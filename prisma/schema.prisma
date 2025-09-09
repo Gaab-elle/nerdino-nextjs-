@@ -1,0 +1,477 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User Model
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String?
+  name          String?
+  username      String?   @unique
+  email_verified Boolean  @default(false)
+  emailVerified  DateTime? // NextAuth field
+  email_verification_token String?
+  email_verification_expires DateTime?
+  image         String?   // NextAuth field
+  avatar_url    String?
+  bio           String?
+  location      String?
+  website       String?
+  github_url    String?
+  linkedin_url  String?
+  twitter_url   String?
+  phone         String?
+  
+  // Profile settings
+  is_public     Boolean   @default(true)
+  show_stats    Boolean   @default(true)
+  last_seen     DateTime?
+  online_status String    @default("offline") // online, away, busy, offline
+  
+  // Career settings
+  availability  String    @default("active") // active, passive, unavailable
+  contract_type String?   // CLT, PJ, freelance, consulting
+  work_mode     String?   // remote, onsite, hybrid
+  urgency       String?   // immediate, 3months, exploring
+  salary_min    Int?
+  salary_max    Int?
+  company_size  String?   // startup, medium, enterprise
+  
+  // Timestamps
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+
+  // Relations
+  projects      Project[]
+  posts         Post[]
+  comments      Comment[]
+  likes         Like[]
+  follows       Follow[] @relation("UserFollows")
+  followers     Follow[] @relation("UserFollowers")
+  messages_sent Message[] @relation("MessageSender")
+  messages_received Message[] @relation("MessageReceiver")
+  conversations_created Conversation[] @relation("ConversationCreator")
+  conversations_participant ConversationParticipant[]
+  notifications Notification[]
+  applications  JobApplication[]
+  favorites     JobFavorite[]
+  skills        UserSkill[]
+  accounts      Account[]
+  sessions      Session[]
+  
+  @@map("users")
+}
+
+// Project Model
+model Project {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  content     String?  // Rich text content
+  image_url   String?
+  demo_url    String?
+  github_url  String?
+  status      String   @default("active") // active, paused, completed, archived
+  progress    Int      @default(0) // 0-100
+  stars       Int      @default(0)
+  forks       Int      @default(0)
+  views       Int      @default(0)
+  is_public   Boolean  @default(true)
+  
+  // Timestamps
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  
+  // Relations
+  user_id     String
+  user        User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  technologies ProjectTechnology[]
+  likes       Like[]
+  comments    Comment[]
+  
+  @@unique([github_url])
+  @@map("projects")
+}
+
+// Technology Model
+model Technology {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  category    String   // frontend, backend, mobile, devops, etc.
+  icon_url    String?
+  color       String?
+  
+  // Timestamps
+  created_at  DateTime @default(now())
+  
+  // Relations
+  projects    ProjectTechnology[]
+  users       UserSkill[]
+  jobs        JobTechnology[]
+  
+  @@map("technologies")
+}
+
+// Project-Technology Junction
+model ProjectTechnology {
+  id             String     @id @default(cuid())
+  project_id     String
+  technology_id  String
+  
+  project        Project    @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  technology     Technology @relation(fields: [technology_id], references: [id], onDelete: Cascade)
+  
+  @@unique([project_id, technology_id])
+  @@map("project_technologies")
+}
+
+// User Skill Model
+model UserSkill {
+  id             String     @id @default(cuid())
+  user_id        String
+  technology_id  String
+  level          String     @default("intermediate") // beginner, intermediate, advanced, expert
+  
+  user           User       @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  technology     Technology @relation(fields: [technology_id], references: [id], onDelete: Cascade)
+  
+  @@unique([user_id, technology_id])
+  @@map("user_skills")
+}
+
+// Post Model (Community)
+model Post {
+  id          String   @id @default(cuid())
+  content     String
+  type        String   @default("text") // text, project, image, link, question
+  image_url   String?
+  link_url    String?
+  link_title  String?
+  link_description String?
+  link_image  String?
+  is_public   Boolean  @default(true)
+  views       Int      @default(0)
+  
+  // Timestamps
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  
+  // Relations
+  user_id     String
+  user        User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  likes       Like[]
+  comments    Comment[]
+  tags        PostTag[]
+  
+  @@map("posts")
+}
+
+// Tag Model
+model Tag {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  color       String?
+  description String?
+  
+  // Timestamps
+  created_at  DateTime @default(now())
+  
+  // Relations
+  posts       PostTag[]
+  
+  @@map("tags")
+}
+
+// Post-Tag Junction
+model PostTag {
+  id      String @id @default(cuid())
+  post_id String
+  tag_id  String
+  
+  post    Post   @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  tag     Tag    @relation(fields: [tag_id], references: [id], onDelete: Cascade)
+  
+  @@unique([post_id, tag_id])
+  @@map("post_tags")
+}
+
+// Comment Model
+model Comment {
+  id          String   @id @default(cuid())
+  content     String
+  is_public   Boolean  @default(true)
+  
+  // Timestamps
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  
+  // Relations
+  user_id     String
+  user        User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  post_id     String?
+  post        Post?    @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  project_id  String?
+  project     Project? @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  parent_id   String?
+  parent      Comment? @relation("CommentReplies", fields: [parent_id], references: [id])
+  replies     Comment[] @relation("CommentReplies")
+  likes       Like[]
+  
+  @@map("comments")
+}
+
+// Like Model
+model Like {
+  id          String   @id @default(cuid())
+  
+  // Timestamps
+  created_at  DateTime @default(now())
+  
+  // Relations
+  user_id     String
+  user        User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  post_id     String?
+  post        Post?    @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  project_id  String?
+  project     Project? @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  comment_id  String?
+  comment     Comment? @relation(fields: [comment_id], references: [id], onDelete: Cascade)
+  
+  @@unique([user_id, post_id])
+  @@unique([user_id, project_id])
+  @@unique([user_id, comment_id])
+  @@map("likes")
+}
+
+// Follow Model
+model Follow {
+  id          String   @id @default(cuid())
+  
+  // Timestamps
+  created_at  DateTime @default(now())
+  
+  // Relations
+  follower_id String
+  following_id String
+  
+  follower    User     @relation("UserFollows", fields: [follower_id], references: [id], onDelete: Cascade)
+  following   User     @relation("UserFollowers", fields: [following_id], references: [id], onDelete: Cascade)
+  
+  @@unique([follower_id, following_id])
+  @@map("follows")
+}
+
+// Conversation Model (Messages)
+model Conversation {
+  id          String   @id @default(cuid())
+  name        String?
+  type        String   @default("direct") // direct, group
+  is_active   Boolean  @default(true)
+  
+  // Timestamps
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  
+  // Relations
+  creator_id  String
+  creator     User     @relation("ConversationCreator", fields: [creator_id], references: [id], onDelete: Cascade)
+  participants ConversationParticipant[]
+  messages    Message[]
+  
+  @@map("conversations")
+}
+
+// Conversation Participant Model
+model ConversationParticipant {
+  id              String       @id @default(cuid())
+  role            String       @default("member") // admin, member
+  
+  // Timestamps
+  created_at      DateTime     @default(now())
+  
+  // Relations
+  conversation_id String
+  user_id         String
+  
+  conversation    Conversation @relation(fields: [conversation_id], references: [id], onDelete: Cascade)
+  user            User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  
+  @@unique([conversation_id, user_id])
+  @@map("conversation_participants")
+}
+
+// Message Model
+model Message {
+  id          String   @id @default(cuid())
+  content     String
+  type        String   @default("text") // text, image, file, code, project
+  file_url    String?
+  file_name   String?
+  file_size   Int?
+  is_read     Boolean  @default(false)
+  
+  // Timestamps
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  
+  // Relations
+  conversation_id String
+  sender_id       String
+  conversation    Conversation @relation(fields: [conversation_id], references: [id], onDelete: Cascade)
+  sender          User         @relation("MessageSender", fields: [sender_id], references: [id], onDelete: Cascade)
+  receiver        User?        @relation("MessageReceiver", fields: [receiver_id], references: [id])
+  receiver_id     String?
+  
+  @@map("messages")
+}
+
+// Job Opportunity Model
+model JobOpportunity {
+  id              String   @id @default(cuid())
+  title           String
+  company         String
+  description     String
+  requirements    String
+  benefits        String?
+  location        String
+  is_remote       Boolean  @default(false)
+  salary_min      Int?
+  salary_max      Int?
+  currency        String   @default("BRL")
+  contract_type   String   // CLT, PJ, freelance, internship
+  experience_level String  // junior, mid, senior, tech_lead
+  company_size    String?  // startup, medium, enterprise
+  is_active       Boolean  @default(true)
+  is_featured     Boolean  @default(false)
+  views           Int      @default(0)
+  
+  // Timestamps
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+  
+  // Relations
+  applications    JobApplication[]
+  favorites       JobFavorite[]
+  technologies    JobTechnology[]
+  
+  @@map("job_opportunities")
+}
+
+// Job-Technology Junction
+model JobTechnology {
+  id              String         @id @default(cuid())
+  job_id          String
+  technology_id   String
+  
+  job             JobOpportunity @relation(fields: [job_id], references: [id], onDelete: Cascade)
+  technology      Technology     @relation(fields: [technology_id], references: [id], onDelete: Cascade)
+  
+  @@unique([job_id, technology_id])
+  @@map("job_technologies")
+}
+
+// Job Application Model
+model JobApplication {
+  id          String   @id @default(cuid())
+  status      String   @default("pending") // pending, reviewed, accepted, rejected
+  cover_letter String?
+  cv_url      String?
+  
+  // Timestamps
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  
+  // Relations
+  user_id     String
+  job_id      String
+  user        User           @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  job         JobOpportunity @relation(fields: [job_id], references: [id], onDelete: Cascade)
+  
+  @@unique([user_id, job_id])
+  @@map("job_applications")
+}
+
+// Job Favorite Model
+model JobFavorite {
+  id          String   @id @default(cuid())
+  
+  // Timestamps
+  created_at  DateTime @default(now())
+  
+  // Relations
+  user_id     String
+  job_id      String
+  user        User           @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  job         JobOpportunity @relation(fields: [job_id], references: [id], onDelete: Cascade)
+  
+  @@unique([user_id, job_id])
+  @@map("job_favorites")
+}
+
+// Notification Model
+model Notification {
+  id          String   @id @default(cuid())
+  title       String
+  content     String
+  type        String   // like, comment, follow, message, job, system
+  is_read     Boolean  @default(false)
+  data        Json?    // Additional data for the notification
+  
+  // Timestamps
+  created_at  DateTime @default(now())
+  
+  // Relations
+  user_id     String
+  user        User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  
+  @@map("notifications")
+}
+
+// NextAuth.js required models
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
