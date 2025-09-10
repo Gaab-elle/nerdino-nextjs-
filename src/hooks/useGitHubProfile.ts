@@ -182,14 +182,20 @@ function getMockProfileData(): GitHubProfileData {
       {
         type: 'PushEvent',
         repo: 'nerdino-nextjs',
-        created_at: '2024-01-15T10:30:00Z',
+        created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 horas atrás
         url: 'https://github.com/gabrielle/nerdino-nextjs'
       },
       {
         type: 'CreateEvent',
         repo: 'portfolio',
-        created_at: '2024-01-14T15:20:00Z',
+        created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // 1 dia atrás
         url: 'https://github.com/gabrielle/portfolio'
+      },
+      {
+        type: 'PushEvent',
+        repo: 'task-manager',
+        created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 dias atrás
+        url: 'https://github.com/gabrielle/task-manager'
       }
     ],
     topRepos: [
@@ -200,7 +206,7 @@ function getMockProfileData(): GitHubProfileData {
         forks: 1,
         language: 'TypeScript',
         url: 'https://github.com/gabrielle/nerdino-nextjs',
-        updated_at: '2024-01-15T10:30:00Z'
+        updated_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString() // 2 horas atrás
       }
     ],
     languages: ['TypeScript', 'JavaScript', 'Python', 'React', 'Next.js', 'Tailwind CSS', 'Prisma', 'PostgreSQL', 'Docker', 'Git'],
@@ -210,7 +216,7 @@ function getMockProfileData(): GitHubProfileData {
       totalStars: 3,
       totalForks: 1,
       accountAge: 1,
-      lastActive: '2024-01-15T10:30:00Z'
+      lastActive: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString() // 2 horas atrás
     }
   };
 }

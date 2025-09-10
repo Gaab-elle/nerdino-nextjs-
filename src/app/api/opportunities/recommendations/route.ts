@@ -46,9 +46,9 @@ export async function GET(request: NextRequest) {
 
     // Extrair tecnologias do usuário
     const userTechnologies = [
-      ...user.skills.map(skill => skill.technology.name),
-      ...user.projects.flatMap(project => 
-        project.technologies.map(pt => pt.technology.name)
+      ...user.skills.map((skill: any) => skill.technology.name),
+      ...user.projects.flatMap((project: any) => 
+        project.technologies.map((pt: any) => pt.technology.name)
       ),
     ];
 
@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
     const uniqueUserTechnologies = [...new Set(userTechnologies)];
 
     // IDs das oportunidades já aplicadas
-    const appliedJobIds = user.applications.map(app => app.job_id);
+    const appliedJobIds = user.applications.map((app: any) => app.job_id);
 
     // Buscar oportunidades recomendadas
     const recommendations = await prisma.jobOpportunity.findMany({
@@ -115,13 +115,13 @@ export async function GET(request: NextRequest) {
     });
 
     // Calcular score de compatibilidade para cada oportunidade
-    const scoredRecommendations = recommendations.map(opportunity => {
+    const scoredRecommendations = recommendations.map((opportunity: any) => {
       let score = 0;
       let matchedTechnologies = 0;
       let totalTechnologies = opportunity.technologies.length;
 
       // Score baseado em tecnologias
-      opportunity.technologies.forEach(jobTech => {
+      opportunity.technologies.forEach((jobTech: any) => {
         if (uniqueUserTechnologies.includes(jobTech.technology.name)) {
           matchedTechnologies++;
           score += 10; // 10 pontos por tecnologia compatível
@@ -173,7 +173,7 @@ export async function GET(request: NextRequest) {
 
     // Ordenar por score e pegar os melhores
     const topRecommendations = scoredRecommendations
-      .sort((a, b) => b.compatibilityScore - a.compatibilityScore)
+      .sort((a: any, b: any) => b.compatibilityScore - a.compatibilityScore)
       .slice(0, limit);
 
     // Buscar oportunidades em destaque se não houver recomendações suficientes
@@ -183,7 +183,7 @@ export async function GET(request: NextRequest) {
           AND: [
             { is_active: true },
             { is_featured: true },
-            { id: { notIn: [...appliedJobIds, ...topRecommendations.map(r => r.id)] } },
+            { id: { notIn: [...appliedJobIds, ...topRecommendations.map((r: any) => r.id)] } },
           ],
         },
         take: limit - topRecommendations.length,
@@ -210,7 +210,7 @@ export async function GET(request: NextRequest) {
         },
       });
 
-      const featuredWithScore = featuredOpportunities.map(opportunity => ({
+      const featuredWithScore = featuredOpportunities.map((opportunity: any) => ({
         ...opportunity,
         compatibilityScore: 5, // Score baixo para destacadas
         technologyMatch: {

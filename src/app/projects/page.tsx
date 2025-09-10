@@ -10,6 +10,25 @@ import { ProjectsStats } from '@/components/projects/ProjectsStats';
 import { ProjectsFilters } from '@/components/projects/ProjectsFilters';
 import { ProjectsGrid } from '@/components/projects/ProjectsGrid';
 import { ProjectsList } from '@/components/projects/ProjectsList';
+import { EditProjectModal } from '@/components/projects/EditProjectModal';
+import { AnalyticsModal } from '@/components/projects/AnalyticsModal';
+import NewProjectModal from '@/components/projects/NewProjectModal';
+
+interface ProjectData {
+  id: number;
+  name: string;
+  description: string;
+  technologies: string[];
+  status: 'active' | 'paused' | 'completed' | 'archived';
+  stars: number;
+  forks: number;
+  progress: number;
+  lastUpdate: string;
+  createdAt: string;
+  demoUrl: string | null;
+  githubUrl: string;
+  image: string;
+}
 
 export default function ProjectsPage() {
   const { t } = useLanguage();
@@ -18,8 +37,8 @@ export default function ProjectsPage() {
   const isLoading = status === 'loading';
   const router = useRouter();
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [projects, setProjects] = useState([]);
-  const [filteredProjects, setFilteredProjects] = useState([]);
+  const [projects, setProjects] = useState<ProjectData[]>([]);
+  const [filteredProjects, setFilteredProjects] = useState<ProjectData[]>([]);
   const [filters, setFilters] = useState({
     search: '',
     status: 'all',
@@ -28,6 +47,131 @@ export default function ProjectsPage() {
     sortBy: 'recent'
   });
 
+  // Estados dos modais
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [analyticsModalOpen, setAnalyticsModalOpen] = useState(false);
+  const [newProjectModalOpen, setNewProjectModalOpen] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<ProjectData | null>(null);
+
+  // Handlers para os botões do header
+  const handleNewProject = () => {
+    console.log('🆕 Abrindo modal de criação de projeto...');
+    setNewProjectModalOpen(true);
+  };
+
+  const handleSyncGitHub = async () => {
+    console.log('🔄 Recarregando projetos após sincronização...');
+    // Recarregar os projetos após sincronização
+    await loadProjects(filters.sortBy);
+  };
+
+  // Handlers para os botões dos projetos
+  const handleEditProject = (project: ProjectData) => {
+    setSelectedProject(project);
+    setEditModalOpen(true);
+  };
+
+  const handleAnalyticsProject = (project: ProjectData) => {
+    setSelectedProject(project);
+    setAnalyticsModalOpen(true);
+  };
+
+  const handleArchiveProject = async (project: ProjectData) => {
+    if (confirm(t('projects.confirm.archive'))) {
+      try {
+        const response = await fetch(`/api/projects/${project.id}/archive`, {
+          method: 'PATCH'
+        });
+        
+        if (response.ok) {
+          console.log('✅ Projeto arquivado com sucesso');
+          await loadProjects(filters.sortBy);
+        } else {
+          console.error('❌ Erro ao arquivar projeto');
+        }
+      } catch (error) {
+        console.error('❌ Erro ao arquivar projeto:', error);
+      }
+    }
+  };
+
+  const handleDeleteProject = async (project: ProjectData) => {
+    if (confirm(t('projects.confirm.delete'))) {
+      try {
+        const response = await fetch(`/api/projects/${project.id}/delete`, {
+          method: 'DELETE'
+        });
+        
+        if (response.ok) {
+          console.log('✅ Projeto excluído com sucesso');
+          await loadProjects(filters.sortBy);
+        } else {
+          console.error('❌ Erro ao excluir projeto');
+        }
+      } catch (error) {
+        console.error('❌ Erro ao excluir projeto:', error);
+      }
+    }
+  };
+
+  const handleSaveProject = async (projectData: Partial<ProjectData>) => {
+    if (!projectData.id) return;
+    
+    try {
+      console.log('💾 Salvando projeto:', projectData);
+      console.log('👤 Usuário atual:', { 
+        hasUser: !!user, 
+        userId: user?.id, 
+        userEmail: user?.email 
+      });
+      
+      const response = await fetch(`/api/projects/${projectData.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(projectData),
+      });
+      
+      if (response.ok) {
+        console.log('✅ Projeto salvo com sucesso');
+        await loadProjects(filters.sortBy);
+      } else {
+        const errorData = await response.json();
+        console.error('❌ Erro ao salvar projeto:', errorData);
+        alert(`Erro ao salvar projeto: ${errorData.error || 'Erro desconhecido'}`);
+      }
+    } catch (error) {
+      console.error('❌ Erro ao salvar projeto:', error);
+    }
+  };
+
+  const handleCreateProject = async (projectData: any) => {
+    try {
+      console.log('🆕 Criando novo projeto:', projectData);
+      
+      const response = await fetch('/api/projects', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(projectData),
+      });
+      
+      if (response.ok) {
+        console.log('✅ Projeto criado com sucesso');
+        await loadProjects(filters.sortBy);
+        setNewProjectModalOpen(false);
+      } else {
+        const errorData = await response.json();
+        console.error('❌ Erro ao criar projeto:', errorData);
+        alert(`Erro ao criar projeto: ${errorData.error || 'Erro desconhecido'}`);
+      }
+    } catch (error) {
+      console.error('❌ Erro ao criar projeto:', error);
+    }
+  };
+
   // Redirect to login if not authenticated
   useEffect(() => {
     if (!isLoading && !user) {
@@ -35,15 +179,39 @@ export default function ProjectsPage() {
     }
   }, [user, isLoading, router]);
 
-  // Load mock projects data
-  useEffect(() => {
+  // Load user projects from API
+  const loadProjects = async (sortBy: string = 'recent') => {
+    try {
+      console.log('🔄 Carregando projetos do usuário...');
+      const response = await fetch(`/api/projects/user?sortBy=${sortBy}`);
+      const data = await response.json();
+      
+      if (response.ok && data.success) {
+        console.log('✅ Projetos carregados:', data.data);
+        setProjects(data.data);
+        setFilteredProjects(data.data);
+      } else {
+        console.error('❌ Erro ao carregar projetos:', data.error);
+        // Fallback para projetos mock se não conseguir carregar
+        loadMockProjects();
+      }
+    } catch (error) {
+      console.error('❌ Erro ao carregar projetos:', error);
+      // Fallback para projetos mock se não conseguir carregar
+      loadMockProjects();
+    }
+  };
+
+  // Fallback para projetos mock
+  const loadMockProjects = () => {
+    console.log('📝 Carregando projetos mock como fallback...');
     const mockProjects = [
       {
         id: 1,
         name: "E-commerce Platform",
         description: "Plataforma completa de e-commerce com painel administrativo, integração de pagamentos e sistema de recomendações baseado em IA.",
         technologies: ["React", "Node.js", "PostgreSQL", "AWS"],
-        status: "active",
+        status: "active" as const,
         stars: 124,
         forks: 15,
         progress: 85,
@@ -58,7 +226,7 @@ export default function ProjectsPage() {
         name: "Task Management System",
         description: "Sistema completo de gerenciamento de tarefas para equipes com kanban board, relatórios e integração com calendário.",
         technologies: ["Vue.js", "Laravel", "MySQL"],
-        status: "completed",
+        status: "completed" as const,
         stars: 92,
         forks: 18,
         progress: 100,
@@ -73,7 +241,7 @@ export default function ProjectsPage() {
         name: "DevTools Extension",
         description: "Extensão para Chrome que ajuda desenvolvedores a debugar aplicações React com visualização de estado em tempo real.",
         technologies: ["TypeScript", "Chrome APIs", "React", "Webpack"],
-        status: "active",
+        status: "active" as const,
         stars: 89,
         forks: 7,
         progress: 100,
@@ -82,57 +250,19 @@ export default function ProjectsPage() {
         demoUrl: "https://chrome.google.com/webstore/detail/devtools-extension",
         githubUrl: "https://github.com/user/devtools-extension",
         image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=200&fit=crop"
-      },
-      {
-        id: 4,
-        name: "Weather Dashboard",
-        description: "Dashboard meteorológico com previsões em tempo real, mapas interativos e alertas personalizados.",
-        technologies: ["React", "D3.js", "OpenWeather API", "Tailwind CSS"],
-        status: "paused",
-        stars: 45,
-        forks: 12,
-        progress: 60,
-        lastUpdate: "3 semanas atrás",
-        createdAt: "2023-12-05",
-        demoUrl: "https://demo-weather.com",
-        githubUrl: "https://github.com/user/weather-dashboard",
-        image: "https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=400&h=200&fit=crop"
-      },
-      {
-        id: 5,
-        name: "Social Media Analytics",
-        description: "Ferramenta de análise de redes sociais com métricas avançadas, relatórios automatizados e insights de IA.",
-        technologies: ["Next.js", "Python", "MongoDB", "TensorFlow"],
-        status: "active",
-        stars: 156,
-        forks: 23,
-        progress: 75,
-        lastUpdate: "1 dia atrás",
-        createdAt: "2024-01-30",
-        demoUrl: "https://demo-analytics.com",
-        githubUrl: "https://github.com/user/social-analytics",
-        image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=200&fit=crop"
-      },
-      {
-        id: 6,
-        name: "Blockchain Voting System",
-        description: "Sistema de votação descentralizado baseado em blockchain com transparência total e segurança criptográfica.",
-        technologies: ["Solidity", "Web3.js", "React", "Ethereum"],
-        status: "archived",
-        stars: 78,
-        forks: 9,
-        progress: 90,
-        lastUpdate: "2 meses atrás",
-        createdAt: "2023-10-15",
-        demoUrl: null,
-        githubUrl: "https://github.com/user/blockchain-voting",
-        image: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=400&h=200&fit=crop"
       }
     ];
     
     setProjects(mockProjects);
     setFilteredProjects(mockProjects);
-  }, []);
+  };
+
+  // Load projects on mount
+  useEffect(() => {
+    if (user) {
+      loadProjects(filters.sortBy);
+    }
+  }, [user, filters.sortBy]);
 
   // Filter and sort projects
   useEffect(() => {
@@ -159,10 +289,46 @@ export default function ProjectsPage() {
       );
     }
 
+    // Period filter
+    if (filters.period !== 'all') {
+      const now = new Date();
+      
+      switch (filters.period) {
+        case 'today':
+          filtered = filtered.filter(project => {
+            const projectDate = new Date(project.createdAt);
+            return projectDate.toDateString() === now.toDateString();
+          });
+          break;
+        case 'week':
+          const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+          filtered = filtered.filter(project => {
+            const projectDate = new Date(project.createdAt);
+            return projectDate >= weekAgo;
+          });
+          break;
+        case 'month':
+          const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+          filtered = filtered.filter(project => {
+            const projectDate = new Date(project.createdAt);
+            return projectDate >= monthAgo;
+          });
+          break;
+        case 'year':
+          const yearAgo = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+          filtered = filtered.filter(project => {
+            const projectDate = new Date(project.createdAt);
+            return projectDate >= yearAgo;
+          });
+          break;
+      }
+    }
+
     // Sort
     switch (filters.sortBy) {
       case 'recent':
-        filtered.sort((a, b) => new Date(b.lastUpdate).getTime() - new Date(a.lastUpdate).getTime());
+        // Mais recentes = projetos criados mais recentemente primeiro
+        filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
         break;
       case 'name':
         filtered.sort((a, b) => a.name.localeCompare(b.name));
@@ -174,6 +340,7 @@ export default function ProjectsPage() {
         filtered.sort((a, b) => b.progress - a.progress);
         break;
       case 'lastUpdate':
+        // Última atualização = projetos atualizados mais recentemente primeiro
         filtered.sort((a, b) => new Date(b.lastUpdate).getTime() - new Date(a.lastUpdate).getTime());
         break;
     }
@@ -203,7 +370,10 @@ export default function ProjectsPage() {
       <Navbar />
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         {/* Header */}
-        <ProjectsHeader />
+        <ProjectsHeader 
+          onNewProject={handleNewProject}
+          onSyncGitHub={handleSyncGitHub}
+        />
         
         {/* Stats */}
         <ProjectsStats projects={projects} />
@@ -219,11 +389,43 @@ export default function ProjectsPage() {
         {/* Projects Display */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {viewMode === 'grid' ? (
-            <ProjectsGrid projects={filteredProjects} />
+            <ProjectsGrid 
+              projects={filteredProjects}
+              onEdit={handleEditProject}
+              onArchive={handleArchiveProject}
+              onDelete={handleDeleteProject}
+              onAnalytics={handleAnalyticsProject}
+            />
           ) : (
-            <ProjectsList projects={filteredProjects} />
+            <ProjectsList 
+              projects={filteredProjects}
+              onEdit={handleEditProject}
+              onArchive={handleArchiveProject}
+              onDelete={handleDeleteProject}
+              onAnalytics={handleAnalyticsProject}
+            />
           )}
         </div>
+
+        {/* Modals */}
+        <EditProjectModal
+          project={selectedProject}
+          isOpen={editModalOpen}
+          onClose={() => setEditModalOpen(false)}
+          onSave={handleSaveProject}
+        />
+        
+        <AnalyticsModal
+          project={selectedProject}
+          isOpen={analyticsModalOpen}
+          onClose={() => setAnalyticsModalOpen(false)}
+        />
+        
+        <NewProjectModal
+          isOpen={newProjectModalOpen}
+          onClose={() => setNewProjectModalOpen(false)}
+          onSave={handleCreateProject}
+        />
       </div>
     </>
   );

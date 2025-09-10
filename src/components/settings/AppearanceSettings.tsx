@@ -1,232 +1,238 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Palette, Monitor, Sun, Moon, Type, Layout, Eye } from 'lucide-react';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
+import { Palette, Layout, Grid, List, Star, Calendar } from 'lucide-react';
+import { useSettings } from '@/hooks/useSettings';
 
 interface AppearanceSettingsProps {
-  onUnsavedChanges: (hasChanges: boolean) => void;
+  onSettingsChange?: (settings: AppearanceSettings) => void;
+  onUnsavedChanges?: (hasChanges: boolean) => void;
 }
 
-export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({ onUnsavedChanges }) => {
-  const { t } = useLanguage();
+interface AppearanceSettings {
+  featuredProject: string;
+  projectsCount: number;
+  projectsLayout: 'grid' | 'list';
+  experienceCount: number;
+  experienceOrder: 'newest' | 'oldest';
+  profileTheme: 'light' | 'dark' | 'auto';
+  accentColor: string;
+}
+
+export default function AppearanceSettings({ onSettingsChange }: AppearanceSettingsProps) {
+  const { settings: globalSettings, updateSetting } = useSettings();
   
-  const [appearance, setAppearance] = useState({
-    theme: 'auto',
-    primaryColor: 'purple',
-    density: 'normal',
-    fontSize: 16,
-    fontFamily: 'sans-serif',
-    borderRadius: 'medium',
-    animations: true,
-    reducedMotion: false
+  const [settings, setSettings] = useState<AppearanceSettings>({
+    featuredProject: 'all',
+    projectsCount: 4,
+    projectsLayout: 'grid',
+    experienceCount: 3,
+    experienceOrder: 'newest',
+    profileTheme: 'auto',
+    accentColor: 'blue',
   });
 
-  const themes = [
-    { value: 'light', label: t('settings.appearance.theme.light'), icon: Sun },
-    { value: 'dark', label: t('settings.appearance.theme.dark'), icon: Moon },
-    { value: 'auto', label: t('settings.appearance.theme.auto'), icon: Monitor }
-  ];
+  // Carregar configurações do contexto global
+  useEffect(() => {
+    if (globalSettings.appearanceLayout) {
+      setSettings({ ...settings, ...globalSettings.appearanceLayout });
+    }
+  }, [globalSettings.appearanceLayout]);
 
-  const colors = [
-    { value: 'purple', label: t('settings.appearance.colors.purple'), class: 'bg-purple-500' },
-    { value: 'blue', label: t('settings.appearance.colors.blue'), class: 'bg-blue-500' },
-    { value: 'green', label: t('settings.appearance.colors.green'), class: 'bg-green-500' },
-    { value: 'red', label: t('settings.appearance.colors.red'), class: 'bg-red-500' },
-    { value: 'orange', label: t('settings.appearance.colors.orange'), class: 'bg-orange-500' }
-  ];
-
-  const densities = [
-    { value: 'compact', label: t('settings.appearance.density.compact') },
-    { value: 'normal', label: t('settings.appearance.density.normal') },
-    { value: 'spacious', label: t('settings.appearance.density.spacious') }
-  ];
-
-  const fonts = [
-    { value: 'sans-serif', label: t('settings.appearance.fonts.sans') },
-    { value: 'serif', label: t('settings.appearance.fonts.serif') },
-    { value: 'mono', label: t('settings.appearance.fonts.mono') }
-  ];
-
-  const handleChange = (field: string, value: any) => {
-    setAppearance(prev => ({ ...prev, [field]: value }));
-    onUnsavedChanges(true);
+  const handleSettingChange = (key: keyof AppearanceSettings, value: any) => {
+    const newSettings = { ...settings, [key]: value };
+    setSettings(newSettings);
+    
+    // Atualizar no contexto global
+    updateSetting('appearanceLayout', newSettings);
+    onSettingsChange?.(newSettings);
   };
 
+  const accentColors = [
+    { value: 'blue', label: 'Azul', color: 'bg-blue-500' },
+    { value: 'green', label: 'Verde', color: 'bg-green-500' },
+    { value: 'purple', label: 'Roxo', color: 'bg-purple-500' },
+    { value: 'red', label: 'Vermelho', color: 'bg-red-500' },
+    { value: 'orange', label: 'Laranja', color: 'bg-orange-500' },
+    { value: 'pink', label: 'Rosa', color: 'bg-pink-500' },
+  ];
+
   return (
-    <div className="p-6">
-      <div className="space-y-8">
-        {/* Theme */}
-        <div className="space-y-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            {t('settings.appearance.theme.title')}
-          </h3>
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Palette className="h-5 w-5 text-purple-600" />
+          Aparência e Layout do Perfil
+        </CardTitle>
+        <CardDescription>
+          Personalize como seu perfil é exibido
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-8">
+        {/* Configurações de Projetos */}
+        <div className="space-y-4">
+          <h4 className="text-sm font-semibold flex items-center gap-2">
+            <Star className="h-4 w-4" />
+            Projetos em Destaque
+          </h4>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {themes.map((theme) => {
-              const Icon = theme.icon;
-              return (
-                <button
-                  key={theme.value}
-                  onClick={() => handleChange('theme', theme.value)}
-                  className={`p-4 border-2 rounded-lg text-left transition-colors ${
-                    appearance.theme === theme.value
-                      ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/30'
-                      : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <Icon className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-                    <span className="font-medium text-gray-900 dark:text-gray-100">
-                      {theme.label}
-                    </span>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Primary Color */}
-        <div className="space-y-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            {t('settings.appearance.colors.title')}
-          </h3>
-          
-          <div className="flex gap-3">
-            {colors.map((color) => (
-              <button
-                key={color.value}
-                onClick={() => handleChange('primaryColor', color.value)}
-                className={`w-12 h-12 rounded-full border-2 ${
-                  appearance.primaryColor === color.value
-                    ? 'border-gray-900 dark:border-white'
-                    : 'border-gray-300 dark:border-gray-600'
-                } ${color.class}`}
-                title={color.label}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* Density */}
-        <div className="space-y-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            {t('settings.appearance.density.title')}
-          </h3>
-          
-          <div className="space-y-3">
-            {densities.map((density) => (
-              <label key={density.value} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg cursor-pointer">
-                <input
-                  type="radio"
-                  name="density"
-                  value={density.value}
-                  checked={appearance.density === density.value}
-                  onChange={(e) => handleChange('density', e.target.value)}
-                  className="text-purple-600 focus:ring-purple-500"
-                />
-                <span className="text-gray-900 dark:text-gray-100">{density.label}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-
-        {/* Font Settings */}
-        <div className="space-y-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            {t('settings.appearance.fonts.title')}
-          </h3>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                <Type className="h-4 w-4 inline mr-1" />
-                {t('settings.appearance.fonts.family')}
-              </label>
-              <select
-                value={appearance.fontFamily}
-                onChange={(e) => handleChange('fontFamily', e.target.value)}
-                className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            <div className="space-y-2">
+              <Label htmlFor="featured-project">Projeto Principal</Label>
+              <Select
+                value={settings.featuredProject}
+                onValueChange={(value) => handleSettingChange('featuredProject', value)}
               >
-                {fonts.map((font) => (
-                  <option key={font.value} value={font.value}>
-                    {font.label}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione um projeto" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos os projetos</SelectItem>
+                  <SelectItem value="nerdino-nextjs">NERDINO Next.js</SelectItem>
+                  <SelectItem value="portfolio">Portfolio</SelectItem>
+                  <SelectItem value="ecommerce">E-commerce</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {t('settings.appearance.fonts.size')}
-              </label>
-              <div className="flex items-center gap-3">
-                <input
-                  type="range"
-                  min="12"
-                  max="20"
-                  value={appearance.fontSize}
-                  onChange={(e) => handleChange('fontSize', parseInt(e.target.value))}
-                  className="flex-1"
-                />
-                <span className="text-sm text-gray-600 dark:text-gray-400 w-8">
-                  {appearance.fontSize}px
-                </span>
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="projects-count">Quantidade de Projetos</Label>
+              <Select
+                value={settings.projectsCount.toString()}
+                onValueChange={(value) => handleSettingChange('projectsCount', parseInt(value))}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="2">2 projetos</SelectItem>
+                  <SelectItem value="4">4 projetos</SelectItem>
+                  <SelectItem value="6">6 projetos</SelectItem>
+                  <SelectItem value="8">8 projetos</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="projects-layout">Layout dos Projetos</Label>
+              <Select
+                value={settings.projectsLayout}
+                onValueChange={(value) => handleSettingChange('projectsLayout', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="grid">
+                    <div className="flex items-center gap-2">
+                      <Grid className="h-4 w-4" />
+                      Grid
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="list">
+                    <div className="flex items-center gap-2">
+                      <List className="h-4 w-4" />
+                      Lista
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </div>
 
-        {/* Layout */}
-        <div className="space-y-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            {t('settings.appearance.layout.title')}
-          </h3>
+        {/* Configurações de Experiências */}
+        <div className="space-y-4">
+          <h4 className="text-sm font-semibold flex items-center gap-2">
+            <Calendar className="h-4 w-4" />
+            Experiências Profissionais
+          </h4>
           
-          <div className="space-y-4">
-            <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-              <div>
-                <h4 className="font-medium text-gray-900 dark:text-gray-100">
-                  {t('settings.appearance.layout.animations')}
-                </h4>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {t('settings.appearance.layout.animationsDescription')}
-                </p>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input 
-                  type="checkbox" 
-                  className="sr-only peer" 
-                  checked={appearance.animations}
-                  onChange={(e) => handleChange('animations', e.target.checked)}
-                />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 dark:peer-focus:ring-purple-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-purple-600"></div>
-              </label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="experience-count">Quantidade de Experiências</Label>
+              <Select
+                value={settings.experienceCount.toString()}
+                onValueChange={(value) => handleSettingChange('experienceCount', parseInt(value))}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">1 experiência</SelectItem>
+                  <SelectItem value="2">2 experiências</SelectItem>
+                  <SelectItem value="3">3 experiências</SelectItem>
+                  <SelectItem value="0">Todas</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
-            <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-              <div>
-                <h4 className="font-medium text-gray-900 dark:text-gray-100">
-                  {t('settings.appearance.layout.reducedMotion')}
-                </h4>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {t('settings.appearance.layout.reducedMotionDescription')}
-                </p>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input 
-                  type="checkbox" 
-                  className="sr-only peer" 
-                  checked={appearance.reducedMotion}
-                  onChange={(e) => handleChange('reducedMotion', e.target.checked)}
-                />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 dark:peer-focus:ring-purple-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-purple-600"></div>
-              </label>
+            <div className="space-y-2">
+              <Label htmlFor="experience-order">Ordem de Exibição</Label>
+              <Select
+                value={settings.experienceOrder}
+                onValueChange={(value) => handleSettingChange('experienceOrder', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="newest">Mais recente primeiro</SelectItem>
+                  <SelectItem value="oldest">Mais antiga primeiro</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </div>
-      </div>
-    </div>
+
+        {/* Configurações Visuais */}
+        <div className="space-y-4">
+          <h4 className="text-sm font-semibold flex items-center gap-2">
+            <Layout className="h-4 w-4" />
+            Configurações Visuais
+          </h4>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="profile-theme">Tema do Perfil</Label>
+              <Select
+                value={settings.profileTheme}
+                onValueChange={(value) => handleSettingChange('profileTheme', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="light">Claro</SelectItem>
+                  <SelectItem value="dark">Escuro</SelectItem>
+                  <SelectItem value="auto">Automático</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="accent-color">Cor de Destaque</Label>
+              <div className="flex gap-2 flex-wrap">
+                {accentColors.map((color) => (
+                  <button
+                    key={color.value}
+                    onClick={() => handleSettingChange('accentColor', color.value)}
+                    className={`w-8 h-8 rounded-full ${color.color} border-2 ${
+                      settings.accentColor === color.value 
+                        ? 'border-gray-900 dark:border-white' 
+                        : 'border-gray-300 dark:border-gray-600'
+                    } hover:scale-110 transition-transform`}
+                    title={color.label}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
-};
+}

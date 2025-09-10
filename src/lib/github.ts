@@ -9,6 +9,7 @@ export interface GitHubUser {
   bio: string;
   location: string;
   blog: string;
+  html_url: string;
   public_repos: number;
   public_gists: number;
   followers: number;
@@ -24,6 +25,7 @@ export interface GitHubRepo {
   description: string;
   html_url: string;
   clone_url: string;
+  homepage: string;
   language: string;
   stargazers_count: number;
   forks_count: number;
@@ -98,7 +100,7 @@ export class GitHubService {
       });
 
       // Calculate total stars
-      const totalStars = repos.data.reduce((sum, repo) => sum + repo.stargazers_count, 0);
+      const totalStars = repos.data.reduce((sum: number, repo: any) => sum + repo.stargazers_count, 0);
 
       // Get languages used
       const languages = new Set<string>();
@@ -118,8 +120,8 @@ export class GitHubService {
         totalRepos: repos.data.length,
         totalStars,
         languages: Array.from(languages),
-        publicRepos: repos.data.filter(repo => !repo.private).length,
-        privateRepos: repos.data.filter(repo => repo.private).length,
+        publicRepos: repos.data.filter((repo: any) => !repo.private).length,
+        privateRepos: repos.data.filter((repo: any) => repo.private).length,
       };
     } catch (error) {
       console.error('Error fetching GitHub stats:', error);
@@ -143,7 +145,7 @@ export class GitHubService {
         per_page: 100,
       });
 
-      return events.filter(event => new Date(event.created_at) >= since);
+      return events.filter((event: any) => new Date(event.created_at) >= since);
     } catch (error) {
       console.error('Error fetching recent activity:', error);
       return [];

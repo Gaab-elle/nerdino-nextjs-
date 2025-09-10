@@ -1,196 +1,205 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Shield, Lock, Eye, EyeOff, Smartphone, Key, AlertTriangle } from 'lucide-react';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { Eye, EyeOff, Lock, Unlock } from 'lucide-react';
 
 interface PrivacySettingsProps {
-  onUnsavedChanges: (hasChanges: boolean) => void;
+  onSettingsChange?: (settings: any) => void;
+  onUnsavedChanges?: (hasChanges: boolean) => void;
 }
 
-export const PrivacySettings: React.FC<PrivacySettingsProps> = ({ onUnsavedChanges }) => {
-  const { t } = useLanguage();
-  
-  const [privacy, setPrivacy] = useState({
-    profileVisibility: 'public',
-    showLastSeen: true,
-    showOnlineStatus: true,
-    twoFactorAuth: false,
-    dataCollection: true,
-    analytics: true,
-    cookies: true
+export default function PrivacySettings({ onSettingsChange }: PrivacySettingsProps) {
+  const [settings, setSettings] = useState({
+    showStars: true,
+    showFollowers: true,
+    showContact: true,
+    showAchievements: true,
+    showCertifications: true,
+    showExperience: true,
+    showRepositories: true,
+    showSkills: true
   });
 
-  const handleChange = (field: string, value: any) => {
-    setPrivacy(prev => ({ ...prev, [field]: value }));
-    onUnsavedChanges(true);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Carregar configurações do localStorage na inicialização
+  useEffect(() => {
+    const savedSettings = localStorage.getItem('nerdino-settings');
+    if (savedSettings) {
+      try {
+        const parsed = JSON.parse(savedSettings);
+        const privacySettings = parsed.privacyVisibility || parsed;
+        setSettings(privacySettings);
+        console.log('✅ Configurações carregadas:', privacySettings);
+      } catch (error) {
+        console.error('❌ Erro ao carregar configurações:', error);
+      }
+    }
+  }, []);
+
+  const handleToggle = (field: keyof typeof settings) => {
+    console.log(`🔄 Alternando ${field}`);
+    setSettings(prev => {
+      const newSettings = {
+        ...prev,
+        [field]: !prev[field]
+      };
+      console.log('📝 Novo estado:', newSettings);
+      return newSettings;
+    });
   };
 
+  const handleSave = async () => {
+    if (isLoading) return; // Prevenir cliques múltiplos
+    
+    setIsLoading(true);
+    console.log('💾 Salvando configurações:', settings);
+
+    try {
+      // Carregar configurações existentes
+      const existingSettings = localStorage.getItem('nerdino-settings');
+      const parsedExisting = existingSettings ? JSON.parse(existingSettings) : {};
+      
+      // Atualizar apenas a seção de privacidade
+      const updatedSettings = {
+        ...parsedExisting,
+        privacyVisibility: settings
+      };
+      
+      // Salvar no localStorage com a chave correta
+      localStorage.setItem('nerdino-settings', JSON.stringify(updatedSettings));
+      
+      // Disparar evento para outros componentes
+      window.dispatchEvent(new CustomEvent('privacySettingsChanged', {
+        detail: settings
+      }));
+
+      // Feedback visual
+      console.log('✅ Configurações salvas com sucesso!');
+      
+      // Atualizar página após salvar
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
+
+    } catch (error) {
+      console.error('❌ Erro ao salvar:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const privacyItems: Array<{
+    key: keyof typeof settings;
+    label: string;
+    description: string;
+  }> = [
+    {
+      key: 'showStars',
+      label: 'Exibir stars dos projetos',
+      description: 'Mostra o número de estrelas dos seus repositórios',
+    },
+    {
+      key: 'showFollowers',
+      label: 'Exibir número de seguidores',
+      description: 'Mostra quantas pessoas te seguem',
+    },
+    {
+      key: 'showContact',
+      label: 'Exibir informações de contato',
+      description: 'Mostra suas informações de contato',
+    },
+    {
+      key: 'showAchievements',
+      label: 'Exibir conquistas/badges',
+      description: 'Mostra suas conquistas e badges',
+    },
+    {
+      key: 'showCertifications',
+      label: 'Exibir certificações',
+      description: 'Mostra suas certificações profissionais',
+    },
+    {
+      key: 'showExperience',
+      label: 'Exibir experiências profissionais',
+      description: 'Mostra seu histórico profissional',
+    },
+    {
+      key: 'showRepositories',
+      label: 'Exibir repositórios/projetos',
+      description: 'Mostra seus projetos e repositórios',
+    },
+    {
+      key: 'showSkills',
+      label: 'Exibir skills/tecnologias',
+      description: 'Mostra suas habilidades técnicas',
+    },
+  ];
+
   return (
-    <div className="p-6">
-      <div className="space-y-8">
-        {/* Profile Privacy */}
-        <div className="space-y-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            {t('settings.privacy.profile.title')}
-          </h3>
-          
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {t('settings.privacy.profile.visibility')}
-              </label>
-              <select
-                value={privacy.profileVisibility}
-                onChange={(e) => handleChange('profileVisibility', e.target.value)}
-                className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-              >
-                <option value="public">{t('settings.privacy.profile.public')}</option>
-                <option value="connections">{t('settings.privacy.profile.connections')}</option>
-                <option value="private">{t('settings.privacy.profile.private')}</option>
-              </select>
-            </div>
-
-            <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-              <div>
-                <h4 className="font-medium text-gray-900 dark:text-gray-100">
-                  {t('settings.privacy.profile.showLastSeen')}
-                </h4>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {t('settings.privacy.profile.showLastSeenDescription')}
-                </p>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input 
-                  type="checkbox" 
-                  className="sr-only peer" 
-                  checked={privacy.showLastSeen}
-                  onChange={(e) => handleChange('showLastSeen', e.target.checked)}
-                />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 dark:peer-focus:ring-purple-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-purple-600"></div>
-              </label>
-            </div>
-
-            <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-              <div>
-                <h4 className="font-medium text-gray-900 dark:text-gray-100">
-                  {t('settings.privacy.profile.showOnlineStatus')}
-                </h4>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {t('settings.privacy.profile.showOnlineStatusDescription')}
-                </p>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input 
-                  type="checkbox" 
-                  className="sr-only peer" 
-                  checked={privacy.showOnlineStatus}
-                  onChange={(e) => handleChange('showOnlineStatus', e.target.checked)}
-                />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 dark:peer-focus:ring-purple-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-purple-600"></div>
-              </label>
-            </div>
-          </div>
-        </div>
-
-        {/* Security */}
-        <div className="space-y-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            {t('settings.privacy.security.title')}
-          </h3>
-          
-          <div className="space-y-4">
-            <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-              <div className="flex items-center gap-3">
-                <Shield className="h-5 w-5 text-green-600" />
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Lock className="h-5 w-5 text-blue-600" />
+          Privacidade e Visibilidade do Perfil
+        </CardTitle>
+        <CardDescription>
+          Controle exatamente o que aparece no seu perfil público
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        {privacyItems.map((item) => (
+          <div key={item.key} className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                {settings[item.key] ? (
+                  <Eye className="h-4 w-4 text-green-600" />
+                ) : (
+                  <EyeOff className="h-4 w-4 text-gray-400" />
+                )}
                 <div>
-                  <h4 className="font-medium text-gray-900 dark:text-gray-100">
-                    {t('settings.privacy.security.twoFactorAuth')}
-                  </h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {t('settings.privacy.security.twoFactorAuthDescription')}
-                  </p>
-                </div>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input 
-                  type="checkbox" 
-                  className="sr-only peer" 
-                  checked={privacy.twoFactorAuth}
-                  onChange={(e) => handleChange('twoFactorAuth', e.target.checked)}
-                />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 dark:peer-focus:ring-purple-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-purple-600"></div>
-              </label>
-            </div>
-
-            <div className="p-4 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg">
-              <div className="flex items-start gap-3">
-                <AlertTriangle className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5" />
-                <div>
-                  <h4 className="font-medium text-blue-900 dark:text-blue-100">
-                    {t('settings.privacy.security.changePassword')}
-                  </h4>
-                  <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
-                    {t('settings.privacy.security.changePasswordDescription')}
-                  </p>
-                  <button className="mt-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300">
-                    {t('settings.privacy.security.changePasswordButton')}
-                  </button>
+                  <Label htmlFor={item.key} className="text-sm font-medium">
+                    {item.label}
+                  </Label>
+                  <p className="text-xs text-gray-500">{item.description}</p>
                 </div>
               </div>
             </div>
+            <Switch
+              id={item.key}
+              checked={settings[item.key]}
+              onCheckedChange={() => handleToggle(item.key)}
+            />
+          </div>
+        ))}
+        
+        <div className="pt-4 border-t">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <Unlock className="h-4 w-4" />
+              <span>
+                {Object.values(settings).filter(Boolean).length} de {privacyItems.length} itens visíveis
+              </span>
+            </div>
+            
+            {/* APENAS UM BOTÃO DE SALVAR */}
+            <button
+              onClick={handleSave}
+              disabled={isLoading}
+              className={`px-6 py-2 text-white rounded-lg transition-colors ${
+                isLoading 
+                  ? 'bg-gray-400 cursor-not-allowed' 
+                  : 'bg-blue-600 hover:bg-blue-700'
+              }`}
+            >
+              {isLoading ? 'Salvando...' : 'Salvar Configurações'}
+            </button>
           </div>
         </div>
-
-        {/* Data Collection */}
-        <div className="space-y-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            {t('settings.privacy.data.title')}
-          </h3>
-          
-          <div className="space-y-4">
-            <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-              <div>
-                <h4 className="font-medium text-gray-900 dark:text-gray-100">
-                  {t('settings.privacy.data.collection')}
-                </h4>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {t('settings.privacy.data.collectionDescription')}
-                </p>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input 
-                  type="checkbox" 
-                  className="sr-only peer" 
-                  checked={privacy.dataCollection}
-                  onChange={(e) => handleChange('dataCollection', e.target.checked)}
-                />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 dark:peer-focus:ring-purple-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-purple-600"></div>
-              </label>
-            </div>
-
-            <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-              <div>
-                <h4 className="font-medium text-gray-900 dark:text-gray-100">
-                  {t('settings.privacy.data.analytics')}
-                </h4>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {t('settings.privacy.data.analyticsDescription')}
-                </p>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input 
-                  type="checkbox" 
-                  className="sr-only peer" 
-                  checked={privacy.analytics}
-                  onChange={(e) => handleChange('analytics', e.target.checked)}
-                />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 dark:peer-focus:ring-purple-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-purple-600"></div>
-              </label>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
-};
+}

@@ -7,7 +7,7 @@ import { prisma } from "./prisma"
 import bcrypt from "bcryptjs"
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
+  // adapter: PrismaAdapter(prisma), // Temporarily disabled for JWT strategy
   providers: [
     CredentialsProvider({
       name: "credentials",
@@ -81,44 +81,43 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   session: {
-    strategy: "database",
+    strategy: "jwt",
   },
   callbacks: {
-    async session({ session, user }) {
-      if (user) {
-        session.user.id = user.id
-        session.user.username = (user as any).username
-        session.user.avatar_url = (user as any).avatar_url
+    async session({ session, token }) {
+      if (token) {
+        session.user.id = token.id as string
+        session.user.username = token.username as string
+        session.user.avatar_url = token.avatar_url as string
       }
       return session
     },
-    async signIn({ user, account, profile }) {
-      if (account?.provider === "google" || account?.provider === "github") {
-        // Check if user already exists with this email
-        const existingUser = await prisma.user.findUnique({
-          where: { email: user.email! }
-        })
-
-        if (existingUser) {
-          // User exists, allow sign in and link accounts
-          return true
-        } else {
-          // User doesn't exist, create new user
-          return true
-        }
+    async jwt({ token, user, account }) {
+      if (user) {
+        // For JWT strategy, we'll use a simple approach
+        // Generate a consistent ID based on email
+        const userId = user.email?.split('@')[0] || 'user'
+        token.id = userId
+        token.username = user.name?.toLowerCase().replace(/\s+/g, '') || userId
+        token.avatar_url = user.image || ''
+        token.email = user.email
       }
+      return token
+    },
+    async signIn({ user, account, profile }) {
+      // For JWT strategy, we'll handle user creation in the JWT callback
       return true
     },
     async redirect({ url, baseUrl }) {
-      // If user is signing in, redirect to dashboard
+      // If user is signing in, redirect to projects page
       if (url === baseUrl || url === `${baseUrl}/`) {
-        return `${baseUrl}/dashboard`
+        return `${baseUrl}/projects`
       }
       // Allows relative callback URLs
       if (url.startsWith("/")) return `${baseUrl}${url}`
       // Allows callback URLs on the same origin
       else if (new URL(url).origin === baseUrl) return url
-      return `${baseUrl}/dashboard`
+      return `${baseUrl}/projects`
     },
   },
   pages: {

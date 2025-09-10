@@ -9,7 +9,10 @@ import {
   Briefcase, 
   Users, 
   Database,
-  ChevronRight
+  ChevronRight,
+  Eye,
+  Layout,
+  Lightbulb
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -33,25 +36,32 @@ export const SettingsSidebar: React.FC<SettingsSidebarProps> = ({
       color: 'text-blue-600 dark:text-blue-400'
     },
     {
+      id: 'privacy-visibility',
+      title: 'Privacidade e Visibilidade',
+      description: 'Controle o que aparece no perfil',
+      icon: Eye,
+      color: 'text-blue-600 dark:text-blue-400'
+    },
+    {
+      id: 'appearance-layout',
+      title: 'Aparência e Layout',
+      description: 'Personalize a exibição do perfil',
+      icon: Layout,
+      color: 'text-purple-600 dark:text-purple-400'
+    },
+    {
+      id: 'examples',
+      title: 'Exemplos e Orientações',
+      description: 'Guias para criar seu perfil',
+      icon: Lightbulb,
+      color: 'text-yellow-600 dark:text-yellow-400'
+    },
+    {
       id: 'notifications',
       title: t('settings.sections.notifications.title'),
       description: t('settings.sections.notifications.shortDescription'),
       icon: Bell,
       color: 'text-green-600 dark:text-green-400'
-    },
-    {
-      id: 'appearance',
-      title: t('settings.sections.appearance.title'),
-      description: t('settings.sections.appearance.shortDescription'),
-      icon: Palette,
-      color: 'text-purple-600 dark:text-purple-400'
-    },
-    {
-      id: 'privacy',
-      title: t('settings.sections.privacy.title'),
-      description: t('settings.sections.privacy.shortDescription'),
-      icon: Shield,
-      color: 'text-red-600 dark:text-red-400'
     },
     {
       id: 'career',

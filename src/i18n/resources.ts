@@ -6,10 +6,12 @@ export const pt = {
     "success": "Sucesso",
     "cancel": "Cancelar",
     "save": "Salvar",
+    "saving": "Salvando...",
     "edit": "Editar",
     "delete": "Excluir",
     "close": "Fechar",
     "back": "Voltar",
+    "add": "Adicionar",
     "next": "Próximo",
     "previous": "Anterior",
     "search": "Pesquisar",
@@ -719,6 +721,47 @@ export const pt = {
           "confirm": "Tem certeza que deseja excluir sua conta? Esta ação não pode ser desfeita."
         }
       }
+    },
+    "privacyVisibility": {
+      "title": "Privacidade e Visibilidade do Perfil",
+      "subtitle": "Controle exatamente o que aparece no seu perfil público",
+      "showStars": "Exibir stars dos projetos",
+      "showFollowers": "Exibir número de seguidores",
+      "showAchievements": "Exibir conquistas/badges",
+      "showCertifications": "Exibir certificações",
+      "showExperience": "Exibir experiências profissionais",
+      "showContact": "Exibir informações de contato",
+      "showRepositories": "Exibir repositórios/projetos",
+      "showSkills": "Exibir skills/tecnologias",
+      "itemsVisible": "itens visíveis"
+    },
+    "appearanceLayout": {
+      "title": "Aparência e Layout do Perfil",
+      "subtitle": "Personalize como seu perfil é exibido",
+      "featuredProject": "Projeto Principal",
+      "projectsCount": "Quantidade de Projetos",
+      "projectsLayout": "Layout dos Projetos",
+      "experienceCount": "Quantidade de Experiências",
+      "experienceOrder": "Ordem de Exibição",
+      "profileTheme": "Tema do Perfil",
+      "accentColor": "Cor de Destaque",
+      "grid": "Grid",
+      "list": "Lista",
+      "newest": "Mais recente primeiro",
+      "oldest": "Mais antiga primeiro",
+      "light": "Claro",
+      "dark": "Escuro",
+      "auto": "Automático"
+    },
+    "examples": {
+      "title": "Exemplos e Orientações",
+      "subtitle": "Use estes exemplos como referência para criar seu perfil",
+      "bio": "Bio Profissional",
+      "experience": "Experiência Profissional",
+      "skills": "Habilidades Técnicas",
+      "education": "Formação Acadêmica",
+      "certifications": "Certificações",
+      "projects": "Projetos"
     }
   },
   "profile": {
@@ -827,10 +870,18 @@ export const pt = {
       "searchPlaceholder": "Buscar por nome ou descrição...",
       "status": "Status",
       "allStatuses": "Todos os status",
+      "active": "Ativo",
+      "paused": "Pausado",
+      "completed": "Concluído",
+      "archived": "Arquivado",
       "technology": "Tecnologia",
       "allTechnologies": "Todas as tecnologias",
       "period": "Período",
       "allPeriods": "Todos os períodos",
+      "today": "Hoje",
+      "thisWeek": "Esta semana",
+      "thisMonth": "Este mês",
+      "thisYear": "Este ano",
       "sortBy": "Ordenar por:",
       "mostRecent": "Mais recentes",
       "nameAZ": "Nome A-Z",
@@ -852,7 +903,9 @@ export const pt = {
       "delete": "Excluir",
       "demo": "Demo",
       "github": "GitHub",
-      "share": "Compartilhar"
+      "share": "Compartilhar",
+      "analytics": "Analytics",
+      "resume": "Retomar"
     },
     "metrics": {
       "stars": "Stars",
@@ -861,10 +914,60 @@ export const pt = {
       "progress": "Progresso",
       "lastUpdate": "Última atualização"
     },
+    "lastUpdate": "Última atualização",
     "empty": {
       "title": "Nenhum projeto encontrado",
       "description": "Comece criando seu primeiro projeto ou ajuste os filtros para encontrar projetos existentes.",
       "createFirst": "Criar Primeiro Projeto"
+    },
+    "edit": {
+      "title": "Editar Projeto",
+      "name": "Nome do Projeto",
+      "namePlaceholder": "Digite o nome do projeto",
+      "description": "Descrição",
+      "descriptionPlaceholder": "Descreva seu projeto",
+      "image": "Imagem do Projeto",
+      "uploadImage": "Upload de Imagem",
+      "dragDropText": "Arraste uma imagem aqui ou clique para selecionar",
+      "dragDropHelp": "PNG, JPG, GIF até 5MB",
+      "imageUrl": "URL da Imagem",
+      "imageUrlPlaceholder": "https://exemplo.com/imagem.jpg",
+      "imageUrlHelp": "Ou cole uma URL de imagem da internet",
+      "status": "Status",
+      "progress": "Progresso",
+      "technologies": "Tecnologias",
+      "techPlaceholder": "Ex: React, Node.js",
+      "addTech": "Adicionar",
+      "githubUrl": "URL do GitHub",
+      "demoUrl": "URL do Demo"
+    },
+    "new": {
+      "title": "Novo Projeto",
+      "create": "Criar Projeto"
+    },
+    "analytics": {
+      "title": "Analytics do Projeto",
+      "loading": "Carregando analytics...",
+      "error": "Erro ao carregar analytics",
+      "views": "Visualizações",
+      "likes": "Curtidas",
+      "comments": "Comentários",
+      "stars": "Estrelas",
+      "forks": "Forks",
+      "performance": "Performance",
+      "progress": "Progresso",
+      "completionRate": "Taxa de Conclusão",
+      "averageRating": "Avaliação Média",
+      "timeline": "Timeline",
+      "created": "Criado",
+      "updated": "Atualizado",
+      "lastActivity": "Última Atividade"
+    },
+    "confirm": {
+      "archive": "Tem certeza que deseja arquivar este projeto?",
+      "delete": "Tem certeza que deseja excluir este projeto? Esta ação não pode ser desfeita.",
+      "archiveTitle": "Arquivar Projeto",
+      "deleteTitle": "Excluir Projeto"
     }
   },
   "notifications": {
@@ -943,10 +1046,12 @@ export const en = {
     "success": "Success",
     "cancel": "Cancel",
     "save": "Save",
+    "saving": "Saving...",
     "edit": "Edit",
     "delete": "Delete",
     "close": "Close",
     "back": "Back",
+    "add": "Add",
     "next": "Next",
     "previous": "Previous",
     "search": "Search",
@@ -1656,6 +1761,47 @@ export const en = {
           "confirm": "Are you sure you want to delete your account? This action cannot be undone."
         }
       }
+    },
+    "privacyVisibility": {
+      "title": "Profile Privacy and Visibility",
+      "subtitle": "Control exactly what appears on your public profile",
+      "showStars": "Show project stars",
+      "showFollowers": "Show follower count",
+      "showAchievements": "Show achievements/badges",
+      "showCertifications": "Show certifications",
+      "showExperience": "Show professional experience",
+      "showContact": "Show contact information",
+      "showRepositories": "Show repositories/projects",
+      "showSkills": "Show skills/technologies",
+      "itemsVisible": "items visible"
+    },
+    "appearanceLayout": {
+      "title": "Profile Appearance and Layout",
+      "subtitle": "Customize how your profile is displayed",
+      "featuredProject": "Featured Project",
+      "projectsCount": "Number of Projects",
+      "projectsLayout": "Projects Layout",
+      "experienceCount": "Number of Experiences",
+      "experienceOrder": "Display Order",
+      "profileTheme": "Profile Theme",
+      "accentColor": "Accent Color",
+      "grid": "Grid",
+      "list": "List",
+      "newest": "Newest first",
+      "oldest": "Oldest first",
+      "light": "Light",
+      "dark": "Dark",
+      "auto": "Auto"
+    },
+    "examples": {
+      "title": "Examples and Guidelines",
+      "subtitle": "Use these examples as reference to create your profile",
+      "bio": "Professional Bio",
+      "experience": "Professional Experience",
+      "skills": "Technical Skills",
+      "education": "Academic Background",
+      "certifications": "Certifications",
+      "projects": "Projects"
     }
   },
   "profile": {
@@ -1764,10 +1910,18 @@ export const en = {
       "searchPlaceholder": "Search by name or description...",
       "status": "Status",
       "allStatuses": "All statuses",
+      "active": "Active",
+      "paused": "Paused",
+      "completed": "Completed",
+      "archived": "Archived",
       "technology": "Technology",
       "allTechnologies": "All technologies",
       "period": "Period",
       "allPeriods": "All periods",
+      "today": "Today",
+      "thisWeek": "This week",
+      "thisMonth": "This month",
+      "thisYear": "This year",
       "sortBy": "Sort by:",
       "mostRecent": "Most recent",
       "nameAZ": "Name A-Z",
@@ -1789,7 +1943,9 @@ export const en = {
       "delete": "Delete",
       "demo": "Demo",
       "github": "GitHub",
-      "share": "Share"
+      "share": "Share",
+      "analytics": "Analytics",
+      "resume": "Resume"
     },
     "metrics": {
       "stars": "Stars",
@@ -1798,10 +1954,60 @@ export const en = {
       "progress": "Progress",
       "lastUpdate": "Last update"
     },
+    "lastUpdate": "Last update",
     "empty": {
       "title": "No projects found",
       "description": "Start by creating your first project or adjust the filters to find existing projects.",
       "createFirst": "Create First Project"
+    },
+    "edit": {
+      "title": "Edit Project",
+      "name": "Project Name",
+      "namePlaceholder": "Enter project name",
+      "description": "Description",
+      "descriptionPlaceholder": "Describe your project",
+      "image": "Project Image",
+      "uploadImage": "Upload Image",
+      "dragDropText": "Drag an image here or click to select",
+      "dragDropHelp": "PNG, JPG, GIF up to 5MB",
+      "imageUrl": "Image URL",
+      "imageUrlPlaceholder": "https://example.com/image.jpg",
+      "imageUrlHelp": "Or paste an image URL from the internet",
+      "status": "Status",
+      "progress": "Progress",
+      "technologies": "Technologies",
+      "techPlaceholder": "Ex: React, Node.js",
+      "addTech": "Add",
+      "githubUrl": "GitHub URL",
+      "demoUrl": "Demo URL"
+    },
+    "new": {
+      "title": "New Project",
+      "create": "Create Project"
+    },
+    "analytics": {
+      "title": "Project Analytics",
+      "loading": "Loading analytics...",
+      "error": "Error loading analytics",
+      "views": "Views",
+      "likes": "Likes",
+      "comments": "Comments",
+      "stars": "Stars",
+      "forks": "Forks",
+      "performance": "Performance",
+      "progress": "Progress",
+      "completionRate": "Completion Rate",
+      "averageRating": "Average Rating",
+      "timeline": "Timeline",
+      "created": "Created",
+      "updated": "Updated",
+      "lastActivity": "Last Activity"
+    },
+    "confirm": {
+      "archive": "Are you sure you want to archive this project?",
+      "delete": "Are you sure you want to delete this project? This action cannot be undone.",
+      "archiveTitle": "Archive Project",
+      "deleteTitle": "Delete Project"
     }
   },
   "notifications": {

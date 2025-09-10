@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { User, Mail, Phone, MapPin, Globe, Github, Linkedin, Twitter, Camera, Check, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
@@ -8,27 +8,50 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useSession } from 'next-auth/react';
 
 interface ProfileSettingsProps {
+  settings?: any;
+  onSettingsChange?: (settings: any) => void;
   onUnsavedChanges: (hasChanges: boolean) => void;
 }
 
-export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onUnsavedChanges }) => {
+export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ 
+  settings, 
+  onSettingsChange, 
+  onUnsavedChanges 
+}) => {
   const { t } = useLanguage();
   const { data: session } = useSession();
   const user = session?.user;
   
   const [formData, setFormData] = useState({
-    name: user?.name || '',
-    username: user?.username || '',
-    email: user?.email || '',
-    phone: '',
-    bio: user?.bio || '',
-    location: user?.location || '',
-    website: user?.website || '',
-    github: user?.github_url || '',
-    linkedin: '',
-    twitter: '',
-    portfolio: ''
+    name: settings?.name || user?.name || '',
+    username: settings?.username || user?.username || '',
+    email: settings?.email || user?.email || '',
+    phone: settings?.phone || '',
+    bio: settings?.bio || '',
+    location: settings?.location || '',
+    website: settings?.website || '',
+    github: settings?.github || '',
+    linkedin: settings?.linkedin || '',
+    twitter: settings?.twitter || '',
+    portfolio: settings?.portfolio || ''
   });
+
+  // Atualizar formData quando settings ou user mudarem
+  useEffect(() => {
+    setFormData({
+      name: settings?.name || user?.name || '',
+      username: settings?.username || user?.username || '',
+      email: settings?.email || user?.email || '',
+      phone: settings?.phone || '',
+      bio: settings?.bio || '',
+      location: settings?.location || '',
+      website: settings?.website || '',
+      github: settings?.github || '',
+      linkedin: settings?.linkedin || '',
+      twitter: settings?.twitter || '',
+      portfolio: settings?.portfolio || ''
+    });
+  }, [settings, user]);
 
   const [avatar, setAvatar] = useState(user?.avatar_url || '');
   const [isUploading, setIsUploading] = useState(false);
@@ -36,7 +59,14 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onUnsavedChang
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    const newFormData = { ...formData, [field]: value };
+    setFormData(newFormData);
+    
+    // Salvar nas configurações
+    if (onSettingsChange) {
+      onSettingsChange({ ...settings, [field]: value });
+    }
+    
     onUnsavedChanges(true);
   };
 
@@ -91,12 +121,14 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onUnsavedChang
             <Avatar className="h-24 w-24">
               <AvatarImage src={avatar} alt={formData.name} />
               <AvatarFallback>
-                {formData.name.split(' ').map(n => n[0]).join('')}
+                {formData.name.split(' ').map((n: string) => n[0]).join('')}
               </AvatarFallback>
             </Avatar>
             <label className="absolute -bottom-2 -right-2 bg-purple-600 text-white p-2 rounded-full cursor-pointer hover:bg-purple-700">
               <Camera className="h-4 w-4" />
               <input
+                id="avatar-upload"
+                name="avatar"
                 type="file"
                 accept="image/*"
                 onChange={handleAvatarUpload}
@@ -128,11 +160,13 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onUnsavedChang
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 <User className="h-4 w-4 inline mr-1" />
                 {t('settings.profile.basicInfo.name')}
               </label>
               <input
+                id="name"
+                name="name"
                 type="text"
                 value={formData.name}
                 onChange={(e) => handleInputChange('name', e.target.value)}
@@ -142,11 +176,13 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onUnsavedChang
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 @{t('settings.profile.basicInfo.username')}
               </label>
               <div className="relative">
                 <input
+                  id="username"
+                  name="username"
                   type="text"
                   value={formData.username}
                   onChange={(e) => handleUsernameChange(e.target.value)}
@@ -183,11 +219,13 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onUnsavedChang
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 <Mail className="h-4 w-4 inline mr-1" />
                 {t('settings.profile.basicInfo.email')}
               </label>
               <input
+                id="email"
+                name="email"
                 type="email"
                 value={formData.email}
                 onChange={(e) => handleInputChange('email', e.target.value)}
@@ -197,11 +235,13 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onUnsavedChang
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 <Phone className="h-4 w-4 inline mr-1" />
                 {t('settings.profile.basicInfo.phone')}
               </label>
               <input
+                id="phone"
+                name="phone"
                 type="tel"
                 value={formData.phone}
                 onChange={(e) => handleInputChange('phone', e.target.value)}
@@ -211,11 +251,13 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onUnsavedChang
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="location" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 <MapPin className="h-4 w-4 inline mr-1" />
                 {t('settings.profile.basicInfo.location')}
               </label>
               <input
+                id="location"
+                name="location"
                 type="text"
                 value={formData.location}
                 onChange={(e) => handleInputChange('location', e.target.value)}
@@ -225,10 +267,12 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onUnsavedChang
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="bio" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 {t('settings.profile.basicInfo.bio')}
               </label>
               <textarea
+                id="bio"
+                name="bio"
                 value={formData.bio}
                 onChange={(e) => handleInputChange('bio', e.target.value)}
                 rows={4}
@@ -251,11 +295,13 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onUnsavedChang
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="website" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 <Globe className="h-4 w-4 inline mr-1" />
                 {t('settings.profile.socialLinks.website')}
               </label>
               <input
+                id="website"
+                name="website"
                 type="url"
                 value={formData.website}
                 onChange={(e) => handleInputChange('website', e.target.value)}
@@ -265,11 +311,13 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onUnsavedChang
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="github" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 <Github className="h-4 w-4 inline mr-1" />
                 GitHub
               </label>
               <input
+                id="github"
+                name="github"
                 type="url"
                 value={formData.github}
                 onChange={(e) => handleInputChange('github', e.target.value)}
@@ -279,11 +327,13 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onUnsavedChang
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="linkedin" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 <Linkedin className="h-4 w-4 inline mr-1" />
                 LinkedIn
               </label>
               <input
+                id="linkedin"
+                name="linkedin"
                 type="url"
                 value={formData.linkedin}
                 onChange={(e) => handleInputChange('linkedin', e.target.value)}
@@ -293,11 +343,13 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ onUnsavedChang
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="twitter" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 <Twitter className="h-4 w-4 inline mr-1" />
                 Twitter
               </label>
               <input
+                id="twitter"
+                name="twitter"
                 type="url"
                 value={formData.twitter}
                 onChange={(e) => handleInputChange('twitter', e.target.value)}

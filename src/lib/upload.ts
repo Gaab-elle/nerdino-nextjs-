@@ -14,7 +14,7 @@ export interface UploadResult {
 
 export interface UploadConfig {
   maxSize: number; // in bytes
-  allowedTypes: string[];
+  allowedTypes: readonly string[];
   destination: string;
 }
 

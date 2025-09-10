@@ -25,9 +25,19 @@ interface Project {
 
 interface ProjectsGridProps {
   projects: Project[];
+  onEdit?: (project: Project) => void;
+  onArchive?: (project: Project) => void;
+  onDelete?: (project: Project) => void;
+  onAnalytics?: (project: Project) => void;
 }
 
-export const ProjectsGrid: React.FC<ProjectsGridProps> = ({ projects }) => {
+export const ProjectsGrid: React.FC<ProjectsGridProps> = ({ 
+  projects, 
+  onEdit, 
+  onArchive, 
+  onDelete, 
+  onAnalytics 
+}) => {
   const { t } = useLanguage();
 
   const getStatusColor = (status: string) => {
@@ -181,11 +191,19 @@ export const ProjectsGrid: React.FC<ProjectsGridProps> = ({ projects }) => {
                     GitHub
                   </a>
                 </Button>
-                <Button size="sm" variant="outline">
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  onClick={() => onAnalytics?.(project)}
+                >
                   <BarChart3 className="h-3 w-3 mr-1" />
                   {t('projects.actions.analytics')}
                 </Button>
-                <Button size="sm" variant="outline">
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  onClick={() => onEdit?.(project)}
+                >
                   <Edit className="h-3 w-3 mr-1" />
                   {t('projects.actions.edit')}
                 </Button>
@@ -196,12 +214,21 @@ export const ProjectsGrid: React.FC<ProjectsGridProps> = ({ projects }) => {
                   </Button>
                 )}
                 {project.status === 'active' && (
-                  <Button size="sm" variant="outline">
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    onClick={() => onArchive?.(project)}
+                  >
                     <Archive className="h-3 w-3 mr-1" />
                     {t('projects.actions.archive')}
                   </Button>
                 )}
-                <Button size="sm" variant="outline" className="text-red-600 hover:text-red-700">
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="text-red-600 hover:text-red-700"
+                  onClick={() => onDelete?.(project)}
+                >
                   <Trash2 className="h-3 w-3 mr-1" />
                   {t('projects.actions.delete')}
                 </Button>

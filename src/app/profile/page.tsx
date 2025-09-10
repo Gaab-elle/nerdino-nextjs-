@@ -8,7 +8,7 @@ import { Navbar } from '@/components/layout/Navbar';
 import { ProfileHeader } from '@/components/profile/ProfileHeader';
 import { AboutSection } from '@/components/profile/AboutSection';
 import { SkillsSection } from '@/components/profile/SkillsSection';
-import { FeaturedProjects } from '@/components/profile/FeaturedProjects';
+import { ProfileProjectsManager } from '@/components/profile/ProfileProjectsManager';
 import { ExperienceTimeline } from '@/components/profile/ExperienceTimeline';
 import { ProfileSidebar } from '@/components/profile/ProfileSidebar';
 import { GitHubRepos } from '@/components/profile/GitHubRepos';
@@ -40,7 +40,7 @@ const ProfileContent: React.FC = () => {
               <SkillsSection />
               
               {/* Projetos em Destaque */}
-              <FeaturedProjects />
+              <ProfileProjectsManager />
               
               {/* Experiência - Só mostra se tiver dados ou estiver editando */}
               {(hasExperience() || isEditing || editingSection === 'experience') && <ExperienceTimeline />}

@@ -1,33 +1,44 @@
 'use client';
 
 import React from 'react';
-import { ProfileSettings } from './ProfileSettings';
-import { NotificationSettings } from './NotificationSettings';
-import { AppearanceSettings } from './AppearanceSettings';
-import { PrivacySettings } from './PrivacySettings';
-import { CareerSettings } from './CareerSettings';
-import { ConnectionSettings } from './ConnectionSettings';
-import { DataSettings } from './DataSettings';
+import { ProfileSettings } from '@/components/settings/ProfileSettings';
+import { NotificationSettings } from '@/components/settings/NotificationSettings';
+import { CareerSettings } from '@/components/settings/CareerSettings';
+import { ConnectionSettings } from '@/components/settings/ConnectionSettings';
+import { DataSettings } from '@/components/settings/DataSettings';
+import PrivacySettings from '@/components/settings/PrivacySettings';
+import AppearanceSettings from '@/components/settings/AppearanceSettings';
+import ProfileExamples from '@/components/settings/ProfileExamples';
 
 interface SettingsContentProps {
   activeSection: string;
+  settings?: any;
+  onSettingsChange?: (settings: any) => void;
   onUnsavedChanges: (hasChanges: boolean) => void;
 }
 
 export const SettingsContent: React.FC<SettingsContentProps> = ({
   activeSection,
+  settings,
+  onSettingsChange,
   onUnsavedChanges
 }) => {
   const renderContent = () => {
     switch (activeSection) {
       case 'profile':
-        return <ProfileSettings onUnsavedChanges={onUnsavedChanges} />;
+        return <ProfileSettings 
+          settings={settings}
+          onSettingsChange={onSettingsChange}
+          onUnsavedChanges={onUnsavedChanges} 
+        />;
+      case 'privacy-visibility':
+        return <PrivacySettings onUnsavedChanges={onUnsavedChanges} />;
+      case 'appearance-layout':
+        return <AppearanceSettings onUnsavedChanges={onUnsavedChanges} />;
+      case 'examples':
+        return <ProfileExamples />;
       case 'notifications':
         return <NotificationSettings onUnsavedChanges={onUnsavedChanges} />;
-      case 'appearance':
-        return <AppearanceSettings onUnsavedChanges={onUnsavedChanges} />;
-      case 'privacy':
-        return <PrivacySettings onUnsavedChanges={onUnsavedChanges} />;
       case 'career':
         return <CareerSettings onUnsavedChanges={onUnsavedChanges} />;
       case 'connections':

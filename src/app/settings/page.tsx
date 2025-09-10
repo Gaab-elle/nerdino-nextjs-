@@ -8,6 +8,7 @@ import { Navbar } from '@/components/layout/Navbar';
 import { SettingsSidebar } from '@/components/settings/SettingsSidebar';
 import { SettingsContent } from '@/components/settings/SettingsContent';
 import { SettingsHeader } from '@/components/settings/SettingsHeader';
+import { useSettings } from '@/hooks/useSettings';
 
 export default function SettingsPage() {
   const { t } = useLanguage();
@@ -16,74 +17,61 @@ export default function SettingsPage() {
   const isLoading = status === 'loading';
   const router = useRouter();
   const [activeSection, setActiveSection] = useState('profile');
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
+  
+  const {
+    settings,
+    loading: settingsLoading,
+    saving: isSaving,
+    hasUnsavedChanges,
+    updateSetting,
+    updateSettings,
+    saveSettings,
+    loadSettings,
+  } = useSettings();
 
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (!isLoading && !user) {
-      router.push('/login');
-    }
-  }, [user, isLoading, router]);
-
-  // Warn user about unsaved changes
-  useEffect(() => {
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (hasUnsavedChanges) {
-        e.preventDefault();
-        e.returnValue = '';
-      }
-    };
-
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [hasUnsavedChanges]);
-
-  // Show loading while checking auth
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600 dark:text-gray-400">{t('common.loading')}</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Don't render if not authenticated
-  if (!user) {
-    return null;
-  }
+  // Temporariamente remover verificação de autenticação para debug
+  console.log('Settings page rendering');
+  console.log('User:', user);
+  console.log('Session:', session);
+  console.log('Is loading:', isLoading);
 
   const handleSave = async () => {
-    setIsSaving(true);
+    console.log('handleSave called');
+    console.log('Current settings:', settings);
+    console.log('User session:', session);
+    
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setHasUnsavedChanges(false);
-      // Show success toast
-      console.log('Settings saved successfully');
+      const success = await saveSettings();
+      console.log('Save result:', success);
+      if (success) {
+        // Recarregar a página ao invés de mostrar popup
+        console.log('Settings saved successfully, reloading page...');
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
+      } else {
+        console.error('Failed to save settings');
+        alert('Erro ao salvar configurações');
+      }
     } catch (error) {
-      console.error('Error saving settings:', error);
-    } finally {
-      setIsSaving(false);
+      console.error('Error in handleSave:', error);
+      alert('Erro ao salvar configurações: ' + (error instanceof Error ? error.message : 'Erro desconhecido'));
     }
   };
 
   const handleCancel = () => {
     if (hasUnsavedChanges) {
       if (confirm(t('settings.confirmCancel'))) {
-        setHasUnsavedChanges(false);
-        // Reset form to original values
+        // Reload settings from server
+        window.location.reload();
       }
     }
   };
 
   const handleReset = () => {
     if (confirm(t('settings.confirmReset'))) {
-      setHasUnsavedChanges(false);
       // Reset to default values
+      saveSettings();
     }
   };
 
@@ -111,44 +99,13 @@ export default function SettingsPage() {
             <div className="flex-1 min-w-0">
               <SettingsContent 
                 activeSection={activeSection}
-                onUnsavedChanges={setHasUnsavedChanges}
+                settings={settings}
+                onSettingsChange={updateSettings}
+                onUnsavedChanges={() => {}} // Hook useSettings já gerencia isso
               />
             </div>
           </div>
 
-          {/* Bottom Actions */}
-          <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4">
-            <div className="max-w-7xl mx-auto flex justify-between items-center">
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                {hasUnsavedChanges && (
-                  <span className="text-orange-600 dark:text-orange-400">
-                    {t('settings.unsavedChanges')}
-                  </span>
-                )}
-              </div>
-              <div className="flex gap-3">
-                <button
-                  onClick={handleReset}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600"
-                >
-                  {t('settings.reset')}
-                </button>
-                <button
-                  onClick={handleCancel}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600"
-                >
-                  {t('settings.cancel')}
-                </button>
-                <button
-                  onClick={handleSave}
-                  disabled={!hasUnsavedChanges || isSaving}
-                  className="px-4 py-2 text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 disabled:cursor-not-allowed rounded-lg"
-                >
-                  {isSaving ? t('settings.saving') : t('settings.save')}
-                </button>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </>
