@@ -10,7 +10,6 @@ import { ActivityFeed } from '@/components/dashboard/ActivityFeed';
 import { ProgressSection } from '@/components/dashboard/ProgressSection';
 import { OpportunitiesSection } from '@/components/dashboard/OpportunitiesSection';
 import { QuickActions } from '@/components/dashboard/QuickActions';
-import { GitHubIntegration } from '@/components/dashboard/GitHubIntegration';
 
 export default function DashboardPage() {
   const { t } = useLanguage();
@@ -54,25 +53,22 @@ export default function DashboardPage() {
           {/* Left Column - Main Content */}
           <div className="lg:col-span-2 space-y-8">
             {/* Featured Projects */}
-            <FeaturedProjects />
+            <FeaturedProjects onProjectAdded={() => {}} />
             
             {/* Activity Feed */}
             <ActivityFeed />
+            
+            {/* Opportunities Section */}
+            <OpportunitiesSection />
           </div>
           
           {/* Right Column - Sidebar */}
           <div className="space-y-8">
-            {/* GitHub Integration */}
-            <GitHubIntegration />
-            
             {/* Quick Actions */}
             <QuickActions />
             
             {/* Progress Section */}
             <ProgressSection />
-            
-            {/* Opportunities */}
-            <OpportunitiesSection />
           </div>
         </div>
       </div>

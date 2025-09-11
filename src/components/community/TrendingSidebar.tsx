@@ -8,41 +8,8 @@ import { useLanguage } from '@/contexts/LanguageContext';
 export const TrendingSidebar: React.FC = () => {
   const { t } = useLanguage();
 
-  const trendingProjects = [
-    {
-      id: 1,
-      name: 'React Data Viz',
-      metric: '+47 stars hoje',
-      icon: <Star className="h-4 w-4 text-yellow-500" />,
-      type: 'stars'
-    },
-    {
-      id: 2,
-      name: 'Node.js Microservice',
-      metric: '+32 forks hoje',
-      icon: <GitFork className="h-4 w-4 text-blue-500" />,
-      type: 'forks'
-    },
-    {
-      id: 3,
-      name: 'Vue Admin Panel',
-      metric: '+28 stars hoje',
-      icon: <Star className="h-4 w-4 text-yellow-500" />,
-      type: 'stars'
-    },
-    {
-      id: 4,
-      name: 'Python ML Kit',
-      metric: '+21 stars hoje',
-      icon: <Star className="h-4 w-4 text-yellow-500" />,
-      type: 'stars'
-    }
-  ];
-
-  const popularTags = [
-    '#react', '#nodejs', '#python', '#javascript', '#typescript',
-    '#vue', '#angular', '#docker', '#aws', '#mongodb', '#postgresql', '#devops'
-  ];
+  const trendingProjects: any[] = []; // Dados reais serão implementados com sistema de trending
+  const popularTags: string[] = []; // Dados reais serão implementados com sistema de tags
 
   return (
     <div className="space-y-6">

@@ -31,6 +31,25 @@ export const OpportunitiesFilters: React.FC<OpportunitiesFiltersProps> = ({
 }) => {
   const { t } = useLanguage();
 
+  // Termos de busca específicos para melhorar resultados
+  const searchTerms = [
+    { value: 'desenvolvedor', label: 'Desenvolvedor', icon: '💻' },
+    { value: 'programador', label: 'Programador', icon: '👨‍💻' },
+    { value: 'frontend', label: 'Frontend', icon: '🎨' },
+    { value: 'backend', label: 'Backend', icon: '⚙️' },
+    { value: 'fullstack', label: 'Full Stack', icon: '🔄' },
+    { value: 'react', label: 'React', icon: '⚛️' },
+    { value: 'nodejs', label: 'Node.js', icon: '🟢' },
+    { value: 'python', label: 'Python', icon: '🐍' },
+    { value: 'javascript', label: 'JavaScript', icon: '🟨' },
+    { value: 'typescript', label: 'TypeScript', icon: '🔷' },
+    { value: 'devops', label: 'DevOps', icon: '🔧' },
+    { value: 'mobile', label: 'Mobile', icon: '📱' },
+    { value: 'ui-ux', label: 'UI/UX', icon: '🎨' },
+    { value: 'data-science', label: 'Data Science', icon: '📊' },
+    { value: 'machine-learning', label: 'Machine Learning', icon: '🤖' }
+  ];
+
   const locations = [
     { value: 'all', label: t('opportunities.filters.allLocations') },
     { value: 'remote', label: t('opportunities.filters.remote') },
@@ -114,6 +133,17 @@ export const OpportunitiesFilters: React.FC<OpportunitiesFiltersProps> = ({
     filters.technologies.length > 0 || 
     filters.contractType !== 'all';
 
+  // Verifica se está filtrando por vagas compatíveis
+  const isFilteringCompatibleJobs = filters.technologies.length > 0 && 
+    filters.technologies.every(tech => userSkills.includes(tech)) &&
+    filters.search === '' && 
+    filters.location === 'all' && 
+    filters.experience === 'all' && 
+    filters.stack === 'all' &&
+    filters.salaryMin === 0 && 
+    filters.salaryMax === 0 &&
+    filters.contractType === 'all';
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
       <div className="flex items-center justify-between mb-6">
@@ -121,6 +151,11 @@ export const OpportunitiesFilters: React.FC<OpportunitiesFiltersProps> = ({
           <Filter className="h-5 w-5" />
           {t('opportunities.filters.title')}
         </h2>
+        {isFilteringCompatibleJobs && (
+          <Badge variant="default" className="bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700">
+            🎯 Vagas Compatíveis
+          </Badge>
+        )}
         {hasActiveFilters && (
           <Button variant="ghost" size="sm" onClick={clearAllFilters}>
             <X className="h-4 w-4 mr-1" />
@@ -144,6 +179,25 @@ export const OpportunitiesFilters: React.FC<OpportunitiesFiltersProps> = ({
               onChange={(e) => handleFilterChange('search', e.target.value)}
               className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             />
+          </div>
+          
+          {/* Quick Search Terms */}
+          <div className="mt-3">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Busca rápida:</p>
+            <div className="flex flex-wrap gap-2">
+              {searchTerms.map((term) => (
+                <Button
+                  key={term.value}
+                  variant={filters.search === term.value ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => handleFilterChange('search', term.value)}
+                  className="text-xs"
+                >
+                  <span className="mr-1">{term.icon}</span>
+                  {term.label}
+                </Button>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -286,13 +340,10 @@ export const OpportunitiesFilters: React.FC<OpportunitiesFiltersProps> = ({
                 className={`px-3 py-1 text-sm rounded-full border transition-colors ${
                   filters.technologies.includes(tech)
                     ? 'bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-700'
-                    : userSkills.includes(tech)
-                    ? 'bg-green-100 text-green-700 border-green-200 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-700'
                     : 'bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600'
                 }`}
               >
                 {tech}
-                {userSkills.includes(tech) && ' ✓'}
               </button>
             ))}
           </div>

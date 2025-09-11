@@ -15,14 +15,53 @@ import { SuggestionsSidebar } from '@/components/community/SuggestionsSidebar';
 import { PopularTagsSidebar } from '@/components/community/PopularTagsSidebar';
 import { QuickStatsSidebar } from '@/components/community/QuickStatsSidebar';
 
+interface Post {
+  id: number;
+  type: string;
+  author: {
+    id: number;
+    name: string;
+    username: string;
+    avatar: string;
+    title: string;
+    verified: boolean;
+  };
+  content: string;
+  tags: string[];
+  timestamp: string;
+  stats: {
+    likes: number;
+    comments: number;
+    shares: number;
+    saves: number;
+  };
+  userLiked: boolean;
+  userSaved: boolean;
+  userFollowed: boolean;
+  imageUrl?: string;
+  linkPreview?: {
+    title: string;
+    description: string;
+    image: string;
+    domain: string;
+  };
+  linkUrl?: string;
+  codeSnippet?: {
+    language: string;
+    filename: string;
+    code: string;
+  };
+}
+
 export default function CommunityPage() {
   const { t } = useLanguage();
   const { data: session, status } = useSession();
   const user = session?.user;
   const isLoading = status === 'loading';
   const router = useRouter();
-  const [posts, setPosts] = useState([]);
-  const [filteredPosts, setFilteredPosts] = useState([]);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [filteredPosts, setFilteredPosts] = useState<Post[]>([]);
+  const [comments, setComments] = useState<any[]>([]);
   const [filters, setFilters] = useState({
     type: 'all',
     sortBy: 'recent',
@@ -36,162 +75,46 @@ export default function CommunityPage() {
     }
   }, [user, isLoading, router]);
 
-  // Load mock posts data
+  // Carregar posts salvos do localStorage
   useEffect(() => {
-    const mockPosts = [
-      {
-        id: 1,
-        type: 'achievement',
-        author: {
-          id: 1,
-          name: 'Lucas Martins',
-          username: 'lucasmartins',
-          avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
-          title: 'Full Stack Developer',
-          verified: true
-        },
-        content: 'Update: Consegui uma vaga como Tech Lead na TechCorp! Foram 3 meses de processo, mas valeu muito a pena. Obrigado a todos que me ajudaram com dicas e networking aqui na comunidade. Vamos que vamos! 🚀',
-        tags: ['#techlead', '#carreira', '#conquista', '#networking'],
-        timestamp: '1 dia atrás',
-        stats: {
-          likes: 234,
-          comments: 45,
-          shares: 18,
-          saves: 12
-        },
-        userLiked: false,
-        userSaved: false,
-        userFollowed: false
-      },
-      {
-        id: 2,
-        type: 'tutorial',
-        author: {
-          id: 2,
-          name: 'Thiago Silva',
-          username: 'thiagosilva',
-          avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-          title: 'DevOps Engineer',
-          verified: false
-        },
-        content: 'Acabei de publicar um tutorial completo sobre como configurar CI/CD com GitHub Actions para projetos Node.js. Cobre desde o básico até deploy automático em produção. Link nos comentários! 📚',
-        tags: ['#githubactions', '#cicd', '#nodejs', '#devops'],
-        timestamp: '1 dia atrás',
-        stats: {
-          likes: 89,
-          comments: 23,
-          shares: 15,
-          saves: 8
-        },
-        userLiked: true,
-        userSaved: false,
-        userFollowed: false
-      },
-      {
-        id: 3,
-        type: 'code',
-        author: {
-          id: 3,
-          name: 'Carlos Silva',
-          username: 'carlossilva',
-          avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face',
-          title: 'Senior React Developer',
-          verified: true
-        },
-        content: 'Dica rápida: Como implementar um hook customizado para debounce em React. Super útil para campos de busca e evitar requests desnecessários! 💡',
-        codeSnippet: {
-          language: 'javascript',
-          filename: 'useDebounce.js',
-          code: `import { useState, useEffect } from 'react';
-
-export const useDebounce = (value, delay) => {
-  const [debouncedValue, setDebouncedValue] = useState(value);
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay);
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [value, delay]);
-
-  return debouncedValue;
-};`
-        },
-        tags: ['#react', '#hooks', '#javascript', '#performance'],
-        timestamp: '4 horas atrás',
-        stats: {
-          likes: 89,
-          comments: 23,
-          shares: 15,
-          saves: 5
-        },
-        userLiked: false,
-        userSaved: true,
-        userFollowed: false
-      },
-      {
-        id: 4,
-        type: 'project',
-        author: {
-          id: 4,
-          name: 'Ana Santos',
-          username: 'anasantos',
-          avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face',
-          title: 'Backend Developer',
-          verified: false
-        },
-        content: 'Consegui minha primeira contribuição aceita no repositório oficial do Django! Foi uma correção pequena na documentação, mas estou muito feliz. Para quem está começando no open source, minha dica é: comecem pequeno e sejam consistentes! 🎉',
-        project: {
-          name: 'Django Documentation Fix',
-          description: 'Correção na documentação do Django para melhorar clareza dos exemplos',
-          githubUrl: 'https://github.com/django/django',
-          demoUrl: null,
-          technologies: ['Python', 'Django', 'Documentation']
-        },
-        tags: ['#django', '#opensource', '#python', '#contribuição'],
-        timestamp: '8 horas atrás',
-        stats: {
-          likes: 156,
-          comments: 34,
-          shares: 12,
-          saves: 7
-        },
-        userLiked: true,
-        userSaved: false,
-        userFollowed: true
-      },
-      {
-        id: 5,
-        type: 'question',
-        author: {
-          id: 5,
-          name: 'Maria Rodriguez',
-          username: 'mariarodriguez',
-          avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
-          title: 'Full Stack Developer',
-          verified: false
-        },
-        content: 'Acabei de lançar meu mais novo projeto! Um dashboard de analytics para APIs que mostra métricas em tempo real. Levei 3 meses para desenvolver e estou muito orgulhosa do resultado. Que acham? 🚀',
-        tags: ['#dashboard', '#analytics', '#apis', '#realtime'],
-        timestamp: '2 horas atrás',
-        stats: {
-          likes: 67,
-          comments: 19,
-          shares: 8,
-          saves: 3
-        },
-        userLiked: false,
-        userSaved: false,
-        userFollowed: false
-      }
-    ];
-    
-    setPosts(mockPosts);
-    setFilteredPosts(mockPosts);
+    const savedPosts = localStorage.getItem('communityPosts');
+    if (savedPosts) {
+      const parsedPosts = JSON.parse(savedPosts);
+      setPosts(parsedPosts);
+      setFilteredPosts(parsedPosts);
+    }
   }, []);
+
+  // Carregar comentários do localStorage
+  useEffect(() => {
+    const savedComments = localStorage.getItem('communityComments');
+    if (savedComments) {
+      const parsedComments = JSON.parse(savedComments);
+      // Converter para array de comentários
+      const allComments: any[] = [];
+      Object.values(parsedComments).forEach((postComments: any) => {
+        allComments.push(...postComments);
+      });
+      setComments(allComments);
+    }
+  }, []);
+
+  // Função para adicionar novo post
+  const handlePostCreated = (newPost: Post) => {
+    const updatedPosts = [newPost, ...posts];
+    setPosts(updatedPosts);
+    setFilteredPosts(updatedPosts);
+    
+    // Salvar no localStorage
+    localStorage.setItem('communityPosts', JSON.stringify(updatedPosts));
+  };
+
+  // Função para atualizar posts (para interações)
+  const updatePosts = (updatedPosts: Post[]) => {
+    setPosts(updatedPosts);
+    setFilteredPosts(updatedPosts);
+    localStorage.setItem('communityPosts', JSON.stringify(updatedPosts));
+  };
 
   // Filter and sort posts
   useEffect(() => {
@@ -246,14 +169,14 @@ export const useDebounce = (value, delay) => {
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             {/* Left Sidebar */}
             <div className="lg:col-span-1 space-y-6">
-              <ActivitySidebar />
+              <ActivitySidebar posts={posts} comments={comments} />
               <TrendingSidebar />
             </div>
 
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-6">
               {/* Create Post */}
-              <CreatePost />
+              <CreatePost onPostCreated={handlePostCreated} />
               
               {/* Feed Filters */}
               <FeedFilters 
@@ -262,7 +185,18 @@ export const useDebounce = (value, delay) => {
               />
               
               {/* Community Feed */}
-              <CommunityFeed posts={filteredPosts} />
+              {filteredPosts.length > 0 ? (
+                <CommunityFeed posts={filteredPosts} onPostsUpdate={updatePosts} />
+              ) : (
+                <div className="text-center py-12">
+                  <div className="text-gray-500 dark:text-gray-400 text-lg">
+                    Nenhum post ainda
+                  </div>
+                  <p className="text-gray-400 dark:text-gray-500 mt-2">
+                    Seja o primeiro a compartilhar algo com a comunidade!
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Right Sidebar */}

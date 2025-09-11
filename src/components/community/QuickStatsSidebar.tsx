@@ -9,20 +9,15 @@ export const QuickStatsSidebar: React.FC = () => {
   const { t } = useLanguage();
 
   const communityStats = {
-    totalPosts: 1247,
-    totalUsers: 3456,
-    totalComments: 8934,
-    totalLikes: 45678,
-    totalShares: 2345,
-    activeToday: 234
+    totalPosts: 0,
+    totalUsers: 0,
+    totalComments: 0,
+    totalLikes: 0,
+    totalShares: 0,
+    activeToday: 0
   };
 
-  const weeklyTrends = [
-    { label: 'Posts', value: 89, change: '+12%', positive: true },
-    { label: 'Usuários', value: 156, change: '+8%', positive: true },
-    { label: 'Interações', value: 234, change: '+15%', positive: true },
-    { label: 'Engajamento', value: 67, change: '-3%', positive: false }
-  ];
+  const weeklyTrends: any[] = []; // Dados reais serão implementados com sistema de estatísticas
 
   return (
     <div className="space-y-6">

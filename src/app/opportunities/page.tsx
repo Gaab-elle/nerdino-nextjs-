@@ -9,6 +9,9 @@ import { OpportunitiesHeader } from '@/components/opportunities/OpportunitiesHea
 import { OpportunitiesFilters } from '@/components/opportunities/OpportunitiesFilters';
 import { JobCards } from '@/components/opportunities/JobCards';
 import { OpportunitiesSidebar } from '@/components/opportunities/OpportunitiesSidebar';
+import { Pagination } from '@/components/opportunities/Pagination';
+import { CompatibleJobsModal } from '@/components/opportunities/CompatibleJobsModal';
+import { useOpportunities } from '@/hooks/useOpportunities';
 
 export default function OpportunitiesPage() {
   const { t } = useLanguage();
@@ -16,24 +19,45 @@ export default function OpportunitiesPage() {
   const user = session?.user;
   const isLoading = status === 'loading';
   const router = useRouter();
-  const [jobs, setJobs] = useState([]);
-  const [filteredJobs, setFilteredJobs] = useState([]);
   const [filters, setFilters] = useState({
     search: '',
     location: 'all',
     experience: 'all',
     stack: 'all',
-    technologies: [],
+    technologies: [] as string[],
     salaryMin: 0,
-    salaryMax: 50000,
+    salaryMax: 0, // Mudado para 0 para não filtrar por salário por padrão
     contractType: 'all',
     sortBy: 'relevance'
   });
   const [userProfile] = useState({
-    skills: ['React', 'TypeScript', 'Node.js', 'Python', 'AWS', 'Docker'],
+    skills: ['React', 'TypeScript', 'Node.js', 'JavaScript', 'Python', 'AWS', 'Docker', 'Git'], // Habilidades reais para teste
     experience: 'senior',
     location: 'São Paulo, SP',
     available: true
+  });
+
+  const [filteredJobs, setFilteredJobs] = useState<any[]>([]);
+  const [showCompatibleJobsModal, setShowCompatibleJobsModal] = useState(false);
+  const [compatibleJobs, setCompatibleJobs] = useState<any[]>([]);
+  const [loadingCompatibleJobs, setLoadingCompatibleJobs] = useState(false);
+
+  // Use the opportunities hook
+  const {
+    jobs,
+    loading: jobsLoading,
+    error: jobsError,
+    pagination,
+    currentSource,
+    refreshJobs,
+    goToPage,
+    applyToJob,
+    toggleFavorite,
+    filterJobs
+  } = useOpportunities({
+    userSkills: userProfile.skills,
+    source: 'infojobs', // Using InfoJobs scraping as default
+    autoFetch: true
   });
 
   // Redirect to login if not authenticated
@@ -43,219 +67,131 @@ export default function OpportunitiesPage() {
     }
   }, [user, isLoading, router]);
 
-  // Load mock jobs data
+  // Update filtered jobs when jobs or filters change
   useEffect(() => {
-    const mockJobs = [
-      {
-        id: 1,
-        title: 'Senior React Developer',
-        company: 'TechCorp Solutions',
-        companyLogo: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=100&h=100&fit=crop',
-        location: 'São Paulo, SP',
-        remote: true,
-        salary: { min: 12000, max: 18000 },
-        experience: 'senior',
-        contractType: 'CLT',
-        technologies: ['React', 'TypeScript', 'Node.js', 'AWS'],
-        description: 'Estamos procurando um desenvolvedor sênior para liderar o desenvolvimento de nossa plataforma web.',
-        postedAt: '2 dias atrás',
-        isNew: true,
-        isUrgent: false,
-        matchScore: 95,
-        matchBreakdown: {
-          skills: 100,
-          experience: 95,
-          location: 100
-        },
-        userApplied: false,
-        userFavorited: false
-      },
-      {
-        id: 2,
-        title: 'Full Stack Developer',
-        company: 'StartupXYZ',
-        companyLogo: 'https://images.unsplash.com/photo-1551434678-e076c223a692?w=100&h=100&fit=crop',
-        location: 'Remoto',
-        remote: true,
-        salary: { min: 8000, max: 12000 },
-        experience: 'pleno',
-        contractType: 'PJ',
-        technologies: ['React', 'Node.js', 'MongoDB', 'Docker'],
-        description: 'Oportunidade para trabalhar em uma startup em crescimento com tecnologias modernas.',
-        postedAt: '1 semana atrás',
-        isNew: false,
-        isUrgent: true,
-        matchScore: 85,
-        matchBreakdown: {
-          skills: 80,
-          experience: 90,
-          location: 100
-        },
-        userApplied: false,
-        userFavorited: true
-      },
-      {
-        id: 3,
-        title: 'Tech Lead - Python',
-        company: 'DataTech Inc',
-        companyLogo: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=100&h=100&fit=crop',
-        location: 'Rio de Janeiro, RJ',
-        remote: false,
-        salary: { min: 15000, max: 25000 },
-        experience: 'senior',
-        contractType: 'CLT',
-        technologies: ['Python', 'Django', 'PostgreSQL', 'AWS', 'Docker'],
-        description: 'Liderança técnica de equipe de desenvolvimento Python com foco em dados.',
-        postedAt: '3 dias atrás',
-        isNew: true,
-        isUrgent: false,
-        matchScore: 75,
-        matchBreakdown: {
-          skills: 60,
-          experience: 100,
-          location: 80
-        },
-        userApplied: true,
-        userFavorited: false
-      },
-      {
-        id: 4,
-        title: 'Frontend Developer',
-        company: 'DesignStudio',
-        companyLogo: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=100&h=100&fit=crop',
-        location: 'São Paulo, SP',
-        remote: true,
-        salary: { min: 6000, max: 9000 },
-        experience: 'junior',
-        contractType: 'CLT',
-        technologies: ['React', 'TypeScript', 'CSS', 'Figma'],
-        description: 'Desenvolvedor frontend para trabalhar com design system e interfaces modernas.',
-        postedAt: '5 dias atrás',
-        isNew: false,
-        isUrgent: false,
-        matchScore: 90,
-        matchBreakdown: {
-          skills: 85,
-          experience: 70,
-          location: 100
-        },
-        userApplied: false,
-        userFavorited: false
-      },
-      {
-        id: 5,
-        title: 'DevOps Engineer',
-        company: 'CloudTech',
-        companyLogo: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=100&h=100&fit=crop',
-        location: 'Remoto',
-        remote: true,
-        salary: { min: 10000, max: 15000 },
-        experience: 'pleno',
-        contractType: 'PJ',
-        technologies: ['AWS', 'Docker', 'Kubernetes', 'Terraform', 'Python'],
-        description: 'Especialista em DevOps para gerenciar infraestrutura cloud e CI/CD.',
-        postedAt: '1 dia atrás',
-        isNew: true,
-        isUrgent: false,
-        matchScore: 70,
-        matchBreakdown: {
-          skills: 65,
-          experience: 85,
-          location: 100
-        },
-        userApplied: false,
-        userFavorited: false
-      }
-    ];
-    
-    setJobs(mockJobs);
-    setFilteredJobs(mockJobs);
-  }, []);
-
-  // Filter and sort jobs
-  useEffect(() => {
-    let filtered = [...jobs];
-
-    // Search filter
-    if (filters.search) {
-      const searchLower = filters.search.toLowerCase();
-      filtered = filtered.filter(job => 
-        job.title.toLowerCase().includes(searchLower) ||
-        job.company.toLowerCase().includes(searchLower) ||
-        job.technologies.some(tech => tech.toLowerCase().includes(searchLower))
-      );
-    }
-
-    // Location filter
-    if (filters.location !== 'all') {
-      if (filters.location === 'remote') {
-        filtered = filtered.filter(job => job.remote);
-      } else {
-        filtered = filtered.filter(job => job.location.includes(filters.location));
-      }
-    }
-
-    // Experience filter
-    if (filters.experience !== 'all') {
-      filtered = filtered.filter(job => job.experience === filters.experience);
-    }
-
-    // Stack filter
-    if (filters.stack !== 'all') {
-      // This would be more complex in a real implementation
-      filtered = filtered.filter(job => {
-        const frontendTechs = ['React', 'Vue', 'Angular', 'CSS', 'HTML'];
-        const backendTechs = ['Node.js', 'Python', 'Java', 'C#', 'Go'];
-        const mobileTechs = ['React Native', 'Flutter', 'Swift', 'Kotlin'];
-        
-        switch (filters.stack) {
-          case 'frontend':
-            return job.technologies.some(tech => frontendTechs.includes(tech));
-          case 'backend':
-            return job.technologies.some(tech => backendTechs.includes(tech));
-          case 'mobile':
-            return job.technologies.some(tech => mobileTechs.includes(tech));
-          default:
-            return true;
-        }
-      });
-    }
-
-    // Technologies filter
-    if (filters.technologies.length > 0) {
-      filtered = filtered.filter(job => 
-        filters.technologies.some(tech => job.technologies.includes(tech))
-      );
-    }
-
-    // Salary filter
-    filtered = filtered.filter(job => 
-      job.salary.min >= filters.salaryMin && job.salary.max <= filters.salaryMax
-    );
-
-    // Contract type filter
-    if (filters.contractType !== 'all') {
-      filtered = filtered.filter(job => job.contractType === filters.contractType);
-    }
-
-    // Sort
-    switch (filters.sortBy) {
-      case 'relevance':
-        filtered.sort((a, b) => b.matchScore - a.matchScore);
-        break;
-      case 'recent':
-        filtered.sort((a, b) => new Date(b.postedAt).getTime() - new Date(a.postedAt).getTime());
-        break;
-      case 'salary':
-        filtered.sort((a, b) => b.salary.max - a.salary.max);
-        break;
-      case 'match':
-        filtered.sort((a, b) => b.matchScore - a.matchScore);
-        break;
-    }
-
+    console.log('🔍 Jobs recebidos:', jobs.length, 'Source:', currentSource);
+    console.log('📊 Primeira vaga:', jobs[0]?.title, jobs[0]?.company);
+    const filtered = filterJobs(filters);
+    console.log('✅ Vagas filtradas:', filtered.length);
     setFilteredJobs(filtered);
-  }, [jobs, filters]);
+  }, [jobs, filters, filterJobs, currentSource]);
+
+  // Função para mostrar vagas compatíveis em um modal
+  const handleShowCompatibleJobs = async () => {
+    console.log('🎯 Buscando vagas compatíveis para:', userProfile.skills);
+    
+    setLoadingCompatibleJobs(true);
+    setShowCompatibleJobsModal(true);
+    
+    // Função para calcular compatibilidade
+    const calculateCompatibility = (userSkills: string[], jobTechnologies: string[], jobTitle: string = ''): number => {
+      if (userSkills.length === 0) {
+        return 0;
+      }
+
+      const normalizeSkill = (skill: string) => skill.toLowerCase().trim();
+      const normalizedUserSkills = userSkills.map(normalizeSkill);
+      const normalizedJobTechs = jobTechnologies.map(normalizeSkill);
+      const normalizedJobTitle = jobTitle.toLowerCase();
+
+      // Se não há tecnologias definidas, tenta inferir do título
+      if (jobTechnologies.length === 0) {
+        const titleToTechMap: { [key: string]: string[] } = {
+          'javascript': ['javascript', 'js'],
+          'react': ['react'],
+          'node': ['node.js', 'nodejs'],
+          'python': ['python'],
+          'java': ['java'],
+          'fullstack': ['full stack', 'fullstack'],
+          'frontend': ['frontend', 'front-end'],
+          'backend': ['backend', 'back-end'],
+          'mobile': ['mobile', 'android', 'ios'],
+          'devops': ['devops', 'dev ops'],
+          'typescript': ['typescript', 'ts']
+        };
+
+        const inferredTechs: string[] = [];
+        Object.entries(titleToTechMap).forEach(([tech, variations]) => {
+          if (variations.some(variation => normalizedJobTitle.includes(variation))) {
+            inferredTechs.push(tech);
+          }
+        });
+
+        if (inferredTechs.length > 0) {
+          const matchingSkills = normalizedUserSkills.filter(userSkill => 
+            inferredTechs.some(tech => 
+              tech.includes(userSkill) || userSkill.includes(tech)
+            )
+          );
+          return Math.round((matchingSkills.length / Math.max(userSkills.length, 1)) * 100);
+        }
+        
+        return 0;
+      }
+
+      const matchingSkills = normalizedUserSkills.filter(userSkill => 
+        normalizedJobTechs.some(jobTech => 
+          jobTech.includes(userSkill) || userSkill.includes(jobTech)
+        )
+      );
+
+      return Math.round((matchingSkills.length / Math.max(userSkills.length, 1)) * 100);
+    };
+
+    try {
+      // Busca todas as vagas disponíveis (múltiplas páginas)
+      let allJobs: any[] = [];
+      let page = 0;
+      let hasMore = true;
+      
+      while (hasMore && page < 5) { // Limita a 5 páginas
+        const response = await fetch(`/api/opportunities/fetch?source=infojobs&page=${page}`);
+        const data = await response.json();
+
+        if (data.success) {
+          allJobs = [...allJobs, ...data.data];
+          hasMore = data.pagination.hasMore;
+          page++;
+          console.log(`📊 Página ${page}: ${data.data.length} vagas, Total: ${allJobs.length}`);
+        } else {
+          break;
+        }
+      }
+
+      // Filtra vagas compatíveis (≥30% de compatibilidade) e adiciona match score
+      const compatibleJobsWithScore = allJobs
+        .map(job => {
+          const compatibility = calculateCompatibility(userProfile.skills, job.technologies, job.title);
+          return {
+            ...job,
+            matchScore: compatibility,
+            matchBreakdown: {
+              skills: compatibility,
+              experience: 85, // Default
+              location: job.remote ? 100 : 80
+            }
+          };
+        })
+        .filter(job => job.matchScore >= 30)
+        .sort((a, b) => b.matchScore - a.matchScore); // Ordena por compatibilidade
+
+      console.log('🎯 Total de vagas analisadas:', allJobs.length);
+      console.log('🎯 Vagas compatíveis encontradas:', compatibleJobsWithScore.length);
+      console.log('📊 Detalhes das vagas compatíveis:');
+      compatibleJobsWithScore.forEach(job => {
+        console.log(`  - ${job.title} (${job.company}): ${job.matchScore}% - [${job.technologies.join(', ')}]`);
+      });
+      
+      setCompatibleJobs(compatibleJobsWithScore);
+    } catch (error) {
+      console.error('❌ Erro ao buscar vagas compatíveis:', error);
+      setCompatibleJobs([]);
+    } finally {
+      setLoadingCompatibleJobs(false);
+    }
+  };
+
+
 
   // Show loading while checking auth
   if (isLoading) {
@@ -279,7 +215,10 @@ export default function OpportunitiesPage() {
       <Navbar />
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         {/* Header */}
-        <OpportunitiesHeader userProfile={userProfile} />
+        <OpportunitiesHeader 
+          userProfile={userProfile} 
+          onShowCompatibleJobs={handleShowCompatibleJobs}
+        />
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -301,21 +240,35 @@ export default function OpportunitiesPage() {
               <JobCards 
                 jobs={filteredJobs}
                 userSkills={userProfile.skills}
-                onApply={(jobId) => {
-                  setJobs(jobs.map(job => 
-                    job.id === jobId ? { ...job, userApplied: true } : job
-                  ));
-                }}
-                onFavorite={(jobId) => {
-                  setJobs(jobs.map(job => 
-                    job.id === jobId ? { ...job, userFavorited: !job.userFavorited } : job
-                  ));
-                }}
+                loading={jobsLoading}
+                error={jobsError}
+                dataSource={currentSource}
+                onApply={applyToJob}
+                onFavorite={toggleFavorite}
+                onRefresh={refreshJobs}
+              />
+              
+              {/* Pagination */}
+              <Pagination
+                currentPage={pagination.page}
+                totalPages={pagination.totalPages}
+                hasMore={pagination.hasMore}
+                onPageChange={goToPage}
+                loading={jobsLoading}
               />
             </div>
           </div>
         </div>
       </div>
+
+      {/* Modal de Vagas Compatíveis */}
+      <CompatibleJobsModal
+        isOpen={showCompatibleJobsModal}
+        onClose={() => setShowCompatibleJobsModal(false)}
+        compatibleJobs={compatibleJobs}
+        userSkills={userProfile.skills}
+        loading={loadingCompatibleJobs}
+      />
     </>
   );
 }

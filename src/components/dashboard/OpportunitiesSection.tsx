@@ -1,11 +1,12 @@
 'use client';
 
 import React from 'react';
-import { Briefcase, Github, Users, MapPin, Clock, ExternalLink, Star } from 'lucide-react';
+import { Briefcase, Github, Users, MapPin, Clock, ExternalLink, Star, ArrowRight } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/contexts/LanguageContext';
+import Link from 'next/link';
 
 interface JobOpportunity {
   id: string;
@@ -59,6 +60,46 @@ const mockJobs: JobOpportunity[] = [
     salary: 'R$ 6.000 - 10.000',
     technologies: ['Node.js', 'React', 'PostgreSQL'],
     match: 87
+  },
+  {
+    id: '3',
+    title: 'Backend Developer',
+    company: 'DataCorp',
+    location: 'Belo Horizonte, MG',
+    type: 'remote',
+    salary: 'R$ 7.000 - 11.000',
+    technologies: ['Python', 'Django', 'PostgreSQL'],
+    match: 92
+  },
+  {
+    id: '4',
+    title: 'DevOps Engineer',
+    company: 'CloudTech',
+    location: 'São Paulo, SP',
+    type: 'onsite',
+    salary: 'R$ 9.000 - 13.000',
+    technologies: ['AWS', 'Docker', 'Kubernetes'],
+    match: 78
+  },
+  {
+    id: '5',
+    title: 'Mobile Developer',
+    company: 'AppStudio',
+    location: 'São Paulo, SP',
+    type: 'hybrid',
+    salary: 'R$ 6.500 - 10.500',
+    technologies: ['React Native', 'TypeScript', 'Firebase'],
+    match: 85
+  },
+  {
+    id: '6',
+    title: 'UI/UX Designer',
+    company: 'DesignCo',
+    location: 'Rio de Janeiro, RJ',
+    type: 'remote',
+    salary: 'R$ 5.500 - 9.500',
+    technologies: ['Figma', 'Adobe XD', 'Sketch'],
+    match: 90
   }
 ];
 
@@ -120,9 +161,17 @@ export const OpportunitiesSection: React.FC = () => {
   return (
     <Card>
       <CardHeader>
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-          {t('dashboard.opportunities.title')}
-        </h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+            {t('dashboard.opportunities.title')}
+          </h2>
+          <Link href="/opportunities">
+            <Button variant="outline" size="sm">
+              Ver Todas as Oportunidades
+              <ArrowRight size={16} className="ml-2" />
+            </Button>
+          </Link>
+        </div>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Job Opportunities */}
@@ -131,45 +180,47 @@ export const OpportunitiesSection: React.FC = () => {
             <Briefcase size={16} className="text-blue-500 mr-2" />
             {t('dashboard.opportunities.suggestedJobs')}
           </h3>
-          <div className="space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {mockJobs.map((job) => (
               <div
                 key={job.id}
-                className="p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-sm transition-shadow"
+                className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-sm transition-shadow h-48 flex flex-col justify-between"
               >
-                <div className="flex items-start justify-between mb-2">
-                  <div className="flex-1">
-                    <h4 className="font-medium text-gray-900 dark:text-gray-100">
-                      {job.title}
-                    </h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      {job.company} • {job.location}
-                    </p>
-                  </div>
-                  <Badge className={getMatchColor(job.match)}>
-                    {job.match}% {t('dashboard.opportunities.match')}
-                  </Badge>
-                </div>
-                
-                <div className="flex items-center space-x-4 mb-3 text-xs text-gray-500 dark:text-gray-400">
-                  <span className="flex items-center">
-                    <MapPin size={12} className="mr-1" />
-                    {job.type === 'remote' ? t('dashboard.opportunities.remote') : job.type === 'hybrid' ? t('dashboard.opportunities.hybrid') : t('dashboard.opportunities.onsite')}
-                  </span>
-                  {job.salary && (
-                    <span>{job.salary}</span>
-                  )}
-                </div>
-
-                <div className="flex flex-wrap gap-1 mb-3">
-                  {job.technologies.map((tech) => (
-                    <Badge key={tech} variant="secondary" className="text-xs">
-                      {tech}
+                <div>
+                  <div className="flex items-start justify-between mb-2">
+                    <div className="flex-1">
+                      <h4 className="font-medium text-gray-900 dark:text-gray-100 text-sm">
+                        {job.title}
+                      </h4>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">
+                        {job.company} • {job.location}
+                      </p>
+                    </div>
+                    <Badge className={`${getMatchColor(job.match)} text-xs`}>
+                      {job.match}%
                     </Badge>
-                  ))}
+                  </div>
+                  
+                  <div className="flex items-center space-x-3 mb-3 text-xs text-gray-500 dark:text-gray-400">
+                    <span className="flex items-center">
+                      <MapPin size={10} className="mr-1" />
+                      {job.type === 'remote' ? t('dashboard.opportunities.remote') : job.type === 'hybrid' ? t('dashboard.opportunities.hybrid') : t('dashboard.opportunities.onsite')}
+                    </span>
+                    {job.salary && (
+                      <span>{job.salary}</span>
+                    )}
+                  </div>
+
+                  <div className="flex flex-wrap gap-1 mb-3">
+                    {job.technologies.slice(0, 3).map((tech) => (
+                      <Badge key={tech} variant="secondary" className="text-xs">
+                        {tech}
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
 
-                <Button size="sm" variant="outline" className="w-full">
+                <Button size="sm" variant="outline" className="w-full text-xs">
                   {t('dashboard.opportunities.viewDetails')}
                 </Button>
               </div>
@@ -183,41 +234,43 @@ export const OpportunitiesSection: React.FC = () => {
             <Github size={16} className="text-gray-500 mr-2" />
             {t('dashboard.opportunities.openSourceProjects')}
           </h3>
-          <div className="space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {mockOpenSourceProjects.map((project) => (
               <div
                 key={project.id}
-                className="p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-sm transition-shadow"
+                className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-sm transition-shadow h-48 flex flex-col justify-between"
               >
-                <div className="flex items-start justify-between mb-2">
-                  <div className="flex-1">
-                    <h4 className="font-medium text-gray-900 dark:text-gray-100">
-                      {project.name}
-                    </h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      {project.description}
-                    </p>
+                <div>
+                  <div className="flex items-start justify-between mb-2">
+                    <div className="flex-1">
+                      <h4 className="font-medium text-gray-900 dark:text-gray-100 text-sm">
+                        {project.name}
+                      </h4>
+                      <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2">
+                        {project.description}
+                      </p>
+                    </div>
+                    <Badge variant="secondary" className="text-xs">
+                      {project.language}
+                    </Badge>
                   </div>
-                  <Badge variant="secondary" className="text-xs">
-                    {project.language}
-                  </Badge>
+
+                  <div className="flex items-center space-x-3 mb-3 text-xs text-gray-500 dark:text-gray-400">
+                    <span className="flex items-center">
+                      <Star size={10} className="mr-1" />
+                      {project.stars}
+                    </span>
+                    <span>{project.issues} issues</span>
+                    <span className="flex items-center">
+                      <Clock size={10} className="mr-1" />
+                      {project.lastActivity}
+                    </span>
+                  </div>
                 </div>
 
-                <div className="flex items-center space-x-4 mb-3 text-xs text-gray-500 dark:text-gray-400">
-                  <span className="flex items-center">
-                    <Star size={12} className="mr-1" />
-                    {project.stars}
-                  </span>
-                  <span>{project.issues} issues</span>
-                  <span className="flex items-center">
-                    <Clock size={12} className="mr-1" />
-                    {project.lastActivity}
-                  </span>
-                </div>
-
-                <Button size="sm" variant="outline" className="w-full" asChild>
+                <Button size="sm" variant="outline" className="w-full text-xs" asChild>
                   <a href={project.url} target="_blank" rel="noopener noreferrer">
-                    <ExternalLink size={14} className="mr-2" />
+                    <ExternalLink size={12} className="mr-2" />
                     {t('dashboard.opportunities.viewProject')}
                   </a>
                 </Button>
@@ -232,41 +285,43 @@ export const OpportunitiesSection: React.FC = () => {
             <Users size={16} className="text-purple-500 mr-2" />
             {t('dashboard.opportunities.connectWithDevs')}
           </h3>
-          <div className="space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {mockDevelopers.map((dev) => (
               <div
                 key={dev.id}
-                className="p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-sm transition-shadow"
+                className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-sm transition-shadow h-48 flex flex-col justify-between"
               >
-                <div className="flex items-start space-x-3">
-                  <img
-                    src={dev.avatar}
-                    alt={dev.name}
-                    className="w-10 h-10 rounded-full object-cover"
-                  />
-                  <div className="flex-1">
-                    <h4 className="font-medium text-gray-900 dark:text-gray-100">
-                      {dev.name}
-                    </h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      {dev.role}
-                      {dev.company && ` • ${dev.company}`}
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      {dev.mutualConnections} {t('dashboard.opportunities.mutualConnections')}
-                    </p>
+                <div>
+                  <div className="flex items-start space-x-3 mb-3">
+                    <img
+                      src={dev.avatar}
+                      alt={dev.name}
+                      className="w-8 h-8 rounded-full object-cover"
+                    />
+                    <div className="flex-1">
+                      <h4 className="font-medium text-gray-900 dark:text-gray-100 text-sm">
+                        {dev.name}
+                      </h4>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">
+                        {dev.role}
+                        {dev.company && ` • ${dev.company}`}
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        {dev.mutualConnections} {t('dashboard.opportunities.mutualConnections')}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap gap-1 mb-3">
+                    {dev.technologies.slice(0, 3).map((tech) => (
+                      <Badge key={tech} variant="secondary" className="text-xs">
+                        {tech}
+                      </Badge>
+                    ))}
                   </div>
                 </div>
 
-                <div className="flex flex-wrap gap-1 mt-3 mb-3">
-                  {dev.technologies.map((tech) => (
-                    <Badge key={tech} variant="secondary" className="text-xs">
-                      {tech}
-                    </Badge>
-                  ))}
-                </div>
-
-                <Button size="sm" variant="outline" className="w-full">
+                <Button size="sm" variant="outline" className="w-full text-xs">
                   {t('dashboard.opportunities.connect')}
                 </Button>
               </div>

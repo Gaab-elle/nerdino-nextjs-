@@ -8,20 +8,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 export const PopularTagsSidebar: React.FC = () => {
   const { t } = useLanguage();
 
-  const popularTags = [
-    { name: 'react', count: 1247, trend: 'up' },
-    { name: 'javascript', count: 2156, trend: 'up' },
-    { name: 'nodejs', count: 892, trend: 'up' },
-    { name: 'python', count: 1834, trend: 'down' },
-    { name: 'typescript', count: 1456, trend: 'up' },
-    { name: 'vue', count: 567, trend: 'up' },
-    { name: 'angular', count: 423, trend: 'down' },
-    { name: 'docker', count: 789, trend: 'up' },
-    { name: 'aws', count: 634, trend: 'up' },
-    { name: 'mongodb', count: 445, trend: 'down' },
-    { name: 'postgresql', count: 378, trend: 'up' },
-    { name: 'devops', count: 523, trend: 'up' }
-  ];
+  const popularTags: any[] = []; // Dados reais serão implementados com sistema de tags
 
   const handleTagClick = (tagName: string) => {
     console.log('Clicked tag:', tagName);

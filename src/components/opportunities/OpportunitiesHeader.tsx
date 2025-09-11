@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Briefcase, Bell, ToggleLeft, ToggleRight, TrendingUp, Users, Calendar, CheckCircle } from 'lucide-react';
+import { Briefcase, Bell, ToggleLeft, ToggleRight, TrendingUp, Users, Calendar, CheckCircle, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useOpportunityStats } from '@/hooks/useOpportunityStats';
 
 interface UserProfile {
   skills: string[];
@@ -15,18 +16,20 @@ interface UserProfile {
 
 interface OpportunitiesHeaderProps {
   userProfile: UserProfile;
+  onShowCompatibleJobs?: () => void;
 }
 
-export const OpportunitiesHeader: React.FC<OpportunitiesHeaderProps> = ({ userProfile }) => {
+export const OpportunitiesHeader: React.FC<OpportunitiesHeaderProps> = ({ userProfile, onShowCompatibleJobs }) => {
   const { t } = useLanguage();
   const [isAvailable, setIsAvailable] = useState(userProfile.available);
 
-  const stats = {
-    compatibleJobs: 24,
-    applications: 8,
-    interviews: 3,
-    responseRate: 75
-  };
+  // Usa o hook personalizado para calcular estatísticas reais
+  const { stats, refreshStats } = useOpportunityStats({
+    userSkills: userProfile.skills,
+    userExperience: userProfile.experience,
+    userLocation: userProfile.location,
+    autoFetch: true
+  });
 
   const handleToggleAvailability = () => {
     setIsAvailable(!isAvailable);
@@ -66,6 +69,15 @@ export const OpportunitiesHeader: React.FC<OpportunitiesHeaderProps> = ({ userPr
                 {isAvailable ? t('opportunities.header.available') : t('opportunities.header.notAvailable')}
               </span>
             </div>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={refreshStats}
+              disabled={stats.loading}
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${stats.loading ? 'animate-spin' : ''}`} />
+              {stats.loading ? 'Atualizando...' : 'Atualizar'}
+            </Button>
             <Button variant="outline" size="sm">
               <Bell className="h-4 w-4 mr-2" />
               {t('opportunities.header.createAlert')}
@@ -75,18 +87,30 @@ export const OpportunitiesHeader: React.FC<OpportunitiesHeaderProps> = ({ userPr
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
-          <div className="bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 p-4 rounded-lg">
+          <div 
+            className="bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 p-4 rounded-lg cursor-pointer hover:from-blue-100 hover:to-blue-200 dark:hover:from-blue-900/30 dark:hover:to-blue-800/30 transition-all duration-200 transform hover:scale-105"
+            onClick={onShowCompatibleJobs}
+            title="Clique para ver vagas compatíveis"
+          >
             <div className="flex items-center gap-3">
               <div className="p-2 bg-blue-500 rounded-lg">
                 <Briefcase className="h-5 w-5 text-white" />
               </div>
               <div>
                 <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                  {stats.compatibleJobs}
+                  {stats.loading ? '...' : stats.compatibleJobs}
                 </p>
                 <p className="text-sm text-blue-700 dark:text-blue-300">
                   {t('opportunities.header.compatibleJobs')}
                 </p>
+                {stats.error && (
+                  <p className="text-xs text-red-500 mt-1">
+                    Erro: {stats.error}
+                  </p>
+                )}
+               <p className="text-xs text-blue-600 dark:text-blue-400 mt-1 opacity-70">
+                 Clique para ver
+               </p>
               </div>
             </div>
           </div>
@@ -98,7 +122,7 @@ export const OpportunitiesHeader: React.FC<OpportunitiesHeaderProps> = ({ userPr
               </div>
               <div>
                 <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-                  {stats.applications}
+                  {stats.loading ? '...' : stats.applications}
                 </p>
                 <p className="text-sm text-green-700 dark:text-green-300">
                   {t('opportunities.header.applications')}
@@ -114,7 +138,7 @@ export const OpportunitiesHeader: React.FC<OpportunitiesHeaderProps> = ({ userPr
               </div>
               <div>
                 <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-                  {stats.interviews}
+                  {stats.loading ? '...' : stats.interviews}
                 </p>
                 <p className="text-sm text-purple-700 dark:text-purple-300">
                   {t('opportunities.header.interviews')}
@@ -130,7 +154,7 @@ export const OpportunitiesHeader: React.FC<OpportunitiesHeaderProps> = ({ userPr
               </div>
               <div>
                 <p className="text-2xl font-bold text-orange-600 dark:text-orange-400">
-                  {stats.responseRate}%
+                  {stats.loading ? '...' : `${stats.responseRate}%`}
                 </p>
                 <p className="text-sm text-orange-700 dark:text-orange-300">
                   {t('opportunities.header.responseRate')}

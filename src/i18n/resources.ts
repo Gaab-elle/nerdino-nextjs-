@@ -126,12 +126,7 @@ export const pt = {
       "lastSync": "Última sincronização",
       "syncNow": "Sincronizar Agora"
     },
-    "yourProgress": {
-      "title": "Seu Progresso",
-      "thisWeek": "Esta Semana",
-      "thisMonth": "Este Mês",
-      "allTime": "Todo Tempo"
-    },
+    "yourProgress": "Seu Progresso",
     "projectStatus": {
       "inProgress": "Em Progresso",
       "paused": "Pausado",
@@ -333,7 +328,7 @@ export const pt = {
       "compatibleJobs": "Vagas Compatíveis",
       "applications": "Aplicações",
       "interviews": "Entrevistas",
-      "responseRate": "Taxa de Resposta",
+      "responseRate": "Propostas",
       "statusAvailable": "Disponível",
       "statusNotAvailable": "Indisponível",
       "recruitersCanSee": "Recrutadores podem ver seu perfil",
@@ -396,7 +391,7 @@ export const pt = {
     "sidebar": {
       "personalProgress": "Seu Progresso",
       "applications": "Aplicações",
-      "responseRate": "Taxa de Resposta",
+      "responseRate": "Propostas",
       "interviews": "Entrevistas",
       "offers": "Ofertas",
       "recommendations": {
@@ -1166,12 +1161,7 @@ export const en = {
       "lastSync": "Last sync",
       "syncNow": "Sync Now"
     },
-    "yourProgress": {
-      "title": "Your Progress",
-      "thisWeek": "This Week",
-      "thisMonth": "This Month",
-      "allTime": "All Time"
-    },
+    "yourProgress": "Your Progress",
     "projectStatus": {
       "inProgress": "In Progress",
       "paused": "Paused",
@@ -1373,7 +1363,7 @@ export const en = {
       "compatibleJobs": "Compatible Jobs",
       "applications": "Applications",
       "interviews": "Interviews",
-      "responseRate": "Response Rate",
+      "responseRate": "Proposals",
       "statusAvailable": "Available",
       "statusNotAvailable": "Unavailable",
       "recruitersCanSee": "Recruiters can see your profile",
@@ -1436,7 +1426,7 @@ export const en = {
     "sidebar": {
       "personalProgress": "Your Progress",
       "applications": "Applications",
-      "responseRate": "Response Rate",
+      "responseRate": "Proposals",
       "interviews": "Interviews",
       "offers": "Offers",
       "recommendations": {

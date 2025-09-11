@@ -1,11 +1,13 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowRight, Github, ExternalLink, Clock, CheckCircle, Pause } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useSession } from 'next-auth/react';
 
 interface Project {
   id: string;
@@ -19,50 +21,21 @@ interface Project {
   progress: number;
 }
 
-const mockProjects: Project[] = [
-  {
-    id: '1',
-    name: 'React Portfolio',
-    description: 'Portfolio pessoal construído com React, TypeScript e Tailwind CSS',
-    status: 'inProgress',
-    lastActivity: '2 horas atrás',
-    technologies: ['React', 'TypeScript', 'Tailwind'],
-    githubUrl: 'https://github.com/user/react-portfolio',
-    liveUrl: 'https://portfolio.example.com',
-    progress: 75
-  },
-  {
-    id: '2',
-    name: 'E-commerce API',
-    description: 'API REST para sistema de e-commerce com Node.js e Express',
-    status: 'inProgress',
-    lastActivity: '1 dia atrás',
-    technologies: ['Node.js', 'Express', 'MongoDB'],
-    githubUrl: 'https://github.com/user/ecommerce-api',
-    progress: 60
-  },
-  {
-    id: '3',
-    name: 'Task Manager App',
-    description: 'Aplicativo de gerenciamento de tarefas com React Native',
-    status: 'paused',
-    lastActivity: '1 semana atrás',
-    technologies: ['React Native', 'Firebase'],
-    githubUrl: 'https://github.com/user/task-manager',
-    progress: 40
-  },
-  {
-    id: '4',
-    name: 'Weather Dashboard',
-    description: 'Dashboard de clima com dados em tempo real',
-    status: 'completed',
-    lastActivity: '2 semanas atrás',
-    technologies: ['Vue.js', 'Chart.js', 'API'],
-    githubUrl: 'https://github.com/user/weather-dashboard',
-    liveUrl: 'https://weather.example.com',
-    progress: 100
-  }
-];
+// Função para calcular tempo relativo
+const getTimeAgo = (timestamp: string) => {
+  const now = new Date();
+  const projectTime = new Date(timestamp);
+  const diffInHours = Math.floor((now.getTime() - projectTime.getTime()) / (1000 * 60 * 60));
+  
+  if (diffInHours < 1) return 'Agora';
+  if (diffInHours < 24) return `${diffInHours} hora${diffInHours > 1 ? 's' : ''} atrás`;
+  
+  const diffInDays = Math.floor(diffInHours / 24);
+  if (diffInDays < 7) return `${diffInDays} dia${diffInDays > 1 ? 's' : ''} atrás`;
+  
+  const diffInWeeks = Math.floor(diffInDays / 7);
+  return `${diffInWeeks} semana${diffInWeeks > 1 ? 's' : ''} atrás`;
+};
 
 const getStatusIcon = (status: Project['status']) => {
   switch (status) {
@@ -86,8 +59,98 @@ const getStatusColor = (status: Project['status']) => {
   }
 };
 
-export const FeaturedProjects: React.FC = () => {
+interface FeaturedProjectsProps {
+  onProjectAdded?: () => void;
+}
+
+export const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ onProjectAdded }) => {
   const { t } = useLanguage();
+  const { data: session } = useSession();
+  const user = session?.user;
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Função para carregar projetos
+  const loadProjects = () => {
+      try {
+        const savedProjects = localStorage.getItem('userProjects');
+        if (savedProjects) {
+          const parsedProjects = JSON.parse(savedProjects);
+          // Filtrar projetos do usuário atual
+          const userProjects = parsedProjects.filter((project: any) => 
+            project.authorId === user?.id
+          );
+          setProjects(userProjects);
+        } else {
+          // Se não há projetos salvos, criar alguns projetos de exemplo baseados nos posts
+          const communityPosts = localStorage.getItem('communityPosts');
+          if (communityPosts && user) {
+            const posts = JSON.parse(communityPosts);
+            const projectPosts = posts.filter((post: any) => 
+              post.type === 'project' && post.author.id === user.id
+            );
+            
+            const exampleProjects = projectPosts.map((post: any, index: number) => ({
+              id: `project-${post.id}`,
+              name: post.project?.name || `Projeto ${index + 1}`,
+              description: post.project?.description || post.content,
+              status: 'inProgress' as const,
+              lastActivity: getTimeAgo(post.timestamp),
+              technologies: post.project?.technologies || ['React', 'JavaScript'],
+              githubUrl: post.project?.githubUrl,
+              liveUrl: post.project?.demoUrl,
+              progress: Math.floor(Math.random() * 80) + 20 // Progresso aleatório entre 20-100%
+            }));
+            
+            setProjects(exampleProjects);
+            // Salvar projetos no localStorage
+            localStorage.setItem('userProjects', JSON.stringify(exampleProjects));
+          }
+        }
+      } catch (error) {
+        console.error('Erro ao carregar projetos:', error);
+        setProjects([]);
+      } finally {
+        setLoading(false);
+      }
+  };
+
+  // Carregar projetos do localStorage
+  useEffect(() => {
+    if (user) {
+      loadProjects();
+    }
+  }, [user]);
+
+  // Escutar evento de projeto adicionado
+  useEffect(() => {
+    const handleProjectAdded = () => {
+      loadProjects();
+    };
+
+    window.addEventListener('projectAdded', handleProjectAdded);
+    return () => {
+      window.removeEventListener('projectAdded', handleProjectAdded);
+    };
+  }, []);
+
+  if (loading) {
+    return (
+      <Card>
+        <CardHeader>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+            {t('dashboard.featuredProjects')}
+          </h2>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto"></div>
+            <p className="mt-2 text-gray-600 dark:text-gray-400">Carregando projetos...</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>
@@ -103,8 +166,25 @@ export const FeaturedProjects: React.FC = () => {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {mockProjects.map((project) => (
+        {projects.length === 0 ? (
+          <div className="text-center py-8">
+            <div className="text-gray-500 dark:text-gray-400 mb-4">
+              <Avatar className="mx-auto mb-2 w-12 h-12">
+                <AvatarImage src={user?.avatar_url || undefined} alt={user?.name || 'Usuário'} />
+                <AvatarFallback className="text-lg">
+                  {user?.name?.charAt(0) || 'U'}
+                </AvatarFallback>
+              </Avatar>
+              <p className="text-lg font-medium">Nenhum projeto encontrado</p>
+              <p className="text-sm">Crie posts de projetos na comunidade para vê-los aqui!</p>
+            </div>
+            <Button variant="outline" onClick={() => window.location.href = '/community'}>
+              Ir para Comunidade
+            </Button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {projects.map((project) => (
             <div
               key={project.id}
               className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow"
@@ -173,8 +253,9 @@ export const FeaturedProjects: React.FC = () => {
                 </div>
               </div>
             </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </CardContent>
     </Card>
   );

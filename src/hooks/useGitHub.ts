@@ -57,15 +57,37 @@ export function useGitHub() {
 
     try {
       setIsLoading(true);
+      
+      // First, try the API check
       const response = await fetch('/api/github/sync');
       const data = await response.json();
       
-      if (response.ok) {
+      console.log('GitHub connection check response:', data);
+      
+      if (response.ok && data.success) {
         setIsConnected(true);
-      } else {
-        setIsConnected(false);
+        return;
       }
+
+      // If API check fails, check session data for GitHub indicators
+      const user = session.user;
+      const hasGitHubAvatar = user.avatar_url && (
+        user.avatar_url.includes('github') || 
+        user.avatar_url.includes('avatars.githubusercontent.com')
+      );
+      
+      console.log('User avatar URL:', user.avatar_url);
+      console.log('Has GitHub avatar:', hasGitHubAvatar);
+      
+      if (hasGitHubAvatar) {
+        setIsConnected(true);
+        return;
+      }
+      
+      setIsConnected(false);
+      setError(data.error || 'GitHub not connected');
     } catch (err) {
+      console.error('GitHub connection check error:', err);
       setIsConnected(false);
       setError('Failed to check GitHub connection');
     } finally {

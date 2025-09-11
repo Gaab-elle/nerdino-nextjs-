@@ -39,7 +39,9 @@ export const DashboardHeader: React.FC = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center">
-            <LogoImage size="lg" showText={true} />
+            <div className="scale-[2.5]">
+              <LogoImage size="lg" showText={false} />
+            </div>
           </Link>
 
           {/* Right side */}
@@ -52,6 +54,11 @@ export const DashboardHeader: React.FC = () => {
                 </span>!
               </span>
             </div>
+
+            {/* Community Link */}
+            <Link href="/community" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white font-medium transition-colors">
+              COMUNIDADE
+            </Link>
 
             {/* Language Switcher */}
             <LanguageSwitcher />
@@ -113,7 +120,7 @@ export const DashboardHeader: React.FC = () => {
                 className="flex items-center space-x-2"
               >
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src={isClient ? user?.avatar_url : undefined} alt={isClient ? (user?.name || 'User') : 'User'} />
+                  <AvatarImage src={isClient ? (user?.avatar_url || undefined) : undefined} alt={isClient ? (user?.name || 'User') : 'User'} />
                   <AvatarFallback>{isClient ? (user?.name?.charAt(0) || 'U') : 'U'}</AvatarFallback>
                 </Avatar>
                 <span className="hidden md:block text-gray-700 dark:text-gray-300">

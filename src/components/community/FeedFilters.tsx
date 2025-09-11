@@ -22,7 +22,7 @@ export const FeedFilters: React.FC<FeedFiltersProps> = ({ filters, setFilters })
   };
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
       {/* Feed Type Filter */}
       <div className="flex items-center gap-2">
         <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -36,7 +36,7 @@ export const FeedFilters: React.FC<FeedFiltersProps> = ({ filters, setFilters })
             <button
               key={option.key}
               onClick={() => handleFilterChange('feed', option.key)}
-              className={`px-4 py-2 text-sm font-medium transition-colors ${
+              className={`px-2 py-1 text-xs font-medium transition-colors ${
                 filters.feed === option.key
                   ? 'bg-purple-600 text-white'
                   : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
@@ -49,7 +49,7 @@ export const FeedFilters: React.FC<FeedFiltersProps> = ({ filters, setFilters })
       </div>
 
       {/* Sort Options */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1">
         <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
           {t('community.filters.sortBy')}:
         </span>
@@ -62,7 +62,7 @@ export const FeedFilters: React.FC<FeedFiltersProps> = ({ filters, setFilters })
             <button
               key={option.key}
               onClick={() => handleFilterChange('sortBy', option.key)}
-              className={`px-4 py-2 text-sm font-medium transition-colors ${
+              className={`px-2 py-1 text-xs font-medium transition-colors ${
                 filters.sortBy === option.key
                   ? 'bg-purple-600 text-white'
                   : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'

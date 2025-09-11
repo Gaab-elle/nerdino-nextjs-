@@ -1,11 +1,12 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Heart, MessageCircle, GitBranch, Star, TrendingUp, Users } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useSession } from 'next-auth/react';
 
 interface Activity {
   id: string;
@@ -153,7 +154,112 @@ const getActivityColor = (type: Activity['type']) => {
 
 export const ActivityFeed: React.FC = () => {
   const { t } = useLanguage();
-  const mockActivities = getMockActivities(t);
+  const { data: session } = useSession();
+  const user = session?.user;
+  const [activities, setActivities] = useState<Activity[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Função para calcular tempo relativo
+  const getTimeAgo = (timestamp: string) => {
+    const now = new Date();
+    const activityTime = new Date(timestamp);
+    const diffInHours = Math.floor((now.getTime() - activityTime.getTime()) / (1000 * 60 * 60));
+    
+    if (diffInHours < 1) return 'Agora';
+    if (diffInHours < 24) return `${diffInHours}h`;
+    
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 7) return `${diffInDays}d`;
+    
+    const diffInWeeks = Math.floor(diffInDays / 7);
+    return `${diffInWeeks}w`;
+  };
+
+  // Função para carregar atividades reais
+  const loadActivities = () => {
+    try {
+      const savedPosts = localStorage.getItem('communityPosts');
+      const savedComments = localStorage.getItem('communityComments');
+      
+      if (savedPosts && user) {
+        const posts = JSON.parse(savedPosts);
+        const comments = savedComments ? JSON.parse(savedComments) : {};
+        
+        // Filtrar posts e comentários do usuário
+        const userPosts = posts.filter((post: any) => post.author.id === user.id);
+        const userComments = Object.values(comments).filter((comment: any) => comment.authorId === user.id);
+        
+        // Converter para formato de atividades
+        const realActivities: Activity[] = [];
+        
+        // Adicionar atividades de posts
+        userPosts.slice(0, 5).forEach((post: any) => {
+          realActivities.push({
+            id: `post-${post.id}`,
+            type: 'trending',
+            user: {
+              name: post.author.name,
+              avatar: post.author.avatar_url || '',
+              username: post.author.name.toLowerCase().replace(/\s+/g, '')
+            },
+            action: 'criou um novo post',
+            target: post.type === 'project' ? 'projeto' : post.type,
+            time: getTimeAgo(post.timestamp),
+            metadata: {
+              projectName: post.type === 'project' ? post.content.split('\n')[0] : undefined
+            }
+          });
+        });
+        
+        // Adicionar atividades de comentários
+        userComments.slice(0, 3).forEach((comment: any) => {
+          realActivities.push({
+            id: `comment-${comment.id}`,
+            type: 'comment',
+            user: {
+              name: comment.authorName,
+              avatar: comment.authorAvatar || '',
+              username: comment.authorName.toLowerCase().replace(/\s+/g, '')
+            },
+            action: 'comentou em',
+            target: 'um post',
+            time: getTimeAgo(comment.timestamp),
+            metadata: {
+              comment: comment.content.substring(0, 50) + '...'
+            }
+          });
+        });
+        
+        setActivities(realActivities.slice(0, 8)); // Limitar a 8 atividades
+      } else {
+        setActivities([]);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar atividades:', error);
+      setActivities([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Carregar atividades
+  useEffect(() => {
+    if (user) {
+      loadActivities();
+    }
+  }, [user]);
+
+  // Escutar evento de post adicionado
+  useEffect(() => {
+    const handlePostAdded = () => {
+      loadActivities();
+    };
+
+    window.addEventListener('postAdded', handlePostAdded);
+    return () => {
+      window.removeEventListener('postAdded', handlePostAdded);
+    };
+  }, []);
 
   return (
     <Card>
@@ -163,8 +269,22 @@ export const ActivityFeed: React.FC = () => {
         </h2>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
-          {mockActivities.map((activity) => (
+        {loading ? (
+          <div className="text-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto"></div>
+            <p className="mt-2 text-gray-600 dark:text-gray-400">Carregando atividades...</p>
+          </div>
+        ) : activities.length === 0 ? (
+          <div className="text-center py-8">
+            <div className="text-gray-500 dark:text-gray-400 mb-4">
+              <TrendingUp size={48} className="mx-auto mb-2" />
+              <p className="text-lg font-medium">Nenhuma atividade ainda</p>
+              <p className="text-sm">Crie posts ou comente para ver suas atividades aqui!</p>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {activities.map((activity) => (
             <div
               key={activity.id}
               className="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
@@ -222,15 +342,18 @@ export const ActivityFeed: React.FC = () => {
                 </p>
               </div>
             </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         {/* Load more button */}
-        <div className="mt-6 text-center">
-          <button className="text-sm text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 font-medium">
-            {t('dashboard.activity.loadMore')}
-          </button>
-        </div>
+        {activities.length > 0 && (
+          <div className="mt-6 text-center">
+            <button className="text-sm text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 font-medium">
+              {t('dashboard.activity.loadMore')}
+            </button>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

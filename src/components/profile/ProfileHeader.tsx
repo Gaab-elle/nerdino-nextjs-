@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { MapPin, Calendar, ExternalLink, Github, Linkedin, Mail, Twitter, RefreshCw, AlertCircle, Edit3, Plus, X, Code, GitCommit, Languages, Briefcase, Clock, Star, Users, FolderOpen } from 'lucide-react';
+import { MapPin, Calendar, ExternalLink, Github, Linkedin, Mail, Twitter, RefreshCw, AlertCircle, Edit3, Plus, X, Code, GitCommit, Languages, Briefcase, Clock, Star, Users, FolderOpen, Save } from 'lucide-react';
 import TechIcon from '@/components/ui/TechIcon';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -28,6 +28,19 @@ export const ProfileHeader: React.FC = () => {
   const [editedTitle, setEditedTitle] = useState('');
   const [editedLocation, setEditedLocation] = useState('');
   const [editedBio, setEditedBio] = useState('');
+  
+  // Estados para edição de disponibilidade e experiência
+  const [editingProfileInfo, setEditingProfileInfo] = useState(false);
+  const [availabilityData, setAvailabilityData] = useState({
+    status: 'Disponível',
+    workType: 'Remoto / Híbrido',
+    schedule: 'Flexível'
+  });
+  const [experienceData, setExperienceData] = useState({
+    specialization: 'Fullstack',
+    currentFocus: 'React / Node.js',
+    interest: 'Startups / Scale-ups'
+  });
   const [editedBadges, setEditedBadges] = useState<string[]>([]);
   const [newBadge, setNewBadge] = useState('');
   const [savedData, setSavedData] = useState<any>(null);
@@ -41,6 +54,26 @@ export const ProfileHeader: React.FC = () => {
         setSavedData(parsedData);
       } catch (error) {
         console.error('Erro ao carregar dados salvos:', error);
+      }
+    }
+    
+    // Carregar dados de disponibilidade e experiência
+    const savedAvailability = localStorage.getItem('availabilityData');
+    const savedExperience = localStorage.getItem('experienceData');
+    
+    if (savedAvailability) {
+      try {
+        setAvailabilityData(JSON.parse(savedAvailability));
+      } catch (error) {
+        console.error('Erro ao carregar dados de disponibilidade:', error);
+      }
+    }
+    
+    if (savedExperience) {
+      try {
+        setExperienceData(JSON.parse(savedExperience));
+      } catch (error) {
+        console.error('Erro ao carregar dados de experiência:', error);
       }
     }
   }, []);
@@ -99,6 +132,18 @@ export const ProfileHeader: React.FC = () => {
       console.log('Dados salvos com sucesso:', dataToSave);
     } catch (error) {
       console.error('Erro ao salvar dados:', error);
+    }
+  };
+
+  // Função para salvar dados de perfil (disponibilidade e experiência)
+  const saveProfileInfoData = () => {
+    try {
+      localStorage.setItem('availabilityData', JSON.stringify(availabilityData));
+      localStorage.setItem('experienceData', JSON.stringify(experienceData));
+      setEditingProfileInfo(false);
+      console.log('Dados de perfil salvos:', { availabilityData, experienceData });
+    } catch (error) {
+      console.error('Erro ao salvar dados de perfil:', error);
     }
   };
 
@@ -502,53 +547,140 @@ export const ProfileHeader: React.FC = () => {
 
         {/* Seção de disponibilidade e experiência */}
         <div className="bg-gray-100 dark:bg-gray-800 rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+              Informações do Perfil
+            </h2>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="p-1 h-8 w-8"
+              onClick={() => setEditingProfileInfo(!editingProfileInfo)}
+            >
+              <Edit3 className="w-4 h-4" />
+            </Button>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Disponibilidade */}
-            <div>
+            <div className="relative">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
                 <Clock className="w-5 h-5 text-green-600 dark:text-green-400" />
                 Disponibilidade
               </h3>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Status</span>
-                  <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                    Disponível
-                  </Badge>
+              
+              {editingProfileInfo ? (
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-sm text-gray-600 dark:text-gray-400">Status</label>
+                    <Input
+                      value={availabilityData.status}
+                      onChange={(e) => setAvailabilityData({...availabilityData, status: e.target.value})}
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm text-gray-600 dark:text-gray-400">Tipo de trabalho</label>
+                    <Input
+                      value={availabilityData.workType}
+                      onChange={(e) => setAvailabilityData({...availabilityData, workType: e.target.value})}
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm text-gray-600 dark:text-gray-400">Horário</label>
+                    <Input
+                      value={availabilityData.schedule}
+                      onChange={(e) => setAvailabilityData({...availabilityData, schedule: e.target.value})}
+                      className="mt-1"
+                    />
+                  </div>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Tipo de trabalho</span>
-                  <span className="text-gray-900 dark:text-white">Remoto / Híbrido</span>
+              ) : (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 dark:text-gray-400">Status</span>
+                    <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                      {availabilityData.status}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 dark:text-gray-400">Tipo de trabalho</span>
+                    <span className="text-gray-900 dark:text-white">{availabilityData.workType}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 dark:text-gray-400">Horário</span>
+                    <span className="text-gray-900 dark:text-white">{availabilityData.schedule}</span>
+                  </div>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Horário</span>
-                  <span className="text-gray-900 dark:text-white">Flexível</span>
-                </div>
-              </div>
+              )}
             </div>
 
             {/* Experiência destacada */}
-            <div>
+            <div className="relative">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
                 <Briefcase className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                 Experiência
               </h3>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Especialização</span>
-                  <span className="text-gray-900 dark:text-white">Fullstack</span>
+              
+              {editingProfileInfo ? (
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-sm text-gray-600 dark:text-gray-400">Especialização</label>
+                    <Input
+                      value={experienceData.specialization}
+                      onChange={(e) => setExperienceData({...experienceData, specialization: e.target.value})}
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm text-gray-600 dark:text-gray-400">Foco atual</label>
+                    <Input
+                      value={experienceData.currentFocus}
+                      onChange={(e) => setExperienceData({...experienceData, currentFocus: e.target.value})}
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm text-gray-600 dark:text-gray-400">Interesse</label>
+                    <Input
+                      value={experienceData.interest}
+                      onChange={(e) => setExperienceData({...experienceData, interest: e.target.value})}
+                      className="mt-1"
+                    />
+                  </div>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Foco atual</span>
-                  <span className="text-gray-900 dark:text-white">React / Node.js</span>
+              ) : (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 dark:text-gray-400">Especialização</span>
+                    <span className="text-gray-900 dark:text-white">{experienceData.specialization}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 dark:text-gray-400">Foco atual</span>
+                    <span className="text-gray-900 dark:text-white">{experienceData.currentFocus}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 dark:text-gray-400">Interesse</span>
+                    <span className="text-gray-900 dark:text-white">{experienceData.interest}</span>
+                  </div>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Interesse</span>
-                  <span className="text-gray-900 dark:text-white">Startups / Scale-ups</span>
-                </div>
-              </div>
+              )}
             </div>
           </div>
+          
+          {/* Botões de ação para edição */}
+          {editingProfileInfo && (
+            <div className="flex gap-2 mt-6 pt-4 border-t border-gray-300 dark:border-gray-600">
+              <Button size="sm" onClick={saveProfileInfoData}>
+                <Save className="w-3 h-3 mr-1" />
+                Salvar Alterações
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => setEditingProfileInfo(false)}>
+                <X className="w-3 h-3 mr-1" />
+                Cancelar
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* Last sync info */}

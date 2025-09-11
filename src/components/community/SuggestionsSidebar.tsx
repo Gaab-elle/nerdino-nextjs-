@@ -10,44 +10,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 export const SuggestionsSidebar: React.FC = () => {
   const { t } = useLanguage();
 
-  const suggestions = [
-    {
-      id: 1,
-      name: 'João Nunes',
-      username: 'joaonunes',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-      title: 'React Specialist',
-      mutualConnections: 3,
-      verified: true
-    },
-    {
-      id: 2,
-      name: 'Fernanda Costa',
-      username: 'fernandacosta',
-      avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face',
-      title: 'Python Developer',
-      mutualConnections: 5,
-      verified: false
-    },
-    {
-      id: 3,
-      name: 'Pedro Santos',
-      username: 'pedrosantos',
-      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
-      title: 'Mobile Developer',
-      mutualConnections: 2,
-      verified: true
-    },
-    {
-      id: 4,
-      name: 'Mariana Silva',
-      username: 'marianasilva',
-      avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
-      title: 'DevOps Engineer',
-      mutualConnections: 4,
-      verified: false
-    }
-  ];
+  const suggestions: any[] = []; // Dados reais serão implementados com sistema de sugestões
 
   const handleFollow = (userId: number) => {
     console.log('Following user:', userId);
