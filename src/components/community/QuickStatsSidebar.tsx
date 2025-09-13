@@ -17,7 +17,12 @@ export const QuickStatsSidebar: React.FC = () => {
     activeToday: 0
   };
 
-  const weeklyTrends: any[] = []; // Dados reais serão implementados com sistema de estatísticas
+  const weeklyTrends: Array<{
+    day: string;
+    posts: number;
+    users: number;
+    comments: number;
+  }> = []; // Dados reais serão implementados com sistema de estatísticas
 
   return (
     <div className="space-y-6">
@@ -82,19 +87,19 @@ export const QuickStatsSidebar: React.FC = () => {
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-purple-600 rounded-full"></div>
                   <span className="text-sm text-gray-700 dark:text-gray-300">
-                    {trend.label}
+                    {trend.day}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                    {trend.value}
+                    {trend.posts}
                   </span>
                   <span className={`text-xs ${
-                    trend.positive 
+                    trend.posts > 50 
                       ? 'text-green-600 dark:text-green-400' 
                       : 'text-red-600 dark:text-red-400'
                   }`}>
-                    {trend.change}
+                    {trend.posts > 50 ? '+' : '-'}
                   </span>
                 </div>
               </div>

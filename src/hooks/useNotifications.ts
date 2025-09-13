@@ -10,7 +10,7 @@ export interface Notification {
   type: string;
   is_read: boolean;
   created_at: string;
-  data?: any;
+  data?: unknown;
   from_user?: {
     id: string;
     name: string;

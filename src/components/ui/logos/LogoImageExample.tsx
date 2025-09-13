@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { LogoImage } from './Logo';
+// import { LogoImage } from './Logo';
 
 /**
  * Exemplo de uso do LogoImage
@@ -24,7 +24,7 @@ export function LogoImageExample() {
       {/* Exemplo 1: Logo padrão (procura por /logo.png) */}
       <div className="space-y-2">
         <h3 className="text-lg font-semibold">Logo Padrão</h3>
-        <LogoImage size="md" showText={true} />
+        {/* <LogoImage size="md" showText={true} /> */}
         <p className="text-sm text-gray-600 dark:text-gray-400">
           Procura por /logo.png na pasta public/
         </p>
@@ -33,12 +33,12 @@ export function LogoImageExample() {
       {/* Exemplo 2: Logo com imagem personalizada */}
       <div className="space-y-2">
         <h3 className="text-lg font-semibold">Logo Personalizado</h3>
-        <LogoImage 
+        {/* <LogoImage 
           size="lg" 
           showText={true}
           imageSrc="/sua-imagem.png"
           imageAlt="Seu Logo Personalizado"
-        />
+        /> */}
         <p className="text-sm text-gray-600 dark:text-gray-400">
           Use imageSrc para especificar o caminho da sua imagem
         </p>
@@ -47,12 +47,12 @@ export function LogoImageExample() {
       {/* Exemplo 3: Apenas imagem, sem texto */}
       <div className="space-y-2">
         <h3 className="text-lg font-semibold">Apenas Imagem</h3>
-        <LogoImage 
+        {/* <LogoImage 
           size="xl" 
           showText={false}
           imageSrc="/logo-icon.png"
           imageAlt="Logo Icon"
-        />
+        /> */}
         <p className="text-sm text-gray-600 dark:text-gray-400">
           showText=false para mostrar apenas a imagem
         </p>
@@ -62,10 +62,10 @@ export function LogoImageExample() {
       <div className="space-y-2">
         <h3 className="text-lg font-semibold">Diferentes Tamanhos</h3>
         <div className="flex items-center space-x-4">
-          <LogoImage size="sm" showText={false} />
+          {/* <LogoImage size="sm" showText={false} />
           <LogoImage size="md" showText={false} />
           <LogoImage size="lg" showText={false} />
-          <LogoImage size="xl" showText={false} />
+          <LogoImage size="xl" showText={false} /> */}
         </div>
         <p className="text-sm text-gray-600 dark:text-gray-400">
           sm, md, lg, xl

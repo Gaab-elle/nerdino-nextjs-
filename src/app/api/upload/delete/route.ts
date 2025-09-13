@@ -21,7 +21,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    if (!Object.keys(UploadService.UPLOAD_CONFIGS).includes(type)) {
+    if (!Object.keys((UploadService as any).UPLOAD_CONFIGS || {}).includes(type)) {
       return NextResponse.json(
         { error: 'Invalid upload type' },
         { status: 400 }

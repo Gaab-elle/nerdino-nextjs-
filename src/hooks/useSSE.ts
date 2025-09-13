@@ -3,11 +3,21 @@ import { useSession } from 'next-auth/react';
 
 interface SSEMessage {
   type: string;
-  data?: any;
+  data?: unknown;
   userId?: string;
   conversationId?: string;
-  message?: any;
-  sender?: any;
+  message?: {
+    id: string;
+    content: string;
+    timestamp: string;
+    senderId: string;
+  };
+  sender?: {
+    id: string;
+    name: string;
+    username: string;
+    avatar: string;
+  };
 }
 
 export function useSSE() {
@@ -84,7 +94,12 @@ export function useSSE() {
         type: 'new_message',
         conversationId,
         message: newMessage,
-        sender: session?.user,
+        sender: session?.user ? {
+          id: session.user.id || '',
+          name: session.user.name || '',
+          username: session.user.username || '',
+          avatar: session.user.avatar_url || ''
+        } : undefined,
       }]);
 
       return newMessage;
@@ -181,7 +196,12 @@ export function useConversationSSE(conversationId: string | null) {
         type: 'new_message',
         conversationId,
         message: newMessage,
-        sender: session?.user,
+        sender: session?.user ? {
+          id: session.user.id || '',
+          name: session.user.name || '',
+          username: session.user.username || '',
+          avatar: session.user.avatar_url || ''
+        } : undefined,
       }]);
 
       return newMessage;

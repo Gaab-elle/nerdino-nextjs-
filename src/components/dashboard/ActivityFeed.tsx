@@ -186,21 +186,21 @@ export const ActivityFeed: React.FC = () => {
         const comments = savedComments ? JSON.parse(savedComments) : {};
         
         // Filtrar posts e comentários do usuário
-        const userPosts = posts.filter((post: any) => post.author.id === user.id);
+        const userPosts = posts.filter((post: { author: { id: string } }) => post.author.id === user.id);
         const userComments = Object.values(comments).filter((comment: any) => comment.authorId === user.id);
         
         // Converter para formato de atividades
         const realActivities: Activity[] = [];
         
         // Adicionar atividades de posts
-        userPosts.slice(0, 5).forEach((post: any) => {
+        userPosts.slice(0, 5).forEach((post: { id: string; content: string; timestamp: string; type: string }) => {
           realActivities.push({
             id: `post-${post.id}`,
             type: 'trending',
             user: {
-              name: post.author.name,
-              avatar: post.author.avatar_url || '',
-              username: post.author.name.toLowerCase().replace(/\s+/g, '')
+              name: (post as any).author?.name || 'Usuário',
+              avatar: (post as any).author?.avatar_url || '',
+              username: ((post as any).author?.name || 'usuario').toLowerCase().replace(/\s+/g, '')
             },
             action: 'criou um novo post',
             target: post.type === 'project' ? 'projeto' : post.type,
@@ -217,9 +217,9 @@ export const ActivityFeed: React.FC = () => {
             id: `comment-${comment.id}`,
             type: 'comment',
             user: {
-              name: comment.authorName,
+              name: comment.authorName || 'Usuário',
               avatar: comment.authorAvatar || '',
-              username: comment.authorName.toLowerCase().replace(/\s+/g, '')
+              username: (comment.authorName || 'usuario').toLowerCase().replace(/\s+/g, '')
             },
             action: 'comentou em',
             target: 'um post',
@@ -325,7 +325,7 @@ export const ActivityFeed: React.FC = () => {
 
                 {activity.metadata?.comment && (
                   <div className="mt-2 p-2 bg-gray-100 dark:bg-gray-700 rounded text-sm text-gray-700 dark:text-gray-300">
-                    "{activity.metadata.comment}"
+                    &quot;{activity.metadata.comment}&quot;
                   </div>
                 )}
 

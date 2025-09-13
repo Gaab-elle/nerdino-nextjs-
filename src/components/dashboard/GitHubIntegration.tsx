@@ -7,11 +7,23 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useGitHub } from '@/hooks/useGitHub';
 import { useLanguage } from '@/contexts/LanguageContext';
+import Link from 'next/link';
 
 export const GitHubIntegration: React.FC = () => {
   const { t } = useLanguage();
   const { isConnected, isLoading, error, syncGitHub, getGitHubStats } = useGitHub();
-  const [stats, setStats] = useState<any>(null);
+  const [stats, setStats] = useState<{
+    totalRepos: number;
+    totalStars: number;
+    totalForks: number;
+    totalCommits: number;
+    languages: Record<string, number>;
+    recentActivity: Array<{
+      repo: string;
+      type: string;
+      date: string;
+    }>;
+  } | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
 
   const handleSync = async () => {
@@ -21,7 +33,20 @@ export const GitHubIntegration: React.FC = () => {
       console.log('Sync result:', result);
       // Refresh stats after sync
       const newStats = await getGitHubStats();
-      setStats(newStats);
+      if (newStats) {
+        setStats({
+          totalRepos: newStats.stats?.totalRepos || 0,
+          totalStars: newStats.stats?.totalStars || 0,
+          totalForks: (newStats.stats as any)?.totalForks || 0,
+          totalCommits: (newStats.stats as any)?.totalCommits || 0,
+          languages: (newStats.stats as any)?.languages || {},
+          recentActivity: newStats.recentActivity?.map(activity => ({
+            repo: activity.repo,
+            type: activity.type,
+            date: activity.date
+          })) || []
+        });
+      }
     } catch (error) {
       console.error('Sync failed:', error);
     } finally {
@@ -32,7 +57,20 @@ export const GitHubIntegration: React.FC = () => {
   const loadStats = async () => {
     if (isConnected) {
       const githubStats = await getGitHubStats();
-      setStats(githubStats);
+      if (githubStats) {
+        setStats({
+          totalRepos: githubStats.stats?.totalRepos || 0,
+          totalStars: githubStats.stats?.totalStars || 0,
+          totalForks: (githubStats.stats as any)?.totalForks || 0,
+          totalCommits: (githubStats.stats as any)?.totalCommits || 0,
+          languages: (githubStats.stats as any)?.languages || {},
+          recentActivity: githubStats.recentActivity?.map(activity => ({
+            repo: activity.repo,
+            type: activity.type,
+            date: activity.date
+          })) || []
+        });
+      }
     }
   };
 
@@ -75,10 +113,10 @@ export const GitHubIntegration: React.FC = () => {
               Connect your GitHub account to automatically sync your repositories and profile data.
             </p>
             <Button asChild>
-              <a href="/api/auth/signin/github">
+              <Link href="/api/auth/signin/github">
                 <Github className="w-4 h-4 mr-2" />
                 Connect GitHub
-              </a>
+              </Link>
             </Button>
           </div>
         </CardContent>
@@ -126,7 +164,7 @@ export const GitHubIntegration: React.FC = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="text-center">
                 <div className="text-2xl font-bold text-purple-600">
-                  {stats.stats.totalRepos}
+                  {stats?.totalRepos}
                 </div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">
                   Repositories
@@ -134,7 +172,7 @@ export const GitHubIntegration: React.FC = () => {
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-purple-600">
-                  {stats.stats.totalStars}
+                  {stats?.totalStars}
                 </div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">
                   Stars
@@ -142,7 +180,7 @@ export const GitHubIntegration: React.FC = () => {
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-purple-600">
-                  {stats.user.followers}
+                  {(stats as any).user?.followers || 0}
                 </div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">
                   Followers
@@ -150,7 +188,7 @@ export const GitHubIntegration: React.FC = () => {
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-purple-600">
-                  {stats.stats.languages.length}
+                  {Object.keys(stats?.languages || {}).length}
                 </div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">
                   Languages
@@ -158,11 +196,11 @@ export const GitHubIntegration: React.FC = () => {
               </div>
             </div>
 
-            {stats.stats.languages.length > 0 && (
+            {Object.keys(stats?.languages || {}).length > 0 && (
               <div>
                 <h4 className="font-semibold mb-2">Top Languages</h4>
                 <div className="flex flex-wrap gap-2">
-                  {stats.stats.languages.slice(0, 8).map((language: string) => (
+                  {Object.keys(stats?.languages || {}).slice(0, 8).map((language: string) => (
                     <Badge key={language} variant="outline">
                       {language}
                     </Badge>
@@ -173,13 +211,13 @@ export const GitHubIntegration: React.FC = () => {
 
             <div className="flex gap-2">
               <Button variant="outline" size="sm" asChild>
-                <a href={stats.user.html_url} target="_blank" rel="noopener noreferrer">
+                <a href={(stats as any).user?.html_url} target="_blank" rel="noopener noreferrer">
                   <ExternalLink className="w-4 h-4 mr-2" />
                   View Profile
                 </a>
               </Button>
               <Button variant="outline" size="sm" asChild>
-                <a href={`${stats.user.html_url}?tab=repositories`} target="_blank" rel="noopener noreferrer">
+                <a href={`${(stats as any).user?.html_url}?tab=repositories`} target="_blank" rel="noopener noreferrer">
                   <Github className="w-4 h-4 mr-2" />
                   View Repos
                 </a>

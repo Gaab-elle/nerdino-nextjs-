@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { syncUserFromGitHub, getGitHubAccessToken } from '@/lib/github';
+import { NextResponse } from 'next/server';
+import { syncUserFromGitHub, refreshGitHubTokenIfNeeded } from '@/lib/github';
 import { prisma } from '@/lib/prisma';
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     console.log('GitHub sync API (alt) called');
     
@@ -20,19 +20,29 @@ export async function POST(request: NextRequest) {
     });
 
     if (!githubAccount) {
+      console.log('No GitHub account found in database');
       return NextResponse.json(
-        { error: 'No GitHub account found' },
-        { status: 404 }
+        { 
+          error: 'GitHub não conectado',
+          message: 'Você precisa conectar sua conta GitHub primeiro. Vá para as configurações e conecte sua conta GitHub.',
+          code: 'GITHUB_NOT_CONNECTED'
+        },
+        { status: 400 }
       );
     }
 
     console.log('Found GitHub account for user:', githubAccount.user.email);
 
-    // Check if user has GitHub connected
-    const accessToken = await getGitHubAccessToken(githubAccount.userId);
+    // Check if user has GitHub connected and token is valid
+    const accessToken = await refreshGitHubTokenIfNeeded(githubAccount.userId);
     if (!accessToken) {
+      console.log('No valid access token found for user:', githubAccount.userId);
       return NextResponse.json(
-        { error: 'GitHub not connected' },
+        { 
+          error: 'Token de acesso GitHub expirado',
+          message: 'Seu token de acesso do GitHub expirou. Reconecte sua conta GitHub.',
+          code: 'GITHUB_TOKEN_EXPIRED'
+        },
         { status: 400 }
       );
     }
@@ -42,7 +52,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: 'GitHub data synced successfully',
+      message: 'Dados do GitHub sincronizados com sucesso',
       data: result,
       user: {
         id: githubAccount.userId,
@@ -52,8 +62,39 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('GitHub sync error:', error);
+    
+    // Handle specific GitHub API errors
+    if (error instanceof Error) {
+      if (error.message.includes('Bad credentials')) {
+        return NextResponse.json(
+          { 
+            error: 'Credenciais GitHub inválidas',
+            message: 'Suas credenciais do GitHub são inválidas. Reconecte sua conta.',
+            code: 'GITHUB_BAD_CREDENTIALS'
+          },
+          { status: 401 }
+        );
+      }
+      
+      if (error.message.includes('rate limit')) {
+        return NextResponse.json(
+          { 
+            error: 'Limite de requisições GitHub excedido',
+            message: 'Muitas requisições para a API do GitHub. Tente novamente em alguns minutos.',
+            code: 'GITHUB_RATE_LIMIT'
+          },
+          { status: 429 }
+        );
+      }
+    }
+    
     return NextResponse.json(
-      { error: 'Failed to sync GitHub data', details: error instanceof Error ? error.message : 'Unknown error' },
+      { 
+        error: 'Erro ao sincronizar dados do GitHub',
+        message: 'Ocorreu um erro inesperado. Tente novamente mais tarde.',
+        details: error instanceof Error ? error.message : 'Erro desconhecido',
+        code: 'GITHUB_SYNC_ERROR'
+      },
       { status: 500 }
     );
   }

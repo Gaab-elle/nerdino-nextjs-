@@ -6,10 +6,10 @@ import { prisma } from '@/lib/prisma';
 // GET /api/opportunities/[id] - Buscar oportunidade específica
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string  }> }
 ) {
   try {
-    const opportunityId = params.id;
+    const opportunityId = (await context.params).id;
 
     const opportunity = await prisma.jobOpportunity.findUnique({
       where: { id: opportunityId },
@@ -110,7 +110,7 @@ export async function GET(
 // PUT /api/opportunities/[id] - Atualizar oportunidade
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string  }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -118,7 +118,7 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const opportunityId = params.id;
+    const opportunityId = (await context.params).id;
     const body = await request.json();
     const {
       title,
@@ -238,7 +238,7 @@ export async function PUT(
 // DELETE /api/opportunities/[id] - Deletar oportunidade
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string  }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -246,7 +246,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const opportunityId = params.id;
+    const opportunityId = (await context.params).id;
 
     // Verificar se a oportunidade existe
     const opportunity = await prisma.jobOpportunity.findUnique({

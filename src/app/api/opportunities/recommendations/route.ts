@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
 // GET /api/opportunities/recommendations - Recomendações personalizadas
-export async function GET(request: NextRequest) {
+export async function GET(request: Request) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
@@ -46,9 +46,11 @@ export async function GET(request: NextRequest) {
 
     // Extrair tecnologias do usuário
     const userTechnologies = [
-      ...user.skills.map((skill: any) => skill.technology.name),
-      ...user.projects.flatMap((project: any) => 
-        project.technologies.map((pt: any) => pt.technology.name)
+      ...user.skills.map((skill: { technology: { name: string } }) => skill.technology.name),
+      ...user.projects.flatMap((project: { 
+        technologies: Array<{ technology: { name: string } }> 
+      }) => 
+        project.technologies.map((pt: { technology: { name: string } }) => pt.technology.name)
       ),
     ];
 
@@ -56,7 +58,7 @@ export async function GET(request: NextRequest) {
     const uniqueUserTechnologies = [...new Set(userTechnologies)];
 
     // IDs das oportunidades já aplicadas
-    const appliedJobIds = user.applications.map((app: any) => app.job_id);
+    const appliedJobIds = user.applications.map((app: { job_id: string }) => app.job_id);
 
     // Buscar oportunidades recomendadas
     const recommendations = await prisma.jobOpportunity.findMany({
@@ -80,9 +82,9 @@ export async function GET(request: NextRequest) {
               {
                 contract_type: user.contract_type || undefined,
               },
-              {
-                work_mode: user.work_mode || undefined,
-              },
+              // {
+              //   work_mode: user.work_mode || undefined,
+              // },
               {
                 experience_level: 'mid', // Default para usuários sem preferência
               },
@@ -115,13 +117,22 @@ export async function GET(request: NextRequest) {
     });
 
     // Calcular score de compatibilidade para cada oportunidade
-    const scoredRecommendations = recommendations.map((opportunity: any) => {
-      let score = 0;
+    const scoredRecommendations = recommendations.map((opportunity: {
+      technologies: Array<{ technology: { name: string } }>;
+      contract_type?: string;
+      _count: { applications: number };
+      created_at: Date;
+      id: string;
+      is_remote?: boolean;
+      salary_max?: number | null;
+      salary_min?: number | null;
+    }) => {
+      let score = 0;  
       let matchedTechnologies = 0;
-      let totalTechnologies = opportunity.technologies.length;
+      const totalTechnologies = opportunity.technologies.length;
 
       // Score baseado em tecnologias
-      opportunity.technologies.forEach((jobTech: any) => {
+      opportunity.technologies.forEach((jobTech: { technology: { name: string } }) => {
         if (uniqueUserTechnologies.includes(jobTech.technology.name)) {
           matchedTechnologies++;
           score += 10; // 10 pontos por tecnologia compatível
@@ -173,7 +184,7 @@ export async function GET(request: NextRequest) {
 
     // Ordenar por score e pegar os melhores
     const topRecommendations = scoredRecommendations
-      .sort((a: any, b: any) => b.compatibilityScore - a.compatibilityScore)
+      .sort((a: { compatibilityScore: number }, b: { compatibilityScore: number }) => b.compatibilityScore - a.compatibilityScore)
       .slice(0, limit);
 
     // Buscar oportunidades em destaque se não houver recomendações suficientes
@@ -183,7 +194,7 @@ export async function GET(request: NextRequest) {
           AND: [
             { is_active: true },
             { is_featured: true },
-            { id: { notIn: [...appliedJobIds, ...topRecommendations.map((r: any) => r.id)] } },
+            { id: { notIn: [...appliedJobIds, ...topRecommendations.map((r: { id: string }) => r.id)] } },
           ],
         },
         take: limit - topRecommendations.length,
@@ -210,7 +221,23 @@ export async function GET(request: NextRequest) {
         },
       });
 
-      const featuredWithScore = featuredOpportunities.map((opportunity: any) => ({
+      const featuredWithScore = featuredOpportunities.map((opportunity: {
+        id: string;
+        title: string;
+        company: string;
+        description: string;
+        location: string;
+        is_remote: boolean;
+        salary_min?: number | null;
+        salary_max?: number | null;
+        contract_type: string;
+        experience_level: string;
+        company_size?: string | null;
+        is_featured: boolean;
+        created_at: Date;
+        technologies: Array<{ technology: { name: string; id: string; category: string; icon_url: string | null; color: string | null } }>;
+        _count: { applications: number; favorites: number };
+      }) => ({
         ...opportunity,
         compatibilityScore: 5, // Score baixo para destacadas
         technologyMatch: {

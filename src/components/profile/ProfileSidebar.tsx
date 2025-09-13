@@ -30,7 +30,15 @@ export const ProfileSidebar: React.FC = () => {
     linkedin: '',
     twitter: ''
   });
-  const [savedContact, setSavedContact] = useState<any>(null);
+  const [savedContact, setSavedContact] = useState<{
+    email: string;
+    phone: string;
+    location: string;
+    website: string;
+    github: string;
+    linkedin: string;
+    twitter: string;
+  } | null>(null);
 
   // Carregar dados salvos do localStorage
   useEffect(() => {

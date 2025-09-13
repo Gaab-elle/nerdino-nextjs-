@@ -47,8 +47,8 @@ export const useIntelligentRecommendations = (userProfile: UserProfile) => {
         const response = await fetch('/api/market-intelligence');
         const marketData: MarketData = await response.json();
 
-        if (marketData.success) {
-          const intelligentRecs = generateIntelligentRecommendations(userProfile, marketData.data);
+        if (marketData && marketData.trendingTechnologies) {
+          const intelligentRecs = generateIntelligentRecommendations(userProfile, marketData);
           setRecommendations(intelligentRecs);
         } else {
           // Fallback para recomendações padrão

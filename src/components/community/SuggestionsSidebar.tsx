@@ -10,7 +10,15 @@ import { useLanguage } from '@/contexts/LanguageContext';
 export const SuggestionsSidebar: React.FC = () => {
   const { t } = useLanguage();
 
-  const suggestions: any[] = []; // Dados reais serão implementados com sistema de sugestões
+  const suggestions: Array<{
+    id: string;
+    name: string;
+    username: string;
+    avatar: string;
+    title: string;
+    mutualConnections: number;
+    isFollowing: boolean;
+  }> = []; // Dados reais serão implementados com sistema de sugestões
 
   const handleFollow = (userId: number) => {
     console.log('Following user:', userId);
@@ -39,7 +47,7 @@ export const SuggestionsSidebar: React.FC = () => {
                   <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                     {user.name}
                   </h4>
-                  {user.verified && (
+                  {(user as any).verified && (
                     <span className="text-blue-500 text-xs">✓</span>
                   )}
                 </div>
@@ -53,7 +61,7 @@ export const SuggestionsSidebar: React.FC = () => {
               <Button
                 size="sm"
                 variant="outline"
-                onClick={() => handleFollow(user.id)}
+                onClick={() => handleFollow(parseInt(user.id))}
                 className="flex-shrink-0"
               >
                 <UserPlus className="h-3 w-3 mr-1" />

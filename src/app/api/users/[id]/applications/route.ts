@@ -2,19 +2,21 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { Params } from '@/types/nextjs';
 
 // GET /api/users/[id]/applications - Listar candidaturas do usuário
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: Params<{ id: string }>
 ) {
   try {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const userId = params.id;
+    const userId = id;
 
     // Só pode ver suas próprias candidaturas
     if (session.user.id !== userId) {
@@ -32,7 +34,10 @@ export async function GET(
     const skip = (page - 1) * limit;
 
     // Construir filtros
-    const where: any = {
+    const where: {
+      user_id: string;
+      status?: string;
+    } = {
       user_id: userId,
     };
 

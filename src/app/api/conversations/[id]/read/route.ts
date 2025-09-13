@@ -6,7 +6,7 @@ import { prisma } from '@/lib/prisma';
 // POST /api/conversations/[id]/read - Marcar mensagens como lidas
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string  }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -16,7 +16,7 @@ export async function POST(
 
     // Verificar se o usuário é participante da conversa
     const conversation = await prisma.conversation.findUnique({
-      where: { id: params.id },
+      where: { id: (await context.params).id },
       include: {
         participants: {
           where: { user_id: session.user.id },
@@ -35,7 +35,7 @@ export async function POST(
     // Marcar todas as mensagens não lidas como lidas
     const result = await prisma.message.updateMany({
       where: {
-        conversation_id: params.id,
+        conversation_id: (await context.params).id,
         is_read: false,
         sender_id: { not: session.user.id },
       },

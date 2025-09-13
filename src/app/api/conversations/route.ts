@@ -20,7 +20,16 @@ export async function GET(request: NextRequest) {
     const skip = (page - 1) * limit;
 
     // Construir filtros
-    const where: any = {
+    const where: {
+      participants: {
+        some: {
+          user_id: string;
+        };
+      };
+      is_active: boolean;
+      type?: string;
+      title?: { contains: string; mode: 'insensitive' };
+    } = {
       participants: {
         some: {
           user_id: session.user.id,
@@ -34,7 +43,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (search) {
-      where.OR = [
+      (where as any).OR = [
         { name: { contains: search, mode: 'insensitive' } },
         {
           participants: {
@@ -196,10 +205,7 @@ export async function POST(request: NextRequest) {
               user_id: { in: [session.user.id, participantIds[0]] },
             },
           },
-          _count: {
-            participants: 2,
-          },
-        },
+        } as any,
         include: {
           participants: {
             include: {

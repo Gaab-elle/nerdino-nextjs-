@@ -8,7 +8,16 @@ import { useLanguage } from '@/contexts/LanguageContext';
 export const TrendingSidebar: React.FC = () => {
   const { t } = useLanguage();
 
-  const trendingProjects: any[] = []; // Dados reais serão implementados com sistema de trending
+  const trendingProjects: Array<{
+    id: string;
+    name: string;
+    description: string;
+    author: { name: string; username: string; avatar: string };
+    stars: number;
+    forks: number;
+    language: string;
+    updatedAt: string;
+  }> = []; // Dados reais serão implementados com sistema de trending
   const popularTags: string[] = []; // Dados reais serão implementados com sistema de tags
 
   return (
@@ -35,8 +44,8 @@ export const TrendingSidebar: React.FC = () => {
                     {project.name}
                   </h4>
                   <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
-                    {project.icon}
-                    <span>{project.metric}</span>
+                    {(project as any).icon}
+                    <span>{(project as any).metric}</span>
                   </div>
                 </div>
               </div>

@@ -7,7 +7,16 @@ import { X, Upload, Link, Plus, X as RemoveIcon } from 'lucide-react';
 interface NewProjectModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (projectData: any) => Promise<void>;
+  onSave: (projectData: {
+    name: string;
+    description: string;
+    technologies: string[];
+    status: 'active' | 'paused' | 'completed' | 'archived';
+    progress: number;
+    demoUrl: string;
+    githubUrl: string;
+    image?: string;
+  }) => Promise<void>;
 }
 
 interface ProjectFormData {
@@ -59,7 +68,7 @@ export default function NewProjectModal({ isOpen, onClose, onSave }: NewProjectM
     }
   }, [isOpen]);
 
-  const handleInputChange = (field: keyof ProjectFormData, value: any) => {
+  const handleInputChange = (field: keyof ProjectFormData, value: string | number | string[]) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -149,7 +158,7 @@ export default function NewProjectModal({ isOpen, onClose, onSave }: NewProjectM
       const projectData = {
         ...formData,
         image: imageUrl,
-        demoUrl: formData.demoUrl || null
+        demoUrl: formData.demoUrl || ''
       };
       
       console.log('📤 Criando novo projeto:', projectData);

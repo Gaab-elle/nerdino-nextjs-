@@ -6,7 +6,7 @@ import { prisma } from '@/lib/prisma';
 // POST /api/opportunities/[id]/favorite - Favoritar/desfavoritar oportunidade
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string  }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -14,7 +14,7 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const opportunityId = params.id;
+    const opportunityId = (await context.params).id;
 
     // Verificar se a oportunidade existe
     const opportunity = await prisma.jobOpportunity.findUnique({
@@ -70,7 +70,7 @@ export async function POST(
 // GET /api/opportunities/[id]/favorite - Verificar se a oportunidade está favoritada
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string  }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -78,7 +78,7 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const opportunityId = params.id;
+    const opportunityId = (await context.params).id;
 
     const favorite = await prisma.jobFavorite.findFirst({
       where: {

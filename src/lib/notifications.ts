@@ -5,7 +5,7 @@ export interface NotificationData {
   title: string;
   content: string;
   type: string;
-  data?: any;
+  data?: unknown;
   from_user_id?: string;
   post_id?: string;
   comment_id?: string;
@@ -23,11 +23,11 @@ export class NotificationService {
           title: data.title.trim(),
           content: data.content.trim(),
           type: data.type,
-          data: data.data || null,
-          from_user_id: data.from_user_id || null,
+          data: data.data || undefined,
+          from_user_id: (data as any).from_user_id || null,
           post_id: data.post_id || null,
           comment_id: data.comment_id || null,
-        },
+        } as any,
       });
 
       return notification;
@@ -236,14 +236,14 @@ export class NotificationService {
     userId: string,
     title: string,
     content: string,
-    data?: any
+    data?: unknown
   ) {
     return this.createNotification({
       user_id: userId,
       title,
       content,
       type: 'system',
-      data: { action: 'system', ...data },
+      data: { action: 'system', ...(data || {}) },
     });
   }
 
@@ -296,7 +296,11 @@ export class NotificationService {
    * Marcar todas as notificações como lidas
    */
   static async markAllAsRead(userId: string, category?: string) {
-    let whereClause: any = {
+    const whereClause: {
+      user_id: string;
+      is_read: boolean;
+      type?: { in: string[] };
+    } = {
       user_id: userId,
       is_read: false,
     };

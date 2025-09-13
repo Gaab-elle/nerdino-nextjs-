@@ -23,7 +23,7 @@ export const ConnectionSettings: React.FC<ConnectionSettingsProps> = ({ onUnsave
     twitterSync: false
   });
 
-  const handleChange = (field: string, value: any) => {
+  const handleChange = (field: string, value: string | boolean | number) => {
     setConnections(prev => ({ ...prev, [field]: value }));
     onUnsavedChanges(true);
   };

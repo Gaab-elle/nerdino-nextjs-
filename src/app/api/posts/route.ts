@@ -17,7 +17,12 @@ export async function GET(request: NextRequest) {
     const skip = (page - 1) * limit;
 
     // Construir filtros
-    const where: any = {
+    const where: {
+      is_public: boolean;
+      type?: string;
+      content?: { contains: string; mode: 'insensitive' };
+      tags?: { some: { tag: { name: string } } };
+    } = {
       is_public: true,
     };
 

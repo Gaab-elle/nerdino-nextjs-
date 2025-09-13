@@ -10,6 +10,8 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useGitHub } from '@/hooks/useGitHub';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { ProjectAdapter } from '@/adapters/projectAdapter';
+import { Project, GitHubStats } from '@/schemas/projects';
 
 interface QuickAction {
   id: string;
@@ -25,7 +27,7 @@ export const QuickActions: React.FC = () => {
   const { data: session } = useSession();
   const user = session?.user;
   const router = useRouter();
-  const [githubStats, setGithubStats] = useState<any>(null);
+  const [githubStats, setGithubStats] = useState<GitHubStats | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showNewProjectModal, setShowNewProjectModal] = useState(false);
   const [showNewPostModal, setShowNewPostModal] = useState(false);
@@ -66,7 +68,16 @@ export const QuickActions: React.FC = () => {
     includeStats: true,
     includeTechnologies: true
   });
-  const [userProjects, setUserProjects] = useState<any[]>([]);
+  const [userProjects, setUserProjects] = useState<Array<{
+    id: string;
+    name: string;
+    description: string;
+    language: string;
+    stars: number;
+    forks: number;
+    url: string;
+    updatedAt: string;
+  }>>([]);
 
   useEffect(() => {
     if (isConnected) {
@@ -104,7 +115,18 @@ export const QuickActions: React.FC = () => {
     try {
       setIsLoading(true);
       const stats = await getGitHubStats();
-      setGithubStats(stats);
+      if (stats) {
+        setGithubStats({
+          stats: {
+            languages: (stats.stats?.languages as unknown as Record<string, number>) || {},
+            totalRepos: stats.stats?.totalRepos || 0,
+            totalStars: stats.stats?.totalStars || 0,
+            totalForks: (stats.stats as unknown as { totalForks?: number })?.totalForks || 0,
+            totalCommits: (stats.stats as unknown as { totalCommits?: number })?.totalCommits || 0,
+          },
+          repos: (stats as { repos?: Array<{ name: string; description: string; language: string; stargazers_count: number; forks_count: number; html_url: string; updated_at: string; }> }).repos || [],
+        });
+      }
     } catch (error) {
       console.error('Failed to load GitHub stats:', error);
     } finally {
@@ -118,7 +140,7 @@ export const QuickActions: React.FC = () => {
       const projects = savedProjects ? JSON.parse(savedProjects) : [];
       
       // Filtrar projetos do usuário atual
-      const userProjectsList = projects.filter((project: any) => 
+      const userProjectsList = projects.filter((project: { authorId: string }) => 
         project.authorId === user?.id
       );
       
@@ -501,12 +523,12 @@ Este projeto está sob a licença ${readmeData.license}. Veja o arquivo [LICENSE
     let content = shareProjectData.customMessage || `Compartilhando meu projeto: ${selectedProject.name}`;
     
     if (shareProjectData.includeStats) {
-      content += `\n\n📊 Status: ${selectedProject.status}`;
-      content += `\n📈 Progresso: ${selectedProject.progress}%`;
+      content += `\n\n📊 Status: Ativo`;
+      content += `\n📈 Progresso: 0%`;
     }
     
-    if (shareProjectData.includeTechnologies && selectedProject.technologies) {
-      content += `\n🛠️ Tecnologias: ${selectedProject.technologies.join(', ')}`;
+    if (shareProjectData.includeTechnologies) {
+      content += `\n🛠️ Tecnologias: ${selectedProject.language || 'N/A'}`;
     }
     
     if (selectedProject.description) {
@@ -526,12 +548,12 @@ Este projeto está sob a licença ${readmeData.license}. Veja o arquivo [LICENSE
       projectData: {
         name: selectedProject.name,
         description: selectedProject.description,
-        status: selectedProject.status,
-        progress: selectedProject.progress,
-        technologies: selectedProject.technologies,
-        githubUrl: selectedProject.githubUrl,
-        liveUrl: selectedProject.liveUrl,
-        lastActivity: selectedProject.lastActivity
+        status: 'Ativo',
+        progress: 0,
+        technologies: [selectedProject.language || 'N/A'],
+        githubUrl: selectedProject.url,
+        liveUrl: selectedProject.url,
+        lastActivity: selectedProject.updatedAt
       },
       stats: {
         likes: 0,
@@ -701,7 +723,7 @@ Este projeto está sob a licença ${readmeData.license}. Veja o arquivo [LICENSE
                   try {
                     const savedPosts = localStorage.getItem('communityPosts');
                     const posts = savedPosts ? JSON.parse(savedPosts) : [];
-                    return Array.isArray(posts) ? posts.filter((post: any) => post.author.id === user?.id).length : 0;
+                    return Array.isArray(posts) ? posts.filter((post: { author: { id: string } }) => post.author.id === user?.id).length : 0;
                   } catch (error) {
                     return 0;
                   }
@@ -715,7 +737,7 @@ Este projeto está sob a licença ${readmeData.license}. Veja o arquivo [LICENSE
                   try {
                     const savedComments = localStorage.getItem('communityComments');
                     const comments = savedComments ? JSON.parse(savedComments) : [];
-                    return Array.isArray(comments) ? comments.filter((comment: any) => comment.author.id === user?.id).length : 0;
+                    return Array.isArray(comments) ? comments.filter((comment: { author: { id: string } }) => comment.author.id === user?.id).length : 0;
                   } catch (error) {
                     return 0;
                   }
@@ -730,8 +752,8 @@ Este projeto está sob a licença ${readmeData.license}. Veja o arquivo [LICENSE
                     const savedPosts = localStorage.getItem('communityPosts');
                     const posts = savedPosts ? JSON.parse(savedPosts) : [];
                     if (!Array.isArray(posts)) return 0;
-                    const userPosts = posts.filter((post: any) => post.author.id === user?.id);
-                    return userPosts.reduce((total: number, post: any) => total + (post.stats?.likes || 0), 0);
+                    const userPosts = posts.filter((post: { author: { id: string } }) => post.author.id === user?.id);
+                    return userPosts.reduce((total: number, post: { stats?: { likes?: number } }) => total + (post.stats?.likes || 0), 0);
                   } catch (error) {
                     return 0;
                   }
@@ -897,7 +919,7 @@ Este projeto está sob a licença ${readmeData.license}. Veja o arquivo [LICENSE
                   </label>
                   <select
                     value={newPost.type}
-                    onChange={(e) => setNewPost({...newPost, type: e.target.value as any})}
+                    onChange={(e) => setNewPost({...newPost, type: e.target.value as 'project' | 'image' | 'code' | 'link'})}
                     className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   >
                     <option value="project">Projeto</option>
@@ -1246,7 +1268,7 @@ Este projeto está sob a licença ${readmeData.license}. Veja o arquivo [LICENSE
                     <option value="">Escolha um projeto...</option>
                     {userProjects.map((project) => (
                       <option key={project.id} value={project.id}>
-                        {project.name} - {project.status} ({project.progress}%)
+                        {project.name} - Ativo (0%)
                       </option>
                     ))}
                   </select>
@@ -1309,12 +1331,12 @@ Este projeto está sob a licença ${readmeData.license}. Veja o arquivo [LICENSE
                         let preview = shareProjectData.customMessage || `Compartilhando meu projeto: ${selectedProject.name}`;
                         
                         if (shareProjectData.includeStats) {
-                          preview += `\n\n📊 Status: ${selectedProject.status}`;
-                          preview += `\n📈 Progresso: ${selectedProject.progress}%`;
+                          preview += `\n\n📊 Status: Ativo`;
+                          preview += `\n📈 Progresso: 0%`;
                         }
                         
-                        if (shareProjectData.includeTechnologies && selectedProject.technologies) {
-                          preview += `\n🛠️ Tecnologias: ${selectedProject.technologies.join(', ')}`;
+                        if (shareProjectData.includeTechnologies) {
+                          preview += `\n🛠️ Tecnologias: ${selectedProject.language || 'N/A'}`;
                         }
                         
                         if (selectedProject.description) {

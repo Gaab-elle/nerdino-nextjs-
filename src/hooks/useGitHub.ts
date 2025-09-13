@@ -97,7 +97,9 @@ export function useGitHub() {
 
   // Sync GitHub data
   const syncGitHub = async () => {
-    if (!session?.user?.id) return;
+    if (!session?.user?.id) {
+      throw new Error('Usuário não autenticado');
+    }
 
     try {
       setIsLoading(true);
@@ -110,12 +112,16 @@ export function useGitHub() {
       const data = await response.json();
       
       if (response.ok) {
+        setIsConnected(true);
         return data.data;
       } else {
-        throw new Error(data.error || 'Failed to sync GitHub data');
+        // Usar a mensagem de erro da API se disponível
+        const errorMessage = data.message || data.error || 'Falha ao sincronizar dados do GitHub';
+        setError(errorMessage);
+        throw new Error(errorMessage);
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to sync GitHub data';
+      const errorMessage = err instanceof Error ? err.message : 'Falha ao sincronizar dados do GitHub';
       setError(errorMessage);
       throw err;
     } finally {
@@ -124,7 +130,16 @@ export function useGitHub() {
   };
 
   // Get GitHub stats
-  const getGitHubStats = async (): Promise<{ user: GitHubUser; stats: GitHubStats; recentActivity: any[] } | null> => {
+  const getGitHubStats = async (): Promise<{ 
+    user: GitHubUser; 
+    stats: GitHubStats; 
+    recentActivity: Array<{
+      type: string;
+      repo: string;
+      date: string;
+      description: string;
+    }>;
+  } | null> => {
     if (!session?.user?.id) return null;
 
     try {

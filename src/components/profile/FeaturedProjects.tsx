@@ -5,6 +5,7 @@ import { ExternalLink, Github, Star, Eye, Calendar, Edit3 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { WebContainerLazy } from '@/components/WebContainerLazy';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useGitHubProfile } from '@/hooks/useGitHubProfile';
 import { useProfileEdit } from '@/contexts/ProfileEditContext';
@@ -31,7 +32,7 @@ export const FeaturedProjects: React.FC = () => {
           },
           links: {
             demo: "https://demo.example.com",
-            github: "https://github.com/gabriel/ecommerce"
+            github: "https://github.com/facebook/react"
           },
           featured: true
         },
@@ -48,7 +49,23 @@ export const FeaturedProjects: React.FC = () => {
           },
           links: {
             demo: "https://tasks.example.com",
-            github: "https://github.com/gabriel/taskmanager"
+            github: "https://github.com/vuejs/core"
+          },
+          featured: true
+        },
+        {
+          id: 3,
+          title: "Portfolio Website",
+          description: "Site pessoal desenvolvido com React e animações CSS. Projeto em desenvolvimento para mostrar habilidades e projetos.",
+          image: "https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=600&h=300&fit=crop",
+          technologies: ["React", "CSS3", "JavaScript", "Framer Motion"],
+          stats: {
+            stars: 0,
+            views: 0,
+            lastUpdate: "Em desenvolvimento"
+          },
+          links: {
+            github: "https://github.com/facebook/react"
           },
           featured: true
         }
@@ -75,6 +92,16 @@ export const FeaturedProjects: React.FC = () => {
   };
 
   const projects = getProjects();
+
+  // Função para determinar o arquivo principal baseado na tecnologia
+  const getMainFile = (technologies: string[]) => {
+    const tech = technologies[0]?.toLowerCase();
+    if (tech?.includes('next')) return 'pages/index.js';
+    if (tech?.includes('react')) return 'src/App.js';
+    if (tech?.includes('vue')) return 'src/App.vue';
+    if (tech?.includes('angular')) return 'src/app/app.component.ts';
+    return 'src/App.js'; // default
+  };
 
   return (
     <Card>
@@ -169,40 +196,53 @@ export const FeaturedProjects: React.FC = () => {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex gap-3">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    asChild
-                    className="flex-1"
-                  >
-                    <a
-                      href={project.links.demo}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-2"
+                <div className="flex gap-2">
+                  {project.links?.demo && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      asChild
+                      className="flex-1"
                     >
-                      <ExternalLink className="h-4 w-4" />
-                      Ver Demo
-                    </a>
-                  </Button>
+                      <a
+                        href={project.links.demo}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-2"
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                        Ver Demo
+                      </a>
+                    </Button>
+                  )}
                   
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    asChild
-                    className="flex-1"
-                  >
-                    <a
-                      href={project.links.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-2"
+                  {project.links?.github && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      asChild
+                      className="flex-1"
                     >
-                      <Github className="h-4 w-4" />
-                      Código
-                    </a>
-                  </Button>
+                      <a
+                        href={project.links.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-2"
+                      >
+                        <Github className="h-4 w-4" />
+                        Código
+                      </a>
+                    </Button>
+                  )}
+                  
+                  {project.links?.github && (
+                    <WebContainerLazy 
+                      githubUrl={project.links.github}
+                      file={getMainFile(project.technologies)}
+                      buttonLabel="WebContainer"
+                      projectName={project.title}
+                    />
+                  )}
                 </div>
               </div>
             </div>

@@ -146,7 +146,16 @@ export default function ProjectsPage() {
     }
   };
 
-  const handleCreateProject = async (projectData: any) => {
+  const handleCreateProject = async (projectData: {
+    name: string;
+    description: string;
+    technologies: string[];
+    status: 'active' | 'paused' | 'completed' | 'archived';
+    progress: number;
+    demoUrl: string;
+    githubUrl: string;
+    image?: string;
+  }) => {
     try {
       console.log('🆕 Criando novo projeto:', projectData);
       

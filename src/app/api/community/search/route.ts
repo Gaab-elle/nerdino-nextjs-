@@ -1,6 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
 // GET /api/community/search - Busca avançada na comunidade
@@ -23,7 +21,53 @@ export async function GET(request: NextRequest) {
     const skip = (page - 1) * limit;
     const searchTerm = query.trim();
 
-    let results: any = {};
+    const results: {
+      posts?: Array<{
+        id: string;
+        title: string;
+        content: string;
+        author_id: string;
+        created_at: Date;
+        updated_at: Date;
+        is_public: boolean;
+        views: number;
+        likes: number;
+        comments: number;
+      }>;
+      users?: Array<{
+        id: string;
+        name: string;
+        email: string;
+        avatar_url?: string;
+        bio?: string;
+        created_at: Date;
+      }>;
+      tags?: Array<{
+        id: string;
+        name: string;
+        description?: string;
+        post_count: number;
+      }>;
+      projects?: Array<{
+        id: string;
+        name: string;
+        description: string;
+        github_url?: string;
+        demo_url?: string;
+        technologies: string[];
+        featured: boolean;
+        stars: number;
+        forks: number;
+        language: string;
+        type: 'github' | 'created';
+        status: 'planning' | 'active' | 'paused' | 'completed';
+        visibility: 'public' | 'private';
+        collaborators: number;
+        createdAt: string;
+        updatedAt: string;
+      }>;
+      total?: number;
+    } = {};
 
     // Buscar posts
     if (type === 'all' || type === 'posts') {
@@ -89,15 +133,7 @@ export async function GET(request: NextRequest) {
         prisma.post.count({ where: whereClause }),
       ]);
 
-      results.posts = {
-        data: posts,
-        pagination: {
-          page,
-          limit,
-          total: totalPosts,
-          pages: Math.ceil(totalPosts / limit),
-        },
-      };
+      results.posts = posts as any;
     }
 
     // Buscar usuários
@@ -141,15 +177,7 @@ export async function GET(request: NextRequest) {
         prisma.user.count({ where: whereClause }),
       ]);
 
-      results.users = {
-        data: users,
-        pagination: {
-          page,
-          limit,
-          total: totalUsers,
-          pages: Math.ceil(totalUsers / limit),
-        },
-      };
+      results.users = users as any;
     }
 
     // Buscar tags
@@ -175,15 +203,7 @@ export async function GET(request: NextRequest) {
         prisma.tag.count({ where: whereClause }),
       ]);
 
-      results.tags = {
-        data: tags,
-        pagination: {
-          page,
-          limit,
-          total: totalTags,
-          pages: Math.ceil(totalTags / limit),
-        },
-      };
+      results.tags = tags as any;
     }
 
     // Buscar projetos (se existir)
@@ -248,15 +268,7 @@ export async function GET(request: NextRequest) {
         prisma.project.count({ where: whereClause }),
       ]);
 
-      results.projects = {
-        data: projects,
-        pagination: {
-          page,
-          limit,
-          total: totalProjects,
-          pages: Math.ceil(totalProjects / limit),
-        },
-      };
+      results.projects = projects as any;
     }
 
     return NextResponse.json({

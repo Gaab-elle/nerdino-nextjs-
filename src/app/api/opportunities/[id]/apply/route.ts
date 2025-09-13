@@ -7,7 +7,7 @@ import { NotificationService } from '@/lib/notifications';
 // POST /api/opportunities/[id]/apply - Candidatar-se a uma oportunidade
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string  }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -15,7 +15,7 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const opportunityId = params.id;
+    const opportunityId = (await context.params).id;
     const body = await request.json();
     const { cover_letter, cv_url } = body;
 
@@ -118,7 +118,7 @@ export async function POST(
 // GET /api/opportunities/[id]/apply - Verificar se o usuário se candidatou
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string  }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -126,7 +126,7 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const opportunityId = params.id;
+    const opportunityId = (await context.params).id;
 
     const application = await prisma.jobApplication.findFirst({
       where: {

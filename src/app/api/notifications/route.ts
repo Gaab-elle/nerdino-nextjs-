@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { NotificationAdapter } from '@/services/notificationAdapter';
 
 // GET /api/notifications - Listar todas as notificações do usuário
 export async function GET(request: NextRequest) {
@@ -21,7 +22,11 @@ export async function GET(request: NextRequest) {
     const skip = (page - 1) * limit;
 
     // Construir filtros
-    const where: any = {
+    const where: {
+      user_id: string;
+      type?: string | { in: string[] };
+      is_read?: boolean;
+    } = {
       user_id: session.user.id,
     };
 
@@ -48,14 +53,14 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    const [notifications, total] = await Promise.all([
+    const [notificationsRaw, total] = await Promise.all([
       prisma.notification.findMany({
         where,
         skip,
         take: limit,
         orderBy: { created_at: 'desc' },
         include: {
-          from_user: {
+          user: {
             select: {
               id: true,
               name: true,
@@ -64,23 +69,26 @@ export async function GET(request: NextRequest) {
               image: true,
             },
           },
-          post: {
-            select: {
-              id: true,
-              content: true,
-              type: true,
-            },
-          },
-          comment: {
-            select: {
-              id: true,
-              content: true,
-            },
-          },
+          // post: {
+          //   select: {
+          //     id: true,
+          //     content: true,
+          //     type: true,
+          //   },
+          // },
+          // comment: {
+          //   select: {
+          //     id: true,
+          //     content: true,
+          //   },
+          // },
         },
       }),
       prisma.notification.count({ where }),
     ]);
+
+    // Normalize notifications using adapter
+    const notifications = NotificationAdapter.normalizeNotificationList(notificationsRaw);
 
     // Contar notificações não lidas por categoria
     const unreadCounts = await Promise.all([
@@ -203,7 +211,7 @@ export async function POST(request: NextRequest) {
         from_user_id: from_user_id || null,
         post_id: post_id || null,
         comment_id: comment_id || null,
-      },
+      } as any,
     });
 
     return NextResponse.json(notification, { status: 201 });
@@ -228,7 +236,11 @@ export async function PUT(request: NextRequest) {
     const { notificationIds, markAllAsRead, category } = body;
 
     if (markAllAsRead) {
-      let whereClause: any = {
+      const whereClause: {
+        user_id: string;
+        is_read: boolean;
+        type?: { in: string[] };
+      } = {
         user_id: session.user.id,
         is_read: false,
       };

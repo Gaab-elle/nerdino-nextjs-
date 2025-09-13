@@ -12,7 +12,7 @@ import { OpportunitiesSection } from '@/components/dashboard/OpportunitiesSectio
 import { QuickActions } from '@/components/dashboard/QuickActions';
 
 export default function DashboardPage() {
-  const { t } = useLanguage();
+  // const { t } = useLanguage(); // Temporariamente comentado até ser usado
   const { data: session, status } = useSession();
   const user = session?.user;
   const isLoading = status === 'loading';

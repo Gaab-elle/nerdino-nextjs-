@@ -9,7 +9,13 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useSession } from 'next-auth/react';
 
 interface CreatePostProps {
-  onPostCreated?: (post: any) => void;
+  onPostCreated?: (post: {
+    id: string;
+    content: string;
+    type: string;
+    timestamp: string;
+    author: { id: string; name: string; username: string; avatar: string };
+  }) => void;
 }
 
 export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreated }) => {
@@ -335,7 +341,18 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreated }) => {
       
       // Chamar callback para adicionar ao feed
       if (onPostCreated) {
-        onPostCreated(newPost);
+        onPostCreated({
+          id: newPost.id.toString(),
+          content: newPost.content,
+          type: newPost.type,
+          timestamp: newPost.timestamp,
+          author: {
+            id: newPost.author.id.toString(),
+            name: newPost.author.name,
+            username: newPost.author.username,
+            avatar: newPost.author.avatar
+          }
+        });
       }
 
       // Se for um post de projeto, salvar também como projeto

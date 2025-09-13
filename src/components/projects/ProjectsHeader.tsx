@@ -5,6 +5,7 @@ import { Plus, BarChart3, Github, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useGitHub } from '@/hooks/useGitHub';
+import { GitHubReconnectButton } from '@/components/auth/GitHubReconnectButton';
 
 interface ProjectsHeaderProps {
   onNewProject?: () => void;
@@ -18,6 +19,7 @@ export const ProjectsHeader: React.FC<ProjectsHeaderProps> = ({
   const { t } = useLanguage();
   const { isConnected, isLoading, syncGitHub } = useGitHub();
   const [isSyncing, setIsSyncing] = useState(false);
+  const [showReconnect, setShowReconnect] = useState(false);
 
   const handleNewProject = () => {
     console.log('🆕 Criando novo projeto...');
@@ -41,9 +43,27 @@ export const ProjectsHeader: React.FC<ProjectsHeaderProps> = ({
       }
       
       console.log('✅ Sincronização com GitHub concluída!');
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('❌ Erro ao sincronizar com GitHub:', error);
-      alert('Erro ao sincronizar com GitHub. Tente novamente.');
+      
+      // Mostrar mensagem de erro mais específica
+      let errorMessage = 'Erro ao sincronizar com GitHub. Tente novamente.';
+      
+      if (error && typeof error === 'object' && 'message' in error) {
+        const errorMsg = (error as { message: string }).message;
+        if (errorMsg.includes('GitHub não conectado')) {
+          errorMessage = 'GitHub não conectado. Vá para as configurações e conecte sua conta GitHub.';
+        } else if (errorMsg.includes('Token de acesso GitHub expirado') || 
+                   errorMsg.includes('Credenciais GitHub inválidas') ||
+                   errorMsg.includes('token is invalid or expired')) {
+          errorMessage = 'Token do GitHub expirado. Reconecte sua conta GitHub.';
+          setShowReconnect(true);
+        } else if (errorMsg.includes('Limite de requisições')) {
+          errorMessage = 'Muitas requisições para o GitHub. Tente novamente em alguns minutos.';
+        }
+      }
+      
+      alert(errorMessage);
     } finally {
       setIsSyncing(false);
     }
@@ -70,21 +90,28 @@ export const ProjectsHeader: React.FC<ProjectsHeaderProps> = ({
               {t('projects.header.analytics')}
             </Button>
             
-            {/* Botão de Sincronização GitHub */}
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={handleSyncGitHub}
-              disabled={isSyncing || isLoading}
-              className={isConnected ? 'border-green-500 text-green-600 hover:bg-green-50' : ''}
-            >
-              {isSyncing ? (
-                <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-              ) : (
-                <Github className="h-4 w-4 mr-2" />
-              )}
-              {isSyncing ? 'Sincronizando...' : 'Sincronizar GitHub'}
-            </Button>
+            {/* Botão de Sincronização GitHub ou Reconexão */}
+            {showReconnect ? (
+              <GitHubReconnectButton 
+                onReconnect={() => setShowReconnect(false)}
+                className="border-red-500 text-red-600 hover:bg-red-50"
+              />
+            ) : (
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={handleSyncGitHub}
+                disabled={isSyncing || isLoading}
+                className={isConnected ? 'border-green-500 text-green-600 hover:bg-green-50' : ''}
+              >
+                {isSyncing ? (
+                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <Github className="h-4 w-4 mr-2" />
+                )}
+                {isSyncing ? 'Sincronizando...' : 'Sincronizar GitHub'}
+              </Button>
+            )}
             
             {/* Botão Novo Projeto */}
             <Button size="sm" onClick={handleNewProject}>

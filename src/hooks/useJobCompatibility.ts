@@ -1,37 +1,9 @@
 'use client';
 
 import { useMemo } from 'react';
+import { JobData, UserProfile } from '@/types/jobs';
 
-interface Job {
-  id: string;
-  title: string;
-  company: string;
-  location: string;
-  technologies: string[];
-  experience: string;
-  salary?: {
-    min: number;
-    max: number;
-  };
-  remote: boolean;
-  url: string;
-  date: string;
-  matchScore?: number;
-  matchBreakdown?: {
-    skills: number;
-    experience: number;
-    location: number;
-  };
-}
-
-interface UserProfile {
-  skills: string[];
-  experience: string;
-  location: string;
-  available: boolean;
-}
-
-export const useJobCompatibility = (jobs: Job[], userProfile: UserProfile) => {
+export const useJobCompatibility = (jobs: JobData[], userProfile: UserProfile) => {
   const jobsWithCompatibility = useMemo(() => {
     return jobs.map(job => {
       const compatibility = calculateCompatibility(userProfile, job);
@@ -47,7 +19,7 @@ export const useJobCompatibility = (jobs: Job[], userProfile: UserProfile) => {
 };
 
 // Função para calcular compatibilidade real
-const calculateCompatibility = (userProfile: UserProfile, job: Job) => {
+const calculateCompatibility = (userProfile: UserProfile, job: JobData) => {
   const breakdown = {
     skills: 0,
     experience: 0,
@@ -225,8 +197,6 @@ const calculateSkillsCompatibility = (userSkills: string[], jobTechnologies: str
       'avocode': ['avocode'],
       'handoff': ['handoff'],
       'abstract': ['abstract'],
-      'sketch': ['sketch'],
-      'figma': ['figma'],
       'adobe xd': ['adobe xd'],
       'balsamiq': ['balsamiq'],
       'wireframe': ['wireframe'],
@@ -424,9 +394,7 @@ const calculateSkillsCompatibility = (userSkills: string[], jobTechnologies: str
       'ts': ['ts', 'typescript'],
       'jsx': ['jsx'],
       'tsx': ['tsx'],
-      'vue': ['vue'],
       'svelte': ['svelte'],
-      'angular': ['angular'],
       'ember': ['ember'],
       'backbone': ['backbone'],
       'knockout': ['knockout'],
@@ -435,7 +403,6 @@ const calculateSkillsCompatibility = (userSkills: string[], jobTechnologies: str
       'underscore': ['underscore'],
       'ramda': ['ramda'],
       'immutable': ['immutable'],
-      'mobx': ['mobx'],
       'rxjs': ['rxjs'],
       'xstream': ['xstream'],
       'most': ['most'],
@@ -481,7 +448,6 @@ const calculateSkillsCompatibility = (userSkills: string[], jobTechnologies: str
       'bind': ['bind'],
       'call': ['call'],
       'apply': ['apply'],
-      'prototype': ['prototype'],
       'inheritance': ['inheritance'],
       'polymorphism': ['polymorphism'],
       'encapsulation': ['encapsulation'],
@@ -511,212 +477,6 @@ const calculateSkillsCompatibility = (userSkills: string[], jobTechnologies: str
       'factory': ['factory'],
       'abstract factory': ['abstract factory'],
       'builder': ['builder'],
-      'prototype': ['prototype'],
-      'adapter': ['adapter'],
-      'bridge': ['bridge'],
-      'composite': ['composite'],
-      'decorator': ['decorator'],
-      'facade': ['facade'],
-      'flyweight': ['flyweight'],
-      'proxy': ['proxy'],
-      'chain of responsibility': ['chain of responsibility'],
-      'command': ['command'],
-      'interpreter': ['interpreter'],
-      'iterator': ['iterator'],
-      'mediator': ['mediator'],
-      'memento': ['memento'],
-      'observer': ['observer'],
-      'state': ['state'],
-      'strategy': ['strategy'],
-      'template method': ['template method'],
-      'visitor': ['visitor'],
-      'mvc': ['mvc', 'model view controller'],
-      'mvp': ['mvp', 'model view presenter'],
-      'mvvm': ['mvvm', 'model view viewmodel'],
-      'mvi': ['mvi', 'model view intent'],
-      'flux': ['flux'],
-      'redux': ['redux'],
-      'mobx': ['mobx'],
-      'zustand': ['zustand'],
-      'jotai': ['jotai'],
-      'recoil': ['recoil'],
-      'context': ['context', 'react context'],
-      'hooks': ['hooks', 'react hooks'],
-      'hoc': ['hoc', 'higher order component'],
-      'render props': ['render props'],
-      'children as function': ['children as function'],
-      'compound component': ['compound component'],
-      'controlled component': ['controlled component'],
-      'uncontrolled component': ['uncontrolled component'],
-      'pure component': ['pure component'],
-      'memo': ['memo', 'react.memo'],
-      'usememo': ['usememo', 'useMemo'],
-      'usecallback': ['usecallback', 'useCallback'],
-      'useeffect': ['useeffect', 'useEffect'],
-      'usestate': ['usestate', 'useState'],
-      'usereducer': ['usereducer', 'useReducer'],
-      'usecontext': ['usecontext', 'useContext'],
-      'useref': ['useref', 'useRef'],
-      'useimperativehandle': ['useimperativehandle', 'useImperativeHandle'],
-      'uselayouteffect': ['uselayouteffect', 'useLayoutEffect'],
-      'usedebugvalue': ['usedebugvalue', 'useDebugValue'],
-      'custom hooks': ['custom hooks'],
-      'forwardref': ['forwardref', 'forwardRef'],
-      'lazy': ['lazy', 'lazy loading'],
-      'suspense': ['suspense'],
-      'error boundary': ['error boundary'],
-      'portal': ['portal', 'react portal'],
-      'fragment': ['fragment', 'react fragment'],
-      'strict mode': ['strict mode'],
-      'profiler': ['profiler', 'react profiler'],
-      'concurrent mode': ['concurrent mode'],
-      'time slicing': ['time slicing'],
-      'scheduler': ['scheduler'],
-      'fiber': ['fiber', 'react fiber'],
-      'reconciliation': ['reconciliation'],
-      'virtual dom': ['virtual dom'],
-      'diffing algorithm': ['diffing algorithm'],
-      'keys': ['keys', 'react keys'],
-      'refs': ['refs', 'react refs'],
-      'lifecycle': ['lifecycle', 'component lifecycle'],
-      'mounting': ['mounting'],
-      'updating': ['updating'],
-      'unmounting': ['unmounting'],
-      'error handling': ['error handling'],
-      'error boundaries': ['error boundaries'],
-      'try catch': ['try catch'],
-      'promises': ['promises'],
-      'async await': ['async await'],
-      'generators': ['generators'],
-      'iterators': ['iterators'],
-      'symbols': ['symbols'],
-      'proxies': ['proxies'],
-      'reflect': ['reflect'],
-      'weakmap': ['weakmap'],
-      'weakset': ['weakset'],
-      'map': ['map'],
-      'set': ['set'],
-      'array methods': ['array methods'],
-      'object methods': ['object methods'],
-      'string methods': ['string methods'],
-      'number methods': ['number methods'],
-      'date methods': ['date methods'],
-      'math methods': ['math methods'],
-      'json': ['json'],
-      'xml': ['xml'],
-      'yaml': ['yaml'],
-      'toml': ['toml'],
-      'ini': ['ini'],
-      'csv': ['csv'],
-      'tsv': ['tsv'],
-      'excel': ['excel'],
-      'pdf': ['pdf'],
-      'doc': ['doc'],
-      'docx': ['docx'],
-      'ppt': ['ppt'],
-      'pptx': ['pptx'],
-      'xls': ['xls'],
-      'xlsx': ['xlsx'],
-      'odt': ['odt'],
-      'ods': ['ods'],
-      'odp': ['odp'],
-      'rtf': ['rtf'],
-      'txt': ['txt'],
-      'md': ['md', 'markdown'],
-      'html': ['html'],
-      'css': ['css'],
-      'js': ['js', 'javascript'],
-      'ts': ['ts', 'typescript'],
-      'jsx': ['jsx'],
-      'tsx': ['tsx'],
-      'vue': ['vue'],
-      'svelte': ['svelte'],
-      'angular': ['angular'],
-      'ember': ['ember'],
-      'backbone': ['backbone'],
-      'knockout': ['knockout'],
-      'jquery': ['jquery'],
-      'lodash': ['lodash'],
-      'underscore': ['underscore'],
-      'ramda': ['ramda'],
-      'immutable': ['immutable'],
-      'mobx': ['mobx'],
-      'rxjs': ['rxjs'],
-      'xstream': ['xstream'],
-      'most': ['most'],
-      'bacon': ['bacon'],
-      'flyd': ['flyd'],
-      'kefir': ['kefir'],
-      'highland': ['highland'],
-      'async': ['async'],
-      'bluebird': ['bluebird'],
-      'q': ['q'],
-      'when': ['when'],
-      'rsvp': ['rsvp'],
-      'deferred': ['deferred'],
-      'future': ['future'],
-      'task': ['task'],
-      'io': ['io'],
-      'maybe': ['maybe'],
-      'either': ['either'],
-      'validation': ['validation'],
-      'sanctuary': ['sanctuary'],
-      'folktale': ['folktale'],
-      'fantasy land': ['fantasy land'],
-      'monad': ['monad'],
-      'functor': ['functor'],
-      'applicative': ['applicative'],
-      'semigroup': ['semigroup'],
-      'monoid': ['monoid'],
-      'foldable': ['foldable'],
-      'traversable': ['traversable'],
-      'bifunctor': ['bifunctor'],
-      'contravariant': ['contravariant'],
-      'profunctor': ['profunctor'],
-      'comonad': ['comonad'],
-      'extend': ['extend'],
-      'compose': ['compose'],
-      'pipe': ['pipe'],
-      'curry': ['curry'],
-      'partial application': ['partial application'],
-      'closure': ['closure'],
-      'scope': ['scope'],
-      'hoisting': ['hoisting'],
-      'this': ['this'],
-      'bind': ['bind'],
-      'call': ['call'],
-      'apply': ['apply'],
-      'prototype': ['prototype'],
-      'inheritance': ['inheritance'],
-      'polymorphism': ['polymorphism'],
-      'encapsulation': ['encapsulation'],
-      'abstraction': ['abstraction'],
-      'composition': ['composition'],
-      'aggregation': ['aggregation'],
-      'association': ['association'],
-      'dependency injection': ['dependency injection'],
-      'inversion of control': ['inversion of control'],
-      'single responsibility': ['single responsibility'],
-      'open closed': ['open closed'],
-      'liskov substitution': ['liskov substitution'],
-      'interface segregation': ['interface segregation'],
-      'dependency inversion': ['dependency inversion'],
-      'dry': ['dry', 'don\'t repeat yourself'],
-      'kiss': ['kiss', 'keep it simple stupid'],
-      'yagni': ['yagni', 'you aren\'t gonna need it'],
-      'solid': ['solid'],
-      'grasp': ['grasp'],
-      'clean code': ['clean code'],
-      'refactoring': ['refactoring'],
-      'design patterns': ['design patterns'],
-      'creational patterns': ['creational patterns'],
-      'structural patterns': ['structural patterns'],
-      'behavioral patterns': ['behavioral patterns'],
-      'singleton': ['singleton'],
-      'factory': ['factory'],
-      'abstract factory': ['abstract factory'],
-      'builder': ['builder'],
-      'prototype': ['prototype'],
       'adapter': ['adapter'],
       'bridge': ['bridge'],
       'composite': ['composite'],
@@ -866,7 +626,7 @@ const calculateLocationCompatibility = (userLocation: string, jobLocation: strin
     'df': ['distrito federal', 'brasília', 'brasilia']
   };
 
-  for (const [state, cities] of Object.entries(brazilianStates)) {
+  for (const [, cities] of Object.entries(brazilianStates)) {
     const userInState = cities.some(city => userLoc.includes(city));
     const jobInState = cities.some(city => jobLoc.includes(city));
     

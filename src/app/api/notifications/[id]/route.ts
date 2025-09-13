@@ -6,7 +6,7 @@ import { prisma } from '@/lib/prisma';
 // GET /api/notifications/[id] - Buscar notificação específica
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string  }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -14,12 +14,12 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const notificationId = params.id;
+    const notificationId = (await context.params).id;
 
     const notification = await prisma.notification.findUnique({
       where: { id: notificationId },
       include: {
-        from_user: {
+        user: {
           select: {
             id: true,
             name: true,
@@ -41,7 +41,7 @@ export async function GET(
             content: true,
           },
         },
-      },
+      } as any,
     });
 
     if (!notification) {
@@ -74,7 +74,7 @@ export async function GET(
 // PUT /api/notifications/[id] - Atualizar notificação
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string  }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -82,7 +82,7 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const notificationId = params.id;
+    const notificationId = (await context.params).id;
     const body = await request.json();
     const { is_read, title, content, data } = body;
 
@@ -124,7 +124,7 @@ export async function PUT(
 // DELETE /api/notifications/[id] - Deletar notificação
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string  }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -132,7 +132,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const notificationId = params.id;
+    const notificationId = (await context.params).id;
 
     // Verificar se a notificação existe e pertence ao usuário
     const notification = await prisma.notification.findUnique({

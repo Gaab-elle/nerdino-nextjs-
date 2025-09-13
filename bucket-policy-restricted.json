@@ -1,0 +1,18 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowElasticBeanstalkAccess",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::954117186437:role/aws-elasticbeanstalk-ec2-role"
+      },
+      "Action": [
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:DeleteObject"
+      ],
+      "Resource": "arn:aws:s3:::nerdino-uploads-gaabz/*"
+    }
+  ]
+}

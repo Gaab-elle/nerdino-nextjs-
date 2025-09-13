@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma';
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string  }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -17,7 +17,7 @@ export async function DELETE(
       );
     }
 
-    const projectId = params.id;
+    const projectId = (await context.params).id;
     
     if (!projectId || isNaN(parseInt(projectId))) {
       return NextResponse.json(

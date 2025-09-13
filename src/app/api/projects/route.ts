@@ -131,7 +131,7 @@ export async function POST(request: NextRequest) {
       id: createdProject.id,
       name: createdProject.title,
       description: createdProject.description,
-      technologies: createdProject.technologies.map((t: any) => t.technology.name),
+      technologies: createdProject.technologies.map((t: { technology: { name: string } }) => t.technology.name),
       status: createdProject.status,
       stars: createdProject.stars || 0,
       forks: createdProject.forks || 0,

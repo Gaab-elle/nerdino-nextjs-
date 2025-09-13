@@ -17,7 +17,18 @@ export default function CreateAccountPage() {
     return null;
   }
 
-  const handleAccountCreation = async (profileData: any) => {
+  const handleAccountCreation = async (profileData: {
+    name: string;
+    username: string;
+    bio?: string;
+    location?: string;
+    website?: string;
+    avatar?: string;
+    skills: string[];
+    interests: string[];
+    experience: string;
+    availability: string;
+  }) => {
     setIsCreating(true);
     try {
       // Here you would integrate with your API to create the account

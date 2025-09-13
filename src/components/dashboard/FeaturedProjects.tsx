@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { ArrowRight, Github, ExternalLink, Clock, CheckCircle, Pause } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { ArrowRight, Github, ExternalLink, Clock, CheckCircle, Pause, Code } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { StackBlitzModal } from '@/components/ui/StackBlitzModal';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useSession } from 'next-auth/react';
 
@@ -69,15 +70,17 @@ export const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ onProjectAdd
   const user = session?.user;
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
+  const [stackblitzModalOpen, setStackblitzModalOpen] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
   // Função para carregar projetos
-  const loadProjects = () => {
+  const loadProjects = useCallback(() => {
       try {
         const savedProjects = localStorage.getItem('userProjects');
         if (savedProjects) {
           const parsedProjects = JSON.parse(savedProjects);
           // Filtrar projetos do usuário atual
-          const userProjects = parsedProjects.filter((project: any) => 
+          const userProjects = parsedProjects.filter((project: { authorId: string }) => 
             project.authorId === user?.id
           );
           setProjects(userProjects);
@@ -86,19 +89,19 @@ export const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ onProjectAdd
           const communityPosts = localStorage.getItem('communityPosts');
           if (communityPosts && user) {
             const posts = JSON.parse(communityPosts);
-            const projectPosts = posts.filter((post: any) => 
-              post.type === 'project' && post.author.id === user.id
+            const projectPosts = posts.filter((post: { projectId?: string; author: { id: string } }) => 
+              (post as any).type === 'project' && (post as any).author?.id === user.id
             );
             
-            const exampleProjects = projectPosts.map((post: any, index: number) => ({
+            const exampleProjects = projectPosts.map((post: { id: string; content: string; author: { id: string } }, index: number) => ({
               id: `project-${post.id}`,
-              name: post.project?.name || `Projeto ${index + 1}`,
-              description: post.project?.description || post.content,
+              name: (post as any).project?.name || `Projeto ${index + 1}`,
+              description: (post as any).project?.description || post.content,
               status: 'inProgress' as const,
-              lastActivity: getTimeAgo(post.timestamp),
-              technologies: post.project?.technologies || ['React', 'JavaScript'],
-              githubUrl: post.project?.githubUrl,
-              liveUrl: post.project?.demoUrl,
+              lastActivity: getTimeAgo((post as any).timestamp),
+              technologies: (post as any).project?.technologies || ['React', 'JavaScript'],
+              githubUrl: (post as any).project?.githubUrl,
+              liveUrl: (post as any).project?.demoUrl,
               progress: Math.floor(Math.random() * 80) + 20 // Progresso aleatório entre 20-100%
             }));
             
@@ -113,14 +116,20 @@ export const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ onProjectAdd
       } finally {
         setLoading(false);
       }
-  };
+  }, [user]);
 
   // Carregar projetos do localStorage
   useEffect(() => {
     if (user) {
       loadProjects();
     }
-  }, [user]);
+  }, [user, loadProjects]);
+
+  // Função para abrir projeto no StackBlitz
+  const openStackBlitz = (project: Project) => {
+    setSelectedProject(project);
+    setStackblitzModalOpen(true);
+  };
 
   // Escutar evento de projeto adicionado
   useEffect(() => {
@@ -236,6 +245,15 @@ export const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ onProjectAdd
                   {t('dashboard.progress.lastActivity')}: {project.lastActivity}
                 </span>
                 <div className="flex space-x-2">
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => openStackBlitz(project)}
+                    className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:text-blue-300 dark:hover:bg-blue-900/20"
+                    title="Abrir no StackBlitz"
+                  >
+                    <Code size={16} />
+                  </Button>
                   {project.githubUrl && (
                     <Button variant="ghost" size="sm" asChild>
                       <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
@@ -257,6 +275,13 @@ export const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ onProjectAdd
           </div>
         )}
       </CardContent>
+      
+      {/* StackBlitz Modal */}
+      <StackBlitzModal
+        isOpen={stackblitzModalOpen}
+        onClose={() => setStackblitzModalOpen(false)}
+        project={selectedProject}
+      />
     </Card>
   );
 };

@@ -4,17 +4,43 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useSSE } from '@/hooks/useSSE';
 import { MessageNotification, useMessageNotifications } from '@/components/messages/MessageNotification';
+import { NotificationAdapter } from '@/adapters/notificationAdapter';
+import { SSEMessage, MessageNotification as SSEMessageNotification, GeneralNotification } from '@/schemas/notifications';
 
 interface NotificationContextType {
   // Message notifications (existing)
-  messageNotifications: any[];
-  addMessageNotification: (notification: any) => void;
+  messageNotifications: Array<{
+    id: string;
+    type: string;
+    message: string;
+    timestamp: string;
+  }>;
+  addMessageNotification: (notification: {
+    id: string;
+    type: string;
+    message: string;
+    timestamp: string;
+  }) => void;
   removeMessageNotification: (index: number) => void;
   clearAllMessageNotifications: () => void;
   
   // General notifications (new)
-  generalNotifications: any[];
-  addGeneralNotification: (notification: any) => void;
+  generalNotifications: Array<{
+    id: string;
+    type: string;
+    title: string;
+    content: string;
+    timestamp: string;
+    read: boolean;
+    data?: Record<string, unknown>;
+  }>;
+  addGeneralNotification: (notification: {
+    id: string;
+    type: string;
+    title: string;
+    content: string;
+    timestamp: string;
+  }) => void;
   removeGeneralNotification: (index: number) => void;
   clearAllGeneralNotifications: () => void;
 }
@@ -32,10 +58,28 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   } = useMessageNotifications();
 
   // General notifications state
-  const [generalNotifications, setGeneralNotifications] = useState<any[]>([]);
+  const [generalNotifications, setGeneralNotifications] = useState<Array<{
+    id: string;
+    type: string;
+    title: string;
+    content: string;
+    timestamp: string;
+    read: boolean;
+    data?: Record<string, unknown>;
+  }>>([]);
 
-  const addGeneralNotification = (notification: any) => {
-    setGeneralNotifications(prev => [...prev, notification]);
+  const addGeneralNotification = (notification: {
+    id: string;
+    type: string;
+    title: string;
+    content: string;
+    timestamp: string;
+  }) => {
+    setGeneralNotifications(prev => [...prev, {
+      ...notification,
+      read: false,
+      data: {}
+    }]);
   };
 
   const removeGeneralNotification = (index: number) => {
@@ -53,26 +97,49 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
     // Processar mensagens SSE para notificações de mensagem
     sseMessages.forEach(message => {
-      if (message.type === 'new_message' && message.sender?.id !== session.user.id && message.conversationId) {
-        addMessageNotification({
-          conversationId: message.conversationId,
-          message: message.message,
-          sender: message.sender,
-          recipientId: session.user.id,
-        });
+      if (message.type === 'new_message' && message.sender?.id !== session.user.id && message.conversationId && message.message && message.sender) {
+        try {
+          const normalizedMessage = NotificationAdapter.normalizeSSEMessage(message);
+          const messageNotification = NotificationAdapter.createMessageNotificationFromSSE(normalizedMessage, session.user.id);
+          
+          if (messageNotification) {
+            addMessageNotification({
+              conversationId: message.conversationId || '',
+              message: {
+                id: messageNotification.id,
+                content: (messageNotification as { message?: string }).message ?? 'Nova mensagem',
+                type: messageNotification.type ?? 'message'
+              },
+              sender: {
+                id: message.sender?.id || '',
+                name: message.sender?.name || 'Usuário'
+              },
+              recipientId: session.user.id
+            });
+          }
+        } catch (error) {
+          console.warn('Failed to process SSE message notification:', error);
+        }
       }
     });
 
     // Processar notificações gerais via SSE
     sseMessages.forEach(message => {
       if (message.type === 'notification') {
-        addGeneralNotification({
-          id: message.data?.id || Date.now(),
-          type: message.type,
-          title: message.data?.title || 'Nova notificação',
-          content: message.data?.content || 'Você tem uma nova notificação',
-          timestamp: new Date(),
-        });
+        try {
+          const normalizedMessage = NotificationAdapter.normalizeSSEMessage(message);
+          const generalNotification = NotificationAdapter.createGeneralNotificationFromSSE(normalizedMessage);
+          
+          addGeneralNotification({
+            id: generalNotification.id,
+            type: generalNotification.type ?? 'general',
+            title: generalNotification.title ?? 'Nova notificação',
+            content: generalNotification.content ?? 'Você tem uma nova notificação',
+            timestamp: generalNotification.timestamp ?? new Date().toISOString(),
+          });
+        } catch (error) {
+          console.warn('Failed to process SSE general notification:', error);
+        }
       }
     });
   }, [sseMessages, session?.user?.id, addMessageNotification, addGeneralNotification]);
@@ -80,8 +147,20 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   return (
     <NotificationContext.Provider
       value={{
-        messageNotifications,
-        addMessageNotification,
+        messageNotifications: messageNotifications.map(notification => ({
+          id: (notification as { id?: string }).id || '',
+          type: (notification as { type?: string }).type || '',
+          message: (notification as { message?: { content?: string } }).message?.content || '',
+          timestamp: (notification as { message?: { timestamp?: string } }).message?.timestamp || ''
+        })),
+        addMessageNotification: (notification: { id: string; type: string; message: string; timestamp: string }) => {
+          addMessageNotification({
+            conversationId: '',
+            message: { id: notification.id, content: notification.message, type: notification.type },
+            sender: { id: '', name: '' },
+            recipientId: ''
+          });
+        },
         removeMessageNotification,
         clearAllMessageNotifications,
         generalNotifications,

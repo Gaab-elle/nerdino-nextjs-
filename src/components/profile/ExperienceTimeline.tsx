@@ -17,8 +17,8 @@ export const ExperienceTimeline: React.FC = () => {
   const { profileData, hasExperience } = useProfileData();
 
   // Estados locais para edição
-  const [editedExperiences, setEditedExperiences] = useState<any[]>([]);
-  const [savedExperiences, setSavedExperiences] = useState<any[]>([]);
+  const [editedExperiences, setEditedExperiences] = useState<Array<{ id: number; title: string; company: string; location: string; period: string; duration: string; type: string; description: string; achievements: string[]; technologies: string[]; current: boolean }>>([]);
+  const [savedExperiences, setSavedExperiences] = useState<Array<{ id: number; title: string; company: string; location: string; period: string; duration: string; type: string; description: string; achievements: string[]; technologies: string[]; current: boolean }>>([]);
   const [editingExperienceId, setEditingExperienceId] = useState<number | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [newExperience, setNewExperience] = useState({
@@ -35,8 +35,8 @@ export const ExperienceTimeline: React.FC = () => {
   });
 
   // Estados para educação
-  const [editedEducation, setEditedEducation] = useState<any[]>([]);
-  const [savedEducation, setSavedEducation] = useState<any[]>([]);
+  const [editedEducation, setEditedEducation] = useState<Array<{ id: number; title: string; institution: string; period: string; description: string; achievements: string[] }>>([]);
+  const [savedEducation, setSavedEducation] = useState<Array<{ id: number; title: string; institution: string; period: string; description: string; achievements: string[] }>>([]);
   const [editingEducationId, setEditingEducationId] = useState<number | null>(null);
   const [showAddEducationForm, setShowAddEducationForm] = useState(false);
   const [newEducation, setNewEducation] = useState({
@@ -48,8 +48,8 @@ export const ExperienceTimeline: React.FC = () => {
   });
 
   // Estados para certificações
-  const [editedCertifications, setEditedCertifications] = useState<any[]>([]);
-  const [savedCertifications, setSavedCertifications] = useState<any[]>([]);
+  const [editedCertifications, setEditedCertifications] = useState<Array<{ id: number; title: string; issuer: string; date: string; credential: string }>>([]);
+  const [savedCertifications, setSavedCertifications] = useState<Array<{ id: number; title: string; issuer: string; date: string; credential: string }>>([]);
   const [editingCertificationId, setEditingCertificationId] = useState<number | null>(null);
   const [showAddCertificationForm, setShowAddCertificationForm] = useState(false);
   const [newCertification, setNewCertification] = useState({
@@ -262,7 +262,7 @@ export const ExperienceTimeline: React.FC = () => {
     setEditingEducationId(id);
   };
 
-  const updateEducation = (id: number, field: string, value: any) => {
+  const updateEducation = (id: number, field: string, value: string | string[]) => {                                                                                                        
     setEditedEducation(prev => 
       prev.map(edu => 
         edu.id === id ? { ...edu, [field]: value } : edu
@@ -280,7 +280,7 @@ export const ExperienceTimeline: React.FC = () => {
   const removeEducationAchievement = (id: number, index: number) => {
     const edu = education.find(e => e.id === id);
     if (edu) {
-      const newAchievements = edu.achievements.filter((_: any, i: number) => i !== index);
+      const newAchievements = edu.achievements.filter((_: string, i: number) => i !== index);
       updateEducation(id, 'achievements', newAchievements);
     }
   };
@@ -320,7 +320,7 @@ export const ExperienceTimeline: React.FC = () => {
     setEditingCertificationId(id);
   };
 
-  const updateCertification = (id: number, field: string, value: any) => {
+  const updateCertification = (id: number, field: string, value: string | string[]) => {
     setEditedCertifications(prev => 
       prev.map(cert => 
         cert.id === id ? { ...cert, [field]: value } : cert
@@ -348,7 +348,7 @@ export const ExperienceTimeline: React.FC = () => {
     });
   };
 
-  const updateExperience = (id: number, field: string, value: any) => {
+  const updateExperience = (id: number, field: string, value: string | string[]) => {
     setEditedExperiences(prev => 
       prev.map(exp => 
         exp.id === id ? { ...exp, [field]: value } : exp
@@ -363,7 +363,7 @@ export const ExperienceTimeline: React.FC = () => {
   const removeAchievement = (id: number, index: number) => {
     const exp = experiences.find(e => e.id === id);
     if (exp) {
-      const newAchievements = exp.achievements.filter((_: any, i: number) => i !== index);
+      const newAchievements = exp.achievements.filter((_: string, i: number) => i !== index);
       updateExperience(id, 'achievements', newAchievements);
     }
   };
@@ -384,7 +384,7 @@ export const ExperienceTimeline: React.FC = () => {
   const removeTechnology = (id: number, index: number) => {
     const exp = experiences.find(e => e.id === id);
     if (exp) {
-      const newTechnologies = exp.technologies.filter((_: any, i: number) => i !== index);
+      const newTechnologies = exp.technologies.filter((_: string, i: number) => i !== index);
       updateExperience(id, 'technologies', newTechnologies);
     }
   };

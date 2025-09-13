@@ -30,21 +30,21 @@ async function apiCall<T>(
 export const postsApi = {
   // Get all posts
   getAll: (params: URLSearchParams) => 
-    apiCall<{ posts: Post[]; pagination: any }>(`/posts?${params}`),
+    apiCall<{ posts: Post[]; pagination: { page: number; limit: number; total: number; totalPages: number } }>(`/posts?${params}`),
 
   // Get single post
   getById: (id: string) => 
     apiCall<Post>(`/posts/${id}`),
 
   // Create post
-  create: (data: any) => 
+  create: (data: { content: string; type: string; tags?: string[] }) => 
     apiCall<Post>('/posts', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
 
   // Update post
-  update: (id: string, data: any) => 
+  update: (id: string, data: { content?: string; type?: string; tags?: string[] }) => 
     apiCall<Post>(`/posts/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -68,28 +68,28 @@ export const postsApi = {
 
   // Get user posts
   getByUser: (userId: string, params: URLSearchParams) => 
-    apiCall<{ posts: Post[]; pagination: any }>(`/users/${userId}/posts?${params}`),
+    apiCall<{ posts: Post[]; pagination: { page: number; limit: number; total: number; totalPages: number } }>(`/users/${userId}/posts?${params}`),
 };
 
 // Comments API
 export const commentsApi = {
   // Get post comments
   getByPost: (postId: string, params: URLSearchParams) => 
-    apiCall<{ comments: Comment[]; pagination: any }>(`/posts/${postId}/comments?${params}`),
+    apiCall<{ comments: Comment[]; pagination: { page: number; limit: number; total: number; totalPages: number } }>(`/posts/${postId}/comments?${params}`),
 
   // Get single comment
   getById: (id: string) => 
     apiCall<Comment>(`/comments/${id}`),
 
   // Create comment
-  create: (postId: string, data: any) => 
+  create: (postId: string, data: { content: string; parentId?: string }) => 
     apiCall<Comment>(`/posts/${postId}/comments`, {
       method: 'POST',
       body: JSON.stringify(data),
     }),
 
   // Update comment
-  update: (id: string, data: any) => 
+  update: (id: string, data: { content?: string }) => 
     apiCall<Comment>(`/comments/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -123,14 +123,14 @@ export const tagsApi = {
     apiCall<Tag>(`/tags/${id}`),
 
   // Create tag
-  create: (data: any) => 
+  create: (data: { name: string; description?: string }) => 
     apiCall<Tag>('/tags', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
 
   // Update tag
-  update: (id: string, data: any) => 
+  update: (id: string, data: { name?: string; description?: string }) => 
     apiCall<Tag>(`/tags/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -147,13 +147,13 @@ export const tagsApi = {
 export const feedApi = {
   // Get personalized feed
   getFeed: (params: URLSearchParams) => 
-    apiCall<{ posts: Post[]; pagination: any; type: string }>(`/feed?${params}`),
+    apiCall<{ posts: Post[]; pagination: { page: number; limit: number; total: number; totalPages: number }; type: string }>(`/feed?${params}`),
 };
 
 // Utility functions
 export const apiUtils = {
   // Build query string from object
-  buildQueryString: (params: Record<string, any>): string => {
+  buildQueryString: (params: Record<string, string | number | boolean | string[]>): string => {
     const searchParams = new URLSearchParams();
     
     Object.entries(params).forEach(([key, value]) => {
@@ -166,7 +166,7 @@ export const apiUtils = {
   },
 
   // Format error message
-  formatError: (error: any): string => {
+  formatError: (error: { message?: string; error?: string }): string => {
     if (error instanceof Error) {
       return error.message;
     }

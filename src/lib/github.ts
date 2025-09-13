@@ -100,7 +100,7 @@ export class GitHubService {
       });
 
       // Calculate total stars
-      const totalStars = repos.data.reduce((sum: number, repo: any) => sum + repo.stargazers_count, 0);
+      const totalStars = repos.data.reduce((sum: number, repo: { stargazers_count?: number }) => sum + (repo.stargazers_count || 0), 0);
 
       // Get languages used
       const languages = new Set<string>();
@@ -120,8 +120,8 @@ export class GitHubService {
         totalRepos: repos.data.length,
         totalStars,
         languages: Array.from(languages),
-        publicRepos: repos.data.filter((repo: any) => !repo.private).length,
-        privateRepos: repos.data.filter((repo: any) => repo.private).length,
+        publicRepos: repos.data.filter((repo: { private: boolean }) => !repo.private).length,
+        privateRepos: repos.data.filter((repo: { private: boolean }) => repo.private).length,
       };
     } catch (error) {
       console.error('Error fetching GitHub stats:', error);
@@ -145,7 +145,7 @@ export class GitHubService {
         per_page: 100,
       });
 
-      return events.filter((event: any) => new Date(event.created_at) >= since);
+      return events.filter((event: { created_at: string | null }) => event.created_at && new Date(event.created_at) >= since);
     } catch (error) {
       console.error('Error fetching recent activity:', error);
       return [];
@@ -167,13 +167,52 @@ export async function getGitHubAccessToken(userId: string) {
   return account?.access_token || null;
 }
 
+// Utility function to check if GitHub token is valid
+export async function isGitHubTokenValid(accessToken: string): Promise<boolean> {
+  try {
+    const octokit = new Octokit({ auth: accessToken });
+    await octokit.rest.users.getAuthenticated();
+    return true;
+  } catch (error) {
+    console.log('GitHub token validation failed:', error);
+    return false;
+  }
+}
+
+// Utility function to refresh GitHub token if needed
+export async function refreshGitHubTokenIfNeeded(userId: string): Promise<string | null> {
+  const { prisma } = await import('./prisma');
+  
+  const account = await prisma.account.findFirst({
+    where: {
+      userId,
+      provider: 'github',
+    },
+  });
+
+  if (!account?.access_token) {
+    return null;
+  }
+
+  // Check if token is still valid
+  const isValid = await isGitHubTokenValid(account.access_token);
+  if (isValid) {
+    return account.access_token;
+  }
+
+  // Token is invalid, we need to re-authenticate
+  console.log('GitHub token is invalid, user needs to re-authenticate');
+  return null;
+}
+
 // Utility function to sync user data from GitHub
 export async function syncUserFromGitHub(userId: string) {
   const { prisma } = await import('./prisma');
   
-  const accessToken = await getGitHubAccessToken(userId);
+  // Check if token is valid and refresh if needed
+  const accessToken = await refreshGitHubTokenIfNeeded(userId);
   if (!accessToken) {
-    throw new Error('No GitHub access token found');
+    throw new Error('GitHub token is invalid or expired. Please re-authenticate.');
   }
 
   const githubService = new GitHubService(accessToken);

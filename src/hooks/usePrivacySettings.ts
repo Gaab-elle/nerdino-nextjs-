@@ -39,9 +39,9 @@ export function usePrivacySettings() {
       return true; // padrão enquanto carrega
     }
 
-    console.log(`🔍 Verificando visibilidade de ${field}:`, privacySettings[field]);
+    console.log(`🔍 Verificando visibilidade de ${field}:`, (privacySettings as any)?.[field]);
     // CORRIGIDO: Verificar se o valor é explicitamente true
-    return privacySettings[field] === true;
+    return (privacySettings as any)?.[field] === true;
   };
 
   const updatePrivacySettings = (newSettings: PrivacySettings) => {
@@ -73,16 +73,16 @@ export function usePrivacySettings() {
     console.log('settings from useSettings:', settings);
     console.log('privacySettings:', privacySettings);
     console.log('privacySettings type:', typeof privacySettings);
-    console.log('privacySettings.showStars:', privacySettings?.showStars);
-    console.log('privacySettings.showFollowers:', privacySettings?.showFollowers);
+    console.log('privacySettings.showStars:', (privacySettings as any)?.showStars);
+    console.log('privacySettings.showFollowers:', (privacySettings as any)?.showFollowers);
     console.log('isVisible showStars:', isVisible('showStars'));
     console.log('isVisible showFollowers:', isVisible('showFollowers'));
     
     // Teste direto
     if (privacySettings) {
       console.log('🧪 Teste direto:');
-      console.log('showStars === true:', privacySettings.showStars === true);
-      console.log('showFollowers === true:', privacySettings.showFollowers === true);
+      console.log('showStars === true:', (privacySettings as any).showStars === true);
+      console.log('showFollowers === true:', (privacySettings as any).showFollowers === true);
     }
   }, [settings, privacySettings]);
 

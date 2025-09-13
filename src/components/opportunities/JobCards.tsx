@@ -6,35 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useLanguage } from '@/contexts/LanguageContext';
-
-interface Job {
-  id: string;
-  title: string;
-  company: string;
-  companyLogo?: string;
-  location: string;
-  remote: boolean;
-  salary?: { min: number; max: number };
-  experience: string;
-  contractType: string;
-  technologies: string[];
-  description: string;
-  postedAt: string;
-  isNew: boolean;
-  isUrgent: boolean;
-  matchScore: number;
-  matchBreakdown: {
-    skills: number;
-    experience: number;
-    location: number;
-  };
-  userApplied: boolean;
-  userFavorited: boolean;
-  url: string;
-}
+import { JobData } from '@/types/jobs';
 
 interface JobCardsProps {
-  jobs: Job[];
+  jobs: JobData[];
   userSkills: string[];
   loading?: boolean;
   error?: string | null;
@@ -106,7 +81,7 @@ export const JobCards: React.FC<JobCardsProps> = ({
     return `R$ ${min.toLocaleString()} - R$ ${max.toLocaleString()}`;
   };
 
-  const handleShareJob = async (job: Job) => {
+  const handleShareJob = async (job: JobData) => {
     const shareData = {
       title: `${job.title} - ${job.company}`,
       text: `Confira esta vaga: ${job.title} na ${job.company}`,
@@ -125,7 +100,7 @@ export const JobCards: React.FC<JobCardsProps> = ({
     }
   };
 
-  const fallbackShare = (job: Job) => {
+  const fallbackShare = (job: JobData) => {
     const shareText = `Confira esta vaga: ${job.title} na ${job.company}\n${job.url}`;
     
     if (navigator.clipboard) {
@@ -269,7 +244,7 @@ export const JobCards: React.FC<JobCardsProps> = ({
           <div
             key={job.id}
             className={`bg-white dark:bg-gray-800 rounded-xl border-2 p-6 transition-all duration-300 hover:shadow-xl hover:scale-[1.02] ${
-              job.matchScore >= 90 
+              (job.matchScore || 0) >= 90 
                 ? 'border-green-200 dark:border-green-800 shadow-green-100 dark:shadow-green-900/20' 
                 : job.userApplied
                 ? 'border-green-400 dark:border-green-500 shadow-green-100 dark:shadow-green-900/20'
@@ -354,12 +329,12 @@ export const JobCards: React.FC<JobCardsProps> = ({
                     <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
                       {t('opportunities.job.matchScore')}
                     </span>
-                    <Badge className={`${getMatchColor(job.matchScore)} text-xs`}>
-                      {job.matchScore}%
+                    <Badge className={`${getMatchColor(job.matchScore || 0)} text-xs`}>
+                      {job.matchScore || 0}%
                     </Badge>
                   </div>
                   <Progress 
-                    value={job.matchScore} 
+                    value={job.matchScore || 0} 
                     className="h-2 mb-2 bg-gray-200 dark:bg-gray-700"
                   />
                   
@@ -367,15 +342,15 @@ export const JobCards: React.FC<JobCardsProps> = ({
                   <div className="space-y-1 text-xs text-gray-600 dark:text-gray-400">
                     <div className="flex justify-between">
                       <span className="truncate">{t('opportunities.job.skills')}</span>
-                      <span className="ml-2">{job.matchBreakdown.skills}%</span>
+                      <span className="ml-2">{job.matchBreakdown?.skills || 0}%</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="truncate">{t('opportunities.job.experience')}</span>
-                      <span className="ml-2">{job.matchBreakdown.experience}%</span>
+                      <span className="ml-2">{job.matchBreakdown?.experience || 0}%</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="truncate">{t('opportunities.job.location')}</span>
-                      <span className="ml-2">{job.matchBreakdown.location}%</span>
+                      <span className="ml-2">{job.matchBreakdown?.location || 0}%</span>
                     </div>
                   </div>
                 </div>

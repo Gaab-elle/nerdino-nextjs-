@@ -25,7 +25,12 @@ export const AboutSection: React.FC = () => {
     interests: [] as string[],
     principles: [] as string[]
   });
-  const [savedAbout, setSavedAbout] = useState<any>(null);
+  const [savedAbout, setSavedAbout] = useState<{
+    professionalBio: string;
+    personalBio: string;
+    interests: string[];
+    principles: string[];
+  } | null>(null);
   const [newInterest, setNewInterest] = useState('');
   const [newPrinciple, setNewPrinciple] = useState('');
 

@@ -9,8 +9,24 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useSession } from 'next-auth/react';
 
 interface ActivitySidebarProps {
-  posts?: any[];
-  comments?: any[];
+  posts?: Array<{
+    id: string;
+    content: string;
+    author: { id: string; name: string; username: string; avatar: string };
+    timestamp: string;
+    type: string;
+    stats?: { likes: number; comments: number; shares: number };
+  }>;
+  comments?: Array<{
+    id: string;
+    content: string;
+    author: { id: string; name: string; username: string; avatar: string };
+    timestamp: string;
+    postId: string;
+    authorId: string;
+    postTitle?: string;
+    postAuthor?: string;
+  }>;
 }
 
 export const ActivitySidebar: React.FC<ActivitySidebarProps> = ({ posts = [], comments = [] }) => {
@@ -91,10 +107,17 @@ export const ActivitySidebar: React.FC<ActivitySidebarProps> = ({ posts = [], co
     
     // Simular likes recebidos baseados nos posts do usuário
     const userPosts = posts.filter(post => post.author.id === user.id);
-    const likesData: any[] = [];
+    const likesData: Array<{
+      id: string;
+      user: string;
+      avatar: string;
+      post: string;
+      time: string;
+      type: string;
+    }> = [];
     
     userPosts.forEach(post => {
-      if (post.stats?.likes > 0) {
+      if (post.stats?.likes && post.stats.likes > 0) {
         // Simular alguns likes para cada post
         const numLikes = Math.min(post.stats.likes, 3); // Máximo 3 likes por post
         for (let i = 0; i < numLikes; i++) {
@@ -115,7 +138,16 @@ export const ActivitySidebar: React.FC<ActivitySidebarProps> = ({ posts = [], co
 
   const likesReceived = getRealLikesReceived();
 
-  const newFollowers: any[] = []; // Dados reais serão implementados com sistema de followers
+  const newFollowers: Array<{
+    id: string;
+    name: string;
+    username: string;
+    avatar: string;
+    followedAt: string;
+    user: string;
+    title: string;
+    mutual: boolean;
+  }> = []; // Dados reais serão implementados com sistema de followers
 
   const getRealCommentsMade = () => {
     if (!user) return [];
@@ -134,7 +166,16 @@ export const ActivitySidebar: React.FC<ActivitySidebarProps> = ({ posts = [], co
 
   const commentsMade = getRealCommentsMade();
 
-  const recentActivity: any[] = []; // Dados reais serão implementados com sistema de notificações
+  const recentActivity: Array<{
+    id: string;
+    type: string;
+    message: string;
+    timestamp: string;
+    user: { name: string; avatar: string };
+    icon: React.ReactNode;
+    action: string;
+    time: string;
+  }> = []; // Dados reais serão implementados com sistema de notificações
 
   return (
     <div className="space-y-6">
@@ -205,7 +246,7 @@ export const ActivitySidebar: React.FC<ActivitySidebarProps> = ({ posts = [], co
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    <span className="font-medium">{activity.user}</span> {activity.action}
+                    <span className="font-medium">{activity.user.name}</span> {activity.action}
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
                     {activity.time}
@@ -278,7 +319,7 @@ export const ActivitySidebar: React.FC<ActivitySidebarProps> = ({ posts = [], co
                       />
                       <div className="flex-1">
                         <p className="font-medium text-gray-900 dark:text-white">{like.user}</p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">curtiu "{like.post}"</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">curtiu &quot;{like.post}&quot;</p>
                         <p className="text-xs text-gray-400 dark:text-gray-500">{like.time}</p>
                       </div>
                       <Heart className="h-5 w-5 text-red-500" />
@@ -300,7 +341,7 @@ export const ActivitySidebar: React.FC<ActivitySidebarProps> = ({ posts = [], co
                         <p className="font-medium text-gray-900 dark:text-white">{follower.user}</p>
                         <p className="text-sm text-gray-500 dark:text-gray-400">{follower.title}</p>
                         <p className="text-xs text-gray-400 dark:text-gray-500">
-                          {follower.mutual} conexões em comum • {follower.time}
+                          {follower.mutual} conexões em comum • {follower.followedAt}
                         </p>
                       </div>
                       <Button size="sm" variant="outline">
@@ -319,7 +360,7 @@ export const ActivitySidebar: React.FC<ActivitySidebarProps> = ({ posts = [], co
                         <MessageSquare className="h-5 w-5 text-blue-500 mt-1" />
                         <div className="flex-1">
                           <p className="font-medium text-gray-900 dark:text-white mb-1">
-                            Comentário em "{comment.post}"
+                            Comentário em &quot;{comment.post}&quot;
                           </p>
                           <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
                             {comment.content}

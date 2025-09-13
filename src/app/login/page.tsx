@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { signIn, getSession } from 'next-auth/react';
+import { signIn } from 'next-auth/react';
 import { Mail, Lock, Eye, EyeOff, Github } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,9 +16,12 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [emailExists, setEmailExists] = useState(false);
-  const [existingUserInfo, setExistingUserInfo] = useState<any>(null);
+  const [existingUserInfo, setExistingUserInfo] = useState<{
+    name?: string;
+    avatar_url?: string;
+  } | null>(null);
   
-  const { t } = useLanguage();
+  // const { t } = useLanguage(); // Temporariamente comentado até ser usado
   const router = useRouter();
 
   // Load saved credentials on component mount
@@ -34,26 +37,12 @@ export default function LoginPage() {
     }
   }, []);
 
-  // Check if email exists when email changes
-  useEffect(() => {
-    if (email && isValidEmail(email)) {
-      const timeoutId = setTimeout(() => {
-        checkEmailExists(email);
-      }, 500); // Debounce for 500ms
-      
-      return () => clearTimeout(timeoutId);
-    } else {
-      setEmailExists(false);
-      setExistingUserInfo(null);
-    }
-  }, [email]);
-
   const isValidEmail = (email: string) => {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return emailRegex.test(email);
   };
 
-  const checkEmailExists = async (email: string) => {
+  const checkEmailExists = useCallback(async (email: string) => {
     if (!isValidEmail(email)) return;
     
     try {
@@ -75,7 +64,21 @@ export default function LoginPage() {
     } catch (error) {
       console.error('Error checking email:', error);
     }
-  };
+  }, []);
+
+  // Check if email exists when email changes
+  useEffect(() => {
+    if (email && isValidEmail(email)) {
+      const timeoutId = setTimeout(() => {
+        checkEmailExists(email);
+      }, 500); // Debounce for 500ms
+      
+      return () => clearTimeout(timeoutId);
+    } else {
+      setEmailExists(false);
+      setExistingUserInfo(null);
+    }
+  }, [email, checkEmailExists]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -257,12 +260,12 @@ export default function LoginPage() {
                       </h3>
                       <div className="mt-1 text-sm text-blue-700 dark:text-blue-300">
                         <p>Já existe uma conta com este email ({existingUserInfo.name || 'Usuário'}).</p>
-                        {existingUserInfo.providers.includes('google') ? (
+                        {(existingUserInfo as any).providers?.includes('google') ? (
                           <p className="mt-1">✅ Você pode fazer login com Google ou usar email/senha.</p>
                         ) : (
                           <p className="mt-1">💡 Use sua senha ou faça login com Google para vincular as contas.</p>
                         )}
-                        {!existingUserInfo.email_verified && (
+                        {!(existingUserInfo as any).email_verified && (
                           <p className="mt-2 text-sm text-amber-600 dark:text-amber-400">
                             ⚠️ Email não verificado. Verifique sua caixa de entrada ou spam.
                           </p>
@@ -347,7 +350,7 @@ export default function LoginPage() {
           <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
             <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
               <strong>Demo:</strong> Use um email válido (ex: teste@exemplo.com) e senha com 6+ caracteres.<br/>
-              Marque "Lembrar de mim" para não precisar digitar novamente na próxima vez.
+              Marque &quot;Lembrar de mim&quot; para não precisar digitar novamente na próxima vez.
             </p>
           </div>
         </CardContent>

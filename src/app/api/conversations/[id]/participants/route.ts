@@ -6,7 +6,7 @@ import { prisma } from '@/lib/prisma';
 // GET /api/conversations/[id]/participants - Listar participantes da conversa
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string  }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -16,7 +16,7 @@ export async function GET(
 
     // Verificar se o usuário é participante da conversa
     const conversation = await prisma.conversation.findUnique({
-      where: { id: params.id },
+      where: { id: (await context.params).id },
       include: {
         participants: {
           where: { user_id: session.user.id },
@@ -34,7 +34,7 @@ export async function GET(
 
     // Buscar todos os participantes
     const participants = await prisma.conversationParticipant.findMany({
-      where: { conversation_id: params.id },
+      where: { conversation_id: (await context.params).id },
       include: {
         user: {
           select: {
@@ -71,7 +71,7 @@ export async function GET(
 // POST /api/conversations/[id]/participants - Adicionar participante à conversa
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string  }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -91,7 +91,7 @@ export async function POST(
 
     // Verificar se o usuário é participante da conversa e tem permissão para adicionar
     const conversation = await prisma.conversation.findUnique({
-      where: { id: params.id },
+      where: { id: (await context.params).id },
       include: {
         participants: {
           where: { user_id: session.user.id },
@@ -121,7 +121,7 @@ export async function POST(
     const existingParticipant = await prisma.conversationParticipant.findUnique({
       where: {
         conversation_id_user_id: {
-          conversation_id: params.id,
+          conversation_id: (await context.params).id,
           user_id: userId,
         },
       },
@@ -134,7 +134,7 @@ export async function POST(
     // Adicionar participante
     const participant = await prisma.conversationParticipant.create({
       data: {
-        conversation_id: params.id,
+        conversation_id: (await context.params).id,
         user_id: userId,
         role: 'member',
       },

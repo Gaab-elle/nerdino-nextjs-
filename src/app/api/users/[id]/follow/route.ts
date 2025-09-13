@@ -3,19 +3,21 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { NotificationService } from '@/lib/notifications';
+import { Params } from '@/types/nextjs';
 
 // POST /api/users/[id]/follow - Seguir/parar de seguir usuário
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: Params<{ id: string }>
 ) {
   try {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const targetUserId = params.id;
+    const targetUserId = id;
 
     // Não pode seguir a si mesmo
     if (session.user.id === targetUserId) {
@@ -98,7 +100,7 @@ export async function POST(
 // GET /api/users/[id]/follow - Verificar se está seguindo o usuário
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string  }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -106,7 +108,7 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const targetUserId = params.id;
+    const targetUserId = (await context.params).id;
 
     const follow = await prisma.follow.findFirst({
       where: {

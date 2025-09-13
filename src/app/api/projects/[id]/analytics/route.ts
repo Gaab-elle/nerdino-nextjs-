@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string  }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -17,7 +17,7 @@ export async function GET(
       );
     }
 
-    const projectId = params.id;
+    const projectId = (await context.params).id;
     
     if (!projectId || isNaN(parseInt(projectId))) {
       return NextResponse.json(
@@ -36,8 +36,7 @@ export async function GET(
         _count: {
           select: {
             likes: true,
-            comments: true,
-            views: true
+            comments: true
           }
         }
       }
@@ -59,8 +58,8 @@ export async function GET(
       },
       metrics: {
         views: project.views || 0,
-        likes: project._count.likes,
-        comments: project._count.comments,
+        likes: (project as any)._count?.likes || 0,
+        comments: (project as any)._count?.comments || 0,
         stars: project.stars || 0,
         forks: project.forks || 0
       },

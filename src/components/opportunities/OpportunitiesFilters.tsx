@@ -95,7 +95,7 @@ export const OpportunitiesFilters: React.FC<OpportunitiesFiltersProps> = ({
     'Kubernetes', 'MongoDB', 'PostgreSQL', 'GraphQL', 'Vue.js', 'Angular'
   ];
 
-  const handleFilterChange = (key: string, value: any) => {
+  const handleFilterChange = (key: string, value: string | number | string[]) => {
     setFilters({ ...filters, [key]: value });
   };
 

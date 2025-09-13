@@ -74,10 +74,10 @@ export const ProjectsGrid: React.FC<ProjectsGridProps> = ({
     return (
       <div className="text-center py-12">
         <div className="text-gray-500 dark:text-gray-400 text-lg">
-          {t('projects.noProjects')}
+          {t('projects.empty.title')}
         </div>
         <p className="text-gray-400 dark:text-gray-500 mt-2">
-          {t('projects.noProjectsDescription')}
+          {t('projects.empty.description')}
         </p>
       </div>
     );

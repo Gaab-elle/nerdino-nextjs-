@@ -18,12 +18,12 @@ interface SocketEvents {
   messages_read: (data: { conversationId: string; userId: string; messageIds?: string[] }) => void;
   
   // Eventos de presença
-  user_online: (data: { userId: string; user: any; timestamp: string }) => void;
+  user_online: (data: { userId: string; user: { id: string; name: string; username: string; avatar: string }; timestamp: string }) => void;
   user_offline: (data: { userId: string; timestamp: string }) => void;
   presence_updated: (data: { userId: string; status: string; timestamp: string }) => void;
   
   // Eventos de digitação
-  user_typing: (data: { userId: string; user: any; conversationId: string; isTyping: boolean }) => void;
+  user_typing: (data: { userId: string; user: { id: string; name: string; username: string; avatar: string }; conversationId: string; isTyping: boolean }) => void;
   
   // Eventos de notificação
   message_notification: (data: {
@@ -121,7 +121,7 @@ export function useConversationSocket(conversationId: string | null) {
       }
     };
 
-    const handleUserTyping = (data: { userId: string; user: any; conversationId: string; isTyping: boolean }) => {
+    const handleUserTyping = (data: { userId: string; user: { id: string; name: string; username: string; avatar: string }; conversationId: string; isTyping: boolean }) => {
       if (data.conversationId === conversationId) {
         setTypingUsers(prev => {
           const newSet = new Set(prev);
@@ -205,7 +205,13 @@ export function useConversationSocket(conversationId: string | null) {
 // Hook para gerenciar presença global
 export function usePresenceSocket() {
   const { socket, isConnected } = useSocket();
-  const [onlineUsers, setOnlineUsers] = useState<Map<string, any>>(new Map());
+  const [onlineUsers, setOnlineUsers] = useState<Map<string, {
+    id: string;
+    name: string;
+    avatar: string;
+    status: string;
+    lastSeen: string;
+  }>>(new Map());
 
   useEffect(() => {
     if (!socket || !isConnected) {
@@ -215,8 +221,14 @@ export function usePresenceSocket() {
     // Entrar na sala de presença
     socket.emit('join_conversations');
 
-    const handleUserOnline = (data: { userId: string; user: any; timestamp: string }) => {
-      setOnlineUsers(prev => new Map(prev.set(data.userId, data.user)));
+    const handleUserOnline = (data: { userId: string; user: { id: string; name: string; username: string; avatar: string }; timestamp: string }) => {
+      setOnlineUsers(prev => new Map(prev.set(data.userId, {
+        id: data.user.id,
+        name: data.user.name,
+        avatar: data.user.avatar,
+        status: 'online',
+        lastSeen: data.timestamp
+      })));
     };
 
     const handleUserOffline = (data: { userId: string; timestamp: string }) => {
@@ -232,7 +244,7 @@ export function usePresenceSocket() {
         const newMap = new Map(prev);
         const user = newMap.get(data.userId);
         if (user) {
-          newMap.set(data.userId, { ...user, online_status: data.status });
+          newMap.set(data.userId, { ...user, status: data.status });
         }
         return newMap;
       });

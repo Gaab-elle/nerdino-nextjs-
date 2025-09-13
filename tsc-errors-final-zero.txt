@@ -1,0 +1,7 @@
+src/app/api/notifications/stream/route.ts(24,28): error TS2304: Cannot find name 'controller'.
+src/app/api/tags/[id]/route.ts(22,13): error TS2561: Object literal may only specify known properties, but 'tags' does not exist in type 'PostTagInclude<DefaultArgs>'. Did you mean to write 'tag'?
+src/components/dashboard/QuickActions.tsx(121,25): error TS2352: Conversion of type 'string[]' to type 'Record<string, number>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Index signature for type 'string' is missing in type 'string[]'.
+src/components/dashboard/QuickActions.tsx(124,38): error TS2339: Property 'totalForks' does not exist on type 'GitHubStats'.
+src/components/dashboard/QuickActions.tsx(125,40): error TS2339: Property 'totalCommits' does not exist on type 'GitHubStats'.
+src/contexts/NotificationContext.tsx(108,15): error TS2322: Type 'string' is not assignable to type '{ id: string; content: string; type: string; }'.

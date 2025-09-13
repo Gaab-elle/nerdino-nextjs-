@@ -25,7 +25,7 @@ export const CareerSettings: React.FC<CareerSettingsProps> = ({ onUnsavedChanges
     level: 'senior'
   });
 
-  const handleChange = (field: string, value: any) => {
+  const handleChange = (field: string, value: string | boolean | number | string[]) => {
     setCareer(prev => ({ ...prev, [field]: value }));
     onUnsavedChanges(true);
   };

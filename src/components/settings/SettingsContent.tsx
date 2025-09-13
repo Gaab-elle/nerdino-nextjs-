@@ -12,8 +12,24 @@ import ProfileExamples from '@/components/settings/ProfileExamples';
 
 interface SettingsContentProps {
   activeSection: string;
-  settings?: any;
-  onSettingsChange?: (settings: any) => void;
+  settings?: {
+    profile?: unknown;
+    privacy?: unknown;
+    appearance?: unknown;
+    notifications?: unknown;
+    career?: unknown;
+    connections?: unknown;
+    data?: unknown;
+  };
+  onSettingsChange?: (settings: {
+    profile?: unknown;
+    privacy?: unknown;
+    appearance?: unknown;
+    notifications?: unknown;
+    career?: unknown;
+    connections?: unknown;
+    data?: unknown;
+  }) => void;
   onUnsavedChanges: (hasChanges: boolean) => void;
 }
 
@@ -27,7 +43,7 @@ export const SettingsContent: React.FC<SettingsContentProps> = ({
     switch (activeSection) {
       case 'profile':
         return <ProfileSettings 
-          settings={settings}
+          settings={settings?.profile ? { profile: settings.profile } : undefined}
           onSettingsChange={onSettingsChange}
           onUnsavedChanges={onUnsavedChanges} 
         />;

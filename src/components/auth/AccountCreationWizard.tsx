@@ -11,7 +11,18 @@ import { Progress } from '@/components/ui/progress';
 import { Upload, FileText, Eye, Check, ArrowRight, ArrowLeft } from 'lucide-react';
 
 interface AccountCreationWizardProps {
-  onComplete?: (profileData: any) => void;
+  onComplete?: (profileData: {
+    name: string;
+    username: string;
+    bio?: string;
+    location?: string;
+    website?: string;
+    avatar?: string;
+    skills: string[];
+    interests: string[];
+    experience: string;
+    availability: string;
+  }) => void;
 }
 
 export default function AccountCreationWizard({ onComplete }: AccountCreationWizardProps) {
@@ -400,7 +411,18 @@ export default function AccountCreationWizard({ onComplete }: AccountCreationWiz
         </Button>
         
         <Button 
-          onClick={() => onComplete?.(formData)}
+          onClick={() => onComplete?.({
+            name: formData.name,
+            username: formData.username,
+            bio: formData.bio,
+            location: formData.contact,
+            website: '',
+            avatar: '',
+            skills: formData.skills,
+            interests: [],
+            experience: formData.experience,
+            availability: 'available'
+          })}
           className="bg-green-600 hover:bg-green-700"
         >
           <Check className="mr-2 h-4 w-4" />

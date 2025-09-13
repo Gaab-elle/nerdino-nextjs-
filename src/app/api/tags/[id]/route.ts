@@ -4,47 +4,24 @@ import { prisma } from '@/lib/prisma';
 // GET /api/tags/[id] - Buscar tag específica
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string  }> }
 ) {
   try {
     const tag = await prisma.tag.findUnique({
-      where: { id: params.id },
+      where: { id: (await context.params).id },
       include: {
         posts: {
           include: {
-            user: {
+            post: {
               select: {
                 id: true,
-                name: true,
-                username: true,
-                avatar_url: true,
-                image: true,
-              },
-            },
-            tags: {
-              include: {
-                tag: true,
-              },
-            },
-            likes: {
-              select: {
-                id: true,
+                content: true,
                 user_id: true,
               },
             },
-            comments: {
-              select: {
-                id: true,
-              },
-            },
-            _count: {
-              select: {
-                likes: true,
-                comments: true,
-              },
-            },
+            tag: true,
           },
-          orderBy: { created_at: 'desc' },
+          orderBy: { post: { created_at: 'desc' } },
         },
         _count: {
           select: {
@@ -71,7 +48,7 @@ export async function GET(
 // PUT /api/tags/[id] - Atualizar tag
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string  }> }
 ) {
   try {
     const body = await request.json();
@@ -85,7 +62,7 @@ export async function PUT(
     }
 
     const tag = await prisma.tag.update({
-      where: { id: params.id },
+      where: { id: (await context.params).id },
       data: {
         name: name.trim().toLowerCase(),
         color,
@@ -106,12 +83,12 @@ export async function PUT(
 // DELETE /api/tags/[id] - Deletar tag
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string  }> }
 ) {
   try {
     // Verificar se a tag existe
     const existingTag = await prisma.tag.findUnique({
-      where: { id: params.id },
+      where: { id: (await context.params).id },
       select: { id: true },
     });
 
@@ -121,7 +98,7 @@ export async function DELETE(
 
     // Deletar tag (cascade vai deletar PostTag)
     await prisma.tag.delete({
-      where: { id: params.id },
+      where: { id: (await context.params).id },
     });
 
     return NextResponse.json({ message: 'Tag deleted successfully' });

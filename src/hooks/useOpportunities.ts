@@ -1,52 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useJobCompatibility } from './useJobCompatibility';
-
-interface JobData {
-  id: string;
-  title: string;
-  company: string;
-  companyLogo?: string;
-  location: string;
-  remote: boolean;
-  salary?: { min: number; max: number };
-  experience: string;
-  contractType: string;
-  technologies: string[];
-  description: string;
-  postedAt: string;
-  isNew: boolean;
-  isUrgent: boolean;
-  matchScore: number;
-  matchBreakdown: {
-    skills: number;
-    experience: number;
-    location: number;
-  };
-  userApplied: boolean;
-  userFavorited: boolean;
-  url: string;
-  date: string;
-}
-
-interface OpportunitiesResponse {
-  success: boolean;
-  data: JobData[];
-  pagination: {
-    page: number;
-    hasMore: boolean;
-    total: number;
-    pageSize: number;
-    totalPages: number;
-  };
-  source: string;
-  error?: string;
-}
-
-interface UseOpportunitiesOptions {
-  userSkills?: string[];
-  source?: 'infojobs' | 'themuse' | 'adzuna' | 'mock';
-  autoFetch?: boolean;
-}
+import { JobData, OpportunitiesResponse, UseOpportunitiesOptions } from '@/types/jobs';
 
 export const useOpportunities = (options: UseOpportunitiesOptions = {}) => {
   const { userSkills = [], source = 'infojobs', autoFetch = true } = options;
@@ -140,9 +94,19 @@ export const useOpportunities = (options: UseOpportunitiesOptions = {}) => {
     ));
   }, []);
 
-  const filterJobs = useCallback((filters: any) => {
-    let filtered = [...jobs];
-    console.log('🔍 Iniciando filtro com', jobs.length, 'vagas');
+  const filterJobs = useCallback((filters: {
+    search?: string;
+    location?: string;
+    experience?: string;
+    technologies?: string[];
+    salaryMin?: number;
+    salaryMax?: number;
+    contractType?: string;
+    stack?: string;
+    sortBy?: string;
+  }, jobsToFilter = jobs) => {
+    let filtered = [...jobsToFilter];
+    console.log('🔍 Iniciando filtro com', jobsToFilter.length, 'vagas');
     console.log('📋 Filtros aplicados:', filters);
 
     // Search filter
@@ -157,21 +121,21 @@ export const useOpportunities = (options: UseOpportunitiesOptions = {}) => {
     }
 
     // Location filter
-    if (filters.location !== 'all') {
+    if (filters.location && filters.location !== 'all') {
       if (filters.location === 'remote') {
         filtered = filtered.filter(job => job.remote);
       } else {
-        filtered = filtered.filter(job => job.location.includes(filters.location));
+        filtered = filtered.filter(job => job.location.includes(filters.location!));
       }
     }
 
     // Experience filter
-    if (filters.experience !== 'all') {
+    if (filters.experience && filters.experience !== 'all') {
       filtered = filtered.filter(job => job.experience === filters.experience);
     }
 
     // Stack filter
-    if (filters.stack !== 'all') {
+    if (filters.stack && filters.stack !== 'all') {
       const frontendTechs = ['React', 'Vue', 'Angular', 'CSS', 'HTML'];
       const backendTechs = ['Node.js', 'Python', 'Java', 'C#', 'Go'];
       const mobileTechs = ['React Native', 'Flutter', 'Swift', 'Kotlin'];
@@ -194,44 +158,46 @@ export const useOpportunities = (options: UseOpportunitiesOptions = {}) => {
     if (filters.technologies && filters.technologies.length > 0) {
       console.log('🔍 Aplicando filtro de tecnologias:', filters.technologies);
       filtered = filtered.filter(job => 
-        filters.technologies.some((tech: string) => job.technologies.includes(tech))
+        filters.technologies!.some((tech: string) => job.technologies.includes(tech))
       );
       console.log('🔍 Após filtro de tecnologias:', filtered.length);
     }
 
     // Salary filter
-    if (filters.salaryMin > 0 && filters.salaryMax > 0) {
+    if (filters.salaryMin && filters.salaryMax && filters.salaryMin > 0 && filters.salaryMax > 0) {
       console.log('🔍 Aplicando filtro de salário:', filters.salaryMin, '-', filters.salaryMax);
       filtered = filtered.filter(job => 
-        job.salary && job.salary.min >= filters.salaryMin && job.salary.max <= filters.salaryMax
+        job.salary && job.salary.min >= filters.salaryMin! && job.salary.max <= filters.salaryMax!
       );
       console.log('🔍 Após filtro de salário:', filtered.length);
     }
 
     // Contract type filter
-    if (filters.contractType !== 'all') {
+    if (filters.contractType && filters.contractType !== 'all') {
       filtered = filtered.filter(job => job.contractType === filters.contractType);
     }
 
     // Sort
-    switch (filters.sortBy) {
-      case 'relevance':
-        filtered.sort((a, b) => b.matchScore - a.matchScore);
-        break;
-      case 'recent':
-        filtered.sort((a, b) => new Date(b.postedAt).getTime() - new Date(a.postedAt).getTime());
-        break;
-      case 'salary':
-        filtered.sort((a, b) => (b.salary?.max || 0) - (a.salary?.max || 0));
-        break;
-      case 'match':
-        filtered.sort((a, b) => b.matchScore - a.matchScore);
-        break;
+    if (filters.sortBy) {
+      switch (filters.sortBy) {
+        case 'relevance':
+          filtered.sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0));
+          break;
+        case 'recent':
+          filtered.sort((a, b) => new Date(b.postedAt).getTime() - new Date(a.postedAt).getTime());
+          break;
+        case 'salary':
+          filtered.sort((a, b) => (b.salary?.max || 0) - (a.salary?.max || 0));
+          break;
+        case 'match':
+          filtered.sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0));
+          break;
+      }
     }
 
     console.log('✅ Filtro finalizado:', filtered.length, 'vagas restantes');
     return filtered;
-  }, [jobs]);
+  }, []); // Removido jobs das dependências
 
   // Auto-fetch on mount
   useEffect(() => {

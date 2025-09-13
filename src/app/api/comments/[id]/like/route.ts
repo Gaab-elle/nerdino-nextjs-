@@ -6,7 +6,7 @@ import { prisma } from '@/lib/prisma';
 // POST /api/comments/[id]/like - Curtir/descurtir comentário
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string  }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -16,7 +16,7 @@ export async function POST(
 
     // Verificar se o comentário existe
     const comment = await prisma.comment.findUnique({
-      where: { id: params.id },
+      where: { id: (await context.params).id },
       select: { id: true },
     });
 
@@ -28,7 +28,7 @@ export async function POST(
     const existingLike = await prisma.like.findFirst({
       where: {
         user_id: session.user.id,
-        comment_id: params.id,
+        comment_id: (await context.params).id,
       },
     });
 
@@ -47,7 +47,7 @@ export async function POST(
       await prisma.like.create({
         data: {
           user_id: session.user.id,
-          comment_id: params.id,
+          comment_id: (await context.params).id,
         },
       });
 
@@ -68,7 +68,7 @@ export async function POST(
 // GET /api/comments/[id]/like - Verificar se usuário curtiu o comentário
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string  }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -79,7 +79,7 @@ export async function GET(
     const like = await prisma.like.findFirst({
       where: {
         user_id: session.user.id,
-        comment_id: params.id,
+        comment_id: (await context.params).id,
       },
     });
 

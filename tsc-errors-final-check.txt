@@ -1,0 +1,62 @@
+.next/types/app/api/messages/stream/route.ts(12,13): error TS2344: Type 'OmitWithTag<typeof import("/home/gaabz/nerdino-nextjs/src/app/api/messages/stream/route"), "GET" | "DELETE" | "HEAD" | "OPTIONS" | "POST" | "PUT" | "PATCH" | "config" | "generateStaticParams" | ... 6 more ... | "maxDuration", "">' does not satisfy the constraint '{ [x: string]: never; }'.
+  Property 'sendMessageToUser' is incompatible with index signature.
+    Type '(userId: string, message: { [key: string]: unknown; type: string; data?: unknown; timestamp?: string | undefined; }) => void' is not assignable to type 'never'.
+.next/types/app/api/notifications/stream/route.ts(12,13): error TS2344: Type 'OmitWithTag<typeof import("/home/gaabz/nerdino-nextjs/src/app/api/notifications/stream/route"), "GET" | "DELETE" | "HEAD" | "OPTIONS" | "POST" | "PUT" | "PATCH" | "config" | "generateStaticParams" | ... 6 more ... | "maxDuration", "">' does not satisfy the constraint '{ [x: string]: never; }'.
+  Property 'sendNotificationToUser' is incompatible with index signature.
+    Type '(userId: string, notification: { id: string; type: string; title: string; message: string; data?: unknown; timestamp: string; }) => void' is not assignable to type 'never'.
+.next/types/app/api/opportunities/fetch/route.ts(38,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "first"; __param_type__: { nextUrl: { searchParams: URLSearchParams; }; }; }' does not satisfy the constraint 'ParamCheck<Request | NextRequest>'.
+  Types of property '__param_type__' are incompatible.
+    Type '{ nextUrl: { searchParams: URLSearchParams; }; }' is not assignable to type 'Request | NextRequest'.
+      Type '{ nextUrl: { searchParams: URLSearchParams; }; }' is missing the following properties from type 'NextRequest': cookies, page, ua, url, and 21 more.
+.next/types/app/api/opportunities/recommendations/route.ts(38,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "first"; __param_type__: { nextUrl: { searchParams: URLSearchParams; }; }; }' does not satisfy the constraint 'ParamCheck<Request | NextRequest>'.
+  Types of property '__param_type__' are incompatible.
+    Type '{ nextUrl: { searchParams: URLSearchParams; }; }' is not assignable to type 'Request | NextRequest'.
+      Type '{ nextUrl: { searchParams: URLSearchParams; }; }' is missing the following properties from type 'NextRequest': cookies, page, ua, url, and 21 more.
+.next/types/app/api/opportunities/route.ts(38,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "first"; __param_type__: { nextUrl: { searchParams: URLSearchParams; }; }; }' does not satisfy the constraint 'ParamCheck<NextRequest | Request>'.
+  Types of property '__param_type__' are incompatible.
+    Type '{ nextUrl: { searchParams: URLSearchParams; }; }' is not assignable to type 'NextRequest | Request'.
+      Type '{ nextUrl: { searchParams: URLSearchParams; }; }' is missing the following properties from type 'NextRequest': cookies, page, ua, url, and 21 more.
+.next/types/app/api/opportunities/route.ts(155,7): error TS2344: Type '{ __tag__: "POST"; __param_position__: "first"; __param_type__: { json: () => Promise<unknown>; }; }' does not satisfy the constraint 'ParamCheck<NextRequest | Request>'.
+  Types of property '__param_type__' are incompatible.
+    Type '{ json: () => Promise<unknown>; }' is not assignable to type 'NextRequest | Request'.
+      Type '{ json: () => Promise<unknown>; }' is missing the following properties from type 'Request': cache, credentials, destination, headers, and 17 more.
+.next/types/app/api/profile/projects/route.ts(194,7): error TS2344: Type '{ __tag__: "PUT"; __param_position__: "first"; __param_type__: { json: () => Promise<unknown>; }; }' does not satisfy the constraint 'ParamCheck<NextRequest | Request>'.
+  Types of property '__param_type__' are incompatible.
+    Type '{ json: () => Promise<unknown>; }' is not assignable to type 'NextRequest | Request'.
+      Type '{ json: () => Promise<unknown>; }' is missing the following properties from type 'Request': cache, credentials, destination, headers, and 17 more.
+.next/types/app/api/projects/user/route.ts(38,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "first"; __param_type__: { nextUrl: { searchParams: URLSearchParams; }; }; }' does not satisfy the constraint 'ParamCheck<NextRequest | Request>'.
+  Types of property '__param_type__' are incompatible.
+    Type '{ nextUrl: { searchParams: URLSearchParams; }; }' is not assignable to type 'NextRequest | Request'.
+      Type '{ nextUrl: { searchParams: URLSearchParams; }; }' is missing the following properties from type 'NextRequest': cookies, page, ua, url, and 21 more.
+src/adapters/projectAdapter.ts(50,25): error TS2339: Property 'technologies' does not exist on type '{ id: string; description: string; status: string; progress: number; github_url: string | null; is_public: boolean; created_at: Date; updated_at: Date; title: string; content: string | null; ... 5 more ...; user_id: string; }'.
+src/adapters/projectAdapter.ts(52,20): error TS2339: Property 'live_url' does not exist on type '{ id: string; description: string; status: string; progress: number; github_url: string | null; is_public: boolean; created_at: Date; updated_at: Date; title: string; content: string | null; ... 5 more ...; user_id: string; }'.
+src/adapters/projectAdapter.ts(59,17): error TS2339: Property 'tags' does not exist on type '{ id: string; description: string; status: string; progress: number; github_url: string | null; is_public: boolean; created_at: Date; updated_at: Date; title: string; content: string | null; ... 5 more ...; user_id: string; }'.
+src/adapters/projectAdapter.ts(71,9): error TS2322: Type 'Record<number, unknown>' is not assignable to type 'Record<string, number>'.
+  'number' and 'string' index signatures are incompatible.
+    Type 'unknown' is not assignable to type 'number'.
+src/app/api/tags/[id]/route.ts(22,13): error TS2561: Object literal may only specify known properties, but 'tags' does not exist in type 'PostTagInclude<DefaultArgs>'. Did you mean to write 'tag'?
+src/components/dashboard/QuickActions.tsx(121,13): error TS2322: Type 'string[]' is not assignable to type 'Record<string, number>'.
+  Index signature for type 'string' is missing in type 'string[]'.
+src/components/dashboard/QuickActions.tsx(124,38): error TS2339: Property 'totalForks' does not exist on type 'GitHubStats'.
+src/components/dashboard/QuickActions.tsx(125,40): error TS2339: Property 'totalCommits' does not exist on type 'GitHubStats'.
+src/components/dashboard/QuickActions.tsx(127,24): error TS2339: Property 'repos' does not exist on type '{ user: GitHubUser; stats: GitHubStats; recentActivity: { type: string; repo: string; date: string; description: string; }[]; }'.
+src/contexts/NotificationContext.tsx(108,15): error TS2322: Type 'string' is not assignable to type '{ id: string; content: string; type: string; }'.
+src/contexts/NotificationContext.tsx(188,31): error TS2339: Property 'message' does not exist on type '{ id: string; type: string; title: string; content: string; timestamp: string; read: boolean; data?: Record<string, unknown> | undefined; }'.
+src/schemas/github.ts(62,16): error TS2554: Expected 2-3 arguments, but got 1.
+src/schemas/projects.ts(25,18): error TS2554: Expected 2-3 arguments, but got 1.
+src/types/prisma.ts(5,117): error TS2344: Type '{ include: { githubAccount: true; projects: true; posts: true; comments: true; likes: true; followers: true; following: true; }; }' does not satisfy the constraint 'UserFindUniqueArgs<DefaultArgs>'.
+  Property 'where' is missing in type '{ include: { githubAccount: true; projects: true; posts: true; comments: true; likes: true; followers: true; following: true; }; }' but required in type 'UserFindUniqueArgs<DefaultArgs>'.
+src/types/prisma.ts(18,123): error TS2344: Type '{ include: { user: true; tags: { include: { tag: true; }; }; likes: true; comments: true; }; }' does not satisfy the constraint 'ProjectFindUniqueArgs<DefaultArgs>'.
+  Property 'where' is missing in type '{ include: { user: true; tags: { include: { tag: true; }; }; likes: true; comments: true; }; }' but required in type 'ProjectFindUniqueArgs<DefaultArgs>'.
+src/types/prisma.ts(32,117): error TS2344: Type '{ include: { user: true; tags: { include: { tag: true; }; }; likes: true; comments: { include: { user: true; replies: { include: { user: true; }; }; }; }; }; }' does not satisfy the constraint 'PostFindUniqueArgs<DefaultArgs>'.
+  Property 'where' is missing in type '{ include: { user: true; tags: { include: { tag: true; }; }; likes: true; comments: { include: { user: true; replies: { include: { user: true; }; }; }; }; }; }' but required in type 'PostFindUniqueArgs<DefaultArgs>'.
+src/types/prisma.ts(55,123): error TS2344: Type '{ include: { user: true; post: true; replies: { include: { user: true; }; }; likes: true; }; }' does not satisfy the constraint 'CommentFindUniqueArgs<DefaultArgs>'.
+  Property 'where' is missing in type '{ include: { user: true; post: true; replies: { include: { user: true; }; }; likes: true; }; }' but required in type 'CommentFindUniqueArgs<DefaultArgs>'.
+src/types/prisma.ts(69,137): error TS2344: Type '{ include: { technologies: { include: { technology: true; }; }; applications: true; favorites: true; }; }' does not satisfy the constraint 'JobOpportunityFindUniqueArgs<DefaultArgs>'.
+  Property 'where' is missing in type '{ include: { technologies: { include: { technology: true; }; }; applications: true; favorites: true; }; }' but required in type 'JobOpportunityFindUniqueArgs<DefaultArgs>'.
+src/types/prisma.ts(82,133): error TS2344: Type '{ include: { user: true; post: true; comment: true; }; }' does not satisfy the constraint 'NotificationFindUniqueArgs<DefaultArgs>'.
+  Property 'where' is missing in type '{ include: { user: true; post: true; comment: true; }; }' but required in type 'NotificationFindUniqueArgs<DefaultArgs>'.
+src/types/prisma.ts(91,133): error TS2344: Type '{ include: { participants: { include: { user: true; }; }; messages: { include: { sender: true; }; }; }; }' does not satisfy the constraint 'ConversationFindUniqueArgs<DefaultArgs>'.
+  Property 'where' is missing in type '{ include: { participants: { include: { user: true; }; }; messages: { include: { sender: true; }; }; }; }' but required in type 'ConversationFindUniqueArgs<DefaultArgs>'.
+src/types/prisma.ts(107,123): error TS2344: Type '{ include: { sender: true; conversation: { include: { participants: { include: { user: true; }; }; }; }; }; }' does not satisfy the constraint 'MessageFindUniqueArgs<DefaultArgs>'.
+  Property 'where' is missing in type '{ include: { sender: true; conversation: { include: { participants: { include: { user: true; }; }; }; }; }; }' but required in type 'MessageFindUniqueArgs<DefaultArgs>'.

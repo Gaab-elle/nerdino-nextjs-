@@ -8,8 +8,26 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useSession } from 'next-auth/react';
 
 interface ProfileSettingsProps {
-  settings?: any;
-  onSettingsChange?: (settings: any) => void;
+  settings?: {
+    profile?: {
+      name?: string;
+      username?: string;
+      bio?: string;
+      location?: string;
+      website?: string;
+      avatar?: string;
+    };
+  };
+  onSettingsChange?: (settings: {
+    profile?: {
+      name?: string;
+      username?: string;
+      bio?: string;
+      location?: string;
+      website?: string;
+      avatar?: string;
+    };
+  }) => void;
   onUnsavedChanges: (hasChanges: boolean) => void;
 }
 
@@ -23,33 +41,33 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({
   const user = session?.user;
   
   const [formData, setFormData] = useState({
-    name: settings?.name || user?.name || '',
-    username: settings?.username || user?.username || '',
-    email: settings?.email || user?.email || '',
-    phone: settings?.phone || '',
-    bio: settings?.bio || '',
-    location: settings?.location || '',
-    website: settings?.website || '',
-    github: settings?.github || '',
-    linkedin: settings?.linkedin || '',
-    twitter: settings?.twitter || '',
-    portfolio: settings?.portfolio || ''
+    name: settings?.profile?.name || user?.name || '',
+    username: settings?.profile?.username || user?.username || '',
+    email: user?.email || '',
+    phone: '',
+    bio: settings?.profile?.bio || '',
+    location: settings?.profile?.location || '',
+    website: settings?.profile?.website || '',
+    github: '',
+    linkedin: '',
+    twitter: '',
+    portfolio: ''
   });
 
   // Atualizar formData quando settings ou user mudarem
   useEffect(() => {
     setFormData({
-      name: settings?.name || user?.name || '',
-      username: settings?.username || user?.username || '',
-      email: settings?.email || user?.email || '',
-      phone: settings?.phone || '',
-      bio: settings?.bio || '',
-      location: settings?.location || '',
-      website: settings?.website || '',
-      github: settings?.github || '',
-      linkedin: settings?.linkedin || '',
-      twitter: settings?.twitter || '',
-      portfolio: settings?.portfolio || ''
+      name: settings?.profile?.name || user?.name || '',
+      username: settings?.profile?.username || user?.username || '',
+      email: user?.email || '',
+      phone: '',
+      bio: settings?.profile?.bio || '',
+      location: settings?.profile?.location || '',
+      website: settings?.profile?.website || '',
+      github: '',
+      linkedin: '',
+      twitter: '',
+      portfolio: ''
     });
   }, [settings, user]);
 

@@ -43,7 +43,18 @@ export const ProgressSection: React.FC = () => {
   const { data: session } = useSession();
   const user = session?.user;
   const { isConnected, getGitHubStats } = useGitHub();
-  const [githubStats, setGithubStats] = useState<any>(null);
+  const [githubStats, setGithubStats] = useState<{
+    totalRepos: number;
+    totalStars: number;
+    totalForks: number;
+    totalCommits: number;
+    languages: Record<string, number>;
+    recentActivity: Array<{
+      repo: string;
+      type: string;
+      date: string;
+    }>;
+  } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [progressStats, setProgressStats] = useState<ProgressStats>({
     commitsThisWeek: 0,
@@ -88,7 +99,20 @@ export const ProgressSection: React.FC = () => {
     try {
       setIsLoading(true);
       const stats = await getGitHubStats();
-      setGithubStats(stats);
+      if (stats) {
+        setGithubStats({
+          totalRepos: stats.stats?.totalRepos || 0,
+          totalStars: stats.stats?.totalStars || 0,
+          totalForks: (stats.stats as unknown as { totalForks?: number })?.totalForks || 0,
+          totalCommits: (stats.stats as unknown as { totalCommits?: number })?.totalCommits || 0,
+          languages: (stats.stats as unknown as { languages?: Record<string, number> })?.languages || {},
+          recentActivity: stats.recentActivity?.map(activity => ({
+            repo: activity.repo,
+            type: activity.type,
+            date: activity.date
+          })) || []
+        });
+      }
     } catch (error) {
       console.error('Failed to load GitHub stats:', error);
     } finally {
@@ -101,23 +125,23 @@ export const ProgressSection: React.FC = () => {
       // Carregar projetos do usuário
       const savedProjects = localStorage.getItem('userProjects');
       const projects = savedProjects ? JSON.parse(savedProjects) : [];
-      const userProjects = projects.filter((project: any) => project.authorId === user?.id);
+      const userProjects = projects.filter((project: { authorId: string }) => project.authorId === user?.id);
 
       // Carregar posts do usuário
       const savedPosts = localStorage.getItem('communityPosts');
       const posts = savedPosts ? JSON.parse(savedPosts) : [];
-      const userPosts = posts.filter((post: any) => post.author.id === user?.id);
+      const userPosts = posts.filter((post: { author: { id: string } }) => post.author.id === user?.id);
 
       // Calcular estatísticas
-      const activeProjects = userProjects.filter((p: any) => p.status === 'inProgress').length;
-      const abandonedProjectsList = userProjects.filter((p: any) => {
+      const activeProjects = userProjects.filter((p: { status: string }) => p.status === 'inProgress').length;
+      const abandonedProjectsList = userProjects.filter((p: { lastActivity?: string; timestamp?: string }) => {
         const lastActivity = new Date(p.lastActivity || p.timestamp || Date.now());
         const daysSince = Math.floor((Date.now() - lastActivity.getTime()) / (1000 * 60 * 60 * 24));
         return daysSince > 7; // Projetos sem atividade há mais de 7 dias
       });
 
       // Calcular commits baseado em posts de código
-      const codePosts = userPosts.filter((post: any) => post.type === 'code');
+      const codePosts = userPosts.filter((post: { type: string }) => post.type === 'code');
       const commitsThisWeek = codePosts.length;
 
       // Calcular tempo de desenvolvimento (estimativa baseada em atividade)
@@ -137,11 +161,11 @@ export const ProgressSection: React.FC = () => {
       });
 
       // Mapear projetos abandonados
-      const abandonedProjectsData = abandonedProjectsList.map((project: any) => ({
-        id: project.id,
+      const abandonedProjectsData = abandonedProjectsList.map((project: { name: string; lastActivity?: string; timestamp?: string }, index: number) => ({
+        id: (project as { id?: string }).id || `project-${index}`,
         name: project.name,
-        lastActivity: getTimeAgo(project.lastActivity || project.timestamp),
-        daysSinceLastCommit: Math.floor((Date.now() - new Date(project.lastActivity || project.timestamp).getTime()) / (1000 * 60 * 60 * 24))
+        lastActivity: getTimeAgo(project.lastActivity || project.timestamp || ''),
+        daysSinceLastCommit: Math.floor((Date.now() - new Date(project.lastActivity || project.timestamp || Date.now()).getTime()) / (1000 * 60 * 60 * 24))
       }));
 
       setAbandonedProjects(abandonedProjectsData);

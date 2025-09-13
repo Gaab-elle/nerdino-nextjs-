@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
         take: limit,
         orderBy: { created_at: 'desc' },
         include: {
-          from_user: {
+          user: {
             select: {
               id: true,
               name: true,
@@ -48,20 +48,7 @@ export async function GET(request: NextRequest) {
               image: true,
             },
           },
-          post: {
-            select: {
-              id: true,
-              content: true,
-              type: true,
-            },
-          },
-          comment: {
-            select: {
-              id: true,
-              content: true,
-            },
-          },
-        },
+        } as any,
       }),
       prisma.notification.count({ where }),
     ]);

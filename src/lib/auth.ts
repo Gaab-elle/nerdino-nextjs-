@@ -7,7 +7,7 @@ import { prisma } from "./prisma"
 import bcrypt from "bcryptjs"
 
 export const authOptions: NextAuthOptions = {
-  // adapter: PrismaAdapter(prisma), // Temporarily disabled for JWT strategy
+  adapter: PrismaAdapter(prisma),
   providers: [
     CredentialsProvider({
       name: "credentials",
@@ -81,31 +81,47 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   session: {
-    strategy: "jwt",
+    strategy: "database",
   },
   callbacks: {
-    async session({ session, token }) {
-      if (token) {
-        session.user.id = token.id as string
-        session.user.username = token.username as string
-        session.user.avatar_url = token.avatar_url as string
+    async session({ session, user }) {
+      if (user) {
+        session.user.id = user.id
+        session.user.username = (user as { username?: string }).username || user.name?.toLowerCase().replace(/\s+/g, '') || user.id
+        session.user.avatar_url = (user as { avatar_url?: string }).avatar_url || user.image || ''
       }
       return session
     },
-    async jwt({ token, user, account }) {
-      if (user) {
-        // For JWT strategy, we'll use a simple approach
-        // Generate a consistent ID based on email
-        const userId = user.email?.split('@')[0] || 'user'
-        token.id = userId
-        token.username = user.name?.toLowerCase().replace(/\s+/g, '') || userId
-        token.avatar_url = user.image || ''
-        token.email = user.email
-      }
-      return token
-    },
     async signIn({ user, account, profile }) {
-      // For JWT strategy, we'll handle user creation in the JWT callback
+      if (account?.provider === 'github' && account.access_token) {
+        // Store GitHub access token in the account record
+        try {
+          await prisma.account.upsert({
+            where: {
+              provider_providerAccountId: {
+                provider: 'github',
+                providerAccountId: account.providerAccountId,
+              },
+            },
+            update: {
+              access_token: account.access_token,
+              refresh_token: account.refresh_token,
+              expires_at: account.expires_at,
+            },
+            create: {
+              userId: user.id,
+              type: account.type,
+              provider: account.provider,
+              providerAccountId: account.providerAccountId,
+              access_token: account.access_token,
+              refresh_token: account.refresh_token,
+              expires_at: account.expires_at,
+            },
+          });
+        } catch (error) {
+          console.error('Error storing GitHub token:', error);
+        }
+      }
       return true
     },
     async redirect({ url, baseUrl }) {

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useSession } from 'next-auth/react';
@@ -11,6 +11,7 @@ import { JobCards } from '@/components/opportunities/JobCards';
 import { OpportunitiesSidebar } from '@/components/opportunities/OpportunitiesSidebar';
 import { Pagination } from '@/components/opportunities/Pagination';
 import { CompatibleJobsModal } from '@/components/opportunities/CompatibleJobsModal';
+import { JobData, CompatibleJob } from '@/types/jobs';
 import { useOpportunities } from '@/hooks/useOpportunities';
 
 export default function OpportunitiesPage() {
@@ -37,9 +38,8 @@ export default function OpportunitiesPage() {
     available: true
   });
 
-  const [filteredJobs, setFilteredJobs] = useState<any[]>([]);
   const [showCompatibleJobsModal, setShowCompatibleJobsModal] = useState(false);
-  const [compatibleJobs, setCompatibleJobs] = useState<any[]>([]);
+  const [compatibleJobs, setCompatibleJobs] = useState<CompatibleJob[]>([]);
   const [loadingCompatibleJobs, setLoadingCompatibleJobs] = useState(false);
 
   // Use the opportunities hook
@@ -67,14 +67,14 @@ export default function OpportunitiesPage() {
     }
   }, [user, isLoading, router]);
 
-  // Update filtered jobs when jobs or filters change
-  useEffect(() => {
+  // Memoize filtered jobs to prevent infinite loops
+  const filteredJobs = useMemo(() => {
     console.log('🔍 Jobs recebidos:', jobs.length, 'Source:', currentSource);
     console.log('📊 Primeira vaga:', jobs[0]?.title, jobs[0]?.company);
-    const filtered = filterJobs(filters);
+    const filtered = filterJobs(filters, jobs);
     console.log('✅ Vagas filtradas:', filtered.length);
-    setFilteredJobs(filtered);
-  }, [jobs, filters, filterJobs, currentSource]);
+    return filtered;
+  }, [jobs, filters, currentSource, filterJobs]);
 
   // Função para mostrar vagas compatíveis em um modal
   const handleShowCompatibleJobs = async () => {
@@ -139,8 +139,29 @@ export default function OpportunitiesPage() {
     };
 
     try {
-      // Busca todas as vagas disponíveis (múltiplas páginas)
-      let allJobs: any[] = [];
+        // Busca todas as vagas disponíveis (múltiplas páginas)
+        let allJobs: Array<{
+          id: string;
+          title: string;
+          company: string;
+          location: string;
+          salary: { min: number; max: number };
+          type: string;
+          description: string;
+          requirements: string;
+          technologies: string[];
+          postedAt: string;
+          isRemote: boolean;
+          experienceLevel: string;
+          remote: boolean;
+          experience: string;
+          contractType: string;
+          isNew: boolean;
+          isUrgent: boolean;
+          userApplied: boolean;
+          userFavorited: boolean;
+          url: string;
+        }> = [];
       let page = 0;
       let hasMore = true;
       
@@ -168,7 +189,7 @@ export default function OpportunitiesPage() {
             matchBreakdown: {
               skills: compatibility,
               experience: 85, // Default
-              location: job.remote ? 100 : 80
+              location: job.isRemote ? 100 : 80
             }
           };
         })

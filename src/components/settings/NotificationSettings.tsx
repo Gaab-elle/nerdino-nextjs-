@@ -53,7 +53,7 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({ onUn
 
   const handleToggle = (category: string, field?: string) => {
     setNotifications(prev => {
-      const newState = { ...prev };
+      const newState = { ...prev } as any;
       if (field) {
         if (category === 'social' || category === 'projects' || category === 'opportunities' || category === 'networking' || category === 'system') {
           newState[category] = { ...newState[category], [field]: !newState[category][field] };
@@ -71,7 +71,7 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({ onUn
   const handleTimeChange = (field: string, value: string) => {
     setNotifications(prev => ({
       ...prev,
-      doNotDisturb: { ...prev.doNotDisturb, [field]: value }
+      doNotDisturb: { ...prev.doNotDisturb, [field]: value } as any
     }));
     onUnsavedChanges(true);
   };

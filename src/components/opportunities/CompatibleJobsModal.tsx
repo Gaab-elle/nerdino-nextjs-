@@ -6,33 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useLanguage } from '@/contexts/LanguageContext';
-
-interface CompatibleJob {
-  id: string;
-  title: string;
-  company: string;
-  companyLogo?: string;
-  location: string;
-  remote: boolean;
-  salary?: { min: number; max: number };
-  experience: string;
-  contractType: string;
-  technologies: string[];
-  description: string;
-  postedAt: string;
-  isNew: boolean;
-  isUrgent: boolean;
-  matchScore: number;
-  matchBreakdown: {
-    skills: number;
-    experience: number;
-    location: number;
-  };
-  userApplied: boolean;
-  userFavorited: boolean;
-  url: string;
-  source?: string;
-}
+import { CompatibleJob } from '@/types/jobs';
 
 interface CompatibleJobsModalProps {
   isOpen: boolean;

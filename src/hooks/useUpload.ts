@@ -3,6 +3,8 @@
 import { useState, useCallback } from 'react';
 import { UploadType } from '@/lib/upload';
 
+export type { UploadType };
+
 export interface UploadFile {
   file: File;
   id: string;
@@ -157,7 +159,12 @@ export function useUpload(): UseUploadReturn {
       const results: UploadFile[] = [];
 
       // Update successful uploads
-      data.data.successful.forEach((result: any, index: number) => {
+      data.data.successful.forEach((result: {
+        filename: string;
+        url: string;
+        size: number;
+        mimetype: string;
+      }, index: number) => {
         const uploadFile = uploadFiles[index];
         if (uploadFile) {
           const updatedFile: UploadFile = {
@@ -172,7 +179,10 @@ export function useUpload(): UseUploadReturn {
       });
 
       // Update failed uploads
-      data.data.failed.forEach((error: any, index: number) => {
+      data.data.failed.forEach((error: {
+        filename: string;
+        error: string;
+      }, index: number) => {
         const uploadFile = uploadFiles[index + data.data.successful.length];
         if (uploadFile) {
           const errorFile: UploadFile = {

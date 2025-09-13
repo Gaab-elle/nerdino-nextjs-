@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma';
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string  }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -28,7 +28,7 @@ export async function PUT(
       }
     }
 
-    const projectId = params.id;
+    const projectId = (await context.params).id;
     
     if (!projectId) {
       console.log('❌ Project ID is missing');
@@ -123,7 +123,7 @@ export async function PUT(
       id: parseInt(updatedProject.id),
       name: updatedProject.title,
       description: updatedProject.description,
-      technologies: updatedProject.technologies.map((t: any) => t.technology.name),
+      technologies: updatedProject.technologies.map((t: { technology: { name: string } }) => t.technology.name),
       status: updatedProject.status,
       stars: updatedProject.stars || 0,
       forks: updatedProject.forks || 0,

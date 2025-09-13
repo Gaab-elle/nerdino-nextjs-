@@ -6,7 +6,7 @@ import { prisma } from '@/lib/prisma';
 // GET /api/conversations/[id] - Buscar conversa específica
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string  }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -15,7 +15,7 @@ export async function GET(
     }
 
     const conversation = await prisma.conversation.findUnique({
-      where: { id: params.id },
+      where: { id: (await context.params).id },
       include: {
         creator: {
           select: {
@@ -97,7 +97,7 @@ export async function GET(
     // Contar mensagens não lidas
     const unreadCount = await prisma.message.count({
       where: {
-        conversation_id: params.id,
+        conversation_id: (await context.params).id,
         is_read: false,
         sender_id: { not: session.user.id },
       },
@@ -120,7 +120,7 @@ export async function GET(
 // PUT /api/conversations/[id] - Atualizar conversa
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string  }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -133,7 +133,7 @@ export async function PUT(
 
     // Verificar se a conversa existe e se o usuário é participante
     const existingConversation = await prisma.conversation.findUnique({
-      where: { id: params.id },
+      where: { id: (await context.params).id },
       include: {
         participants: {
           where: { user_id: session.user.id },
@@ -151,7 +151,7 @@ export async function PUT(
 
     // Atualizar conversa
     const updatedConversation = await prisma.conversation.update({
-      where: { id: params.id },
+      where: { id: (await context.params).id },
       data: {
         name: name || null,
         is_active: is_active !== undefined ? is_active : existingConversation.is_active,
@@ -218,7 +218,7 @@ export async function PUT(
 // DELETE /api/conversations/[id] - Deletar conversa
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string  }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -228,7 +228,7 @@ export async function DELETE(
 
     // Verificar se a conversa existe e se o usuário é o criador
     const existingConversation = await prisma.conversation.findUnique({
-      where: { id: params.id },
+      where: { id: (await context.params).id },
       select: { creator_id: true },
     });
 
@@ -242,7 +242,7 @@ export async function DELETE(
 
     // Deletar conversa (cascade vai deletar mensagens e participantes)
     await prisma.conversation.delete({
-      where: { id: params.id },
+      where: { id: (await context.params).id },
     });
 
     return NextResponse.json({ message: 'Conversation deleted successfully' });

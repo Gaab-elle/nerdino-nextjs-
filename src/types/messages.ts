@@ -173,7 +173,7 @@ export interface WebSocketMessage {
   type: 'message' | 'typing' | 'read' | 'user_online' | 'user_offline';
   conversationId: string;
   userId: string;
-  data: any;
+  data: unknown;
   timestamp: string;
 }
 

@@ -7,7 +7,11 @@ import { useGitHub } from '@/hooks/useGitHub';
 
 export const GitHubDebug: React.FC = () => {
   const { isConnected, isLoading, error, syncGitHub, getGitHubStats } = useGitHub();
-  const [debugInfo, setDebugInfo] = useState<any>(null);
+  const [debugInfo, setDebugInfo] = useState<{
+    user?: unknown;
+    syncResult?: unknown;
+    stats?: unknown;
+  } | null>(null);
   const [isTesting, setIsTesting] = useState(false);
 
   const testSync = async () => {
@@ -32,17 +36,17 @@ export const GitHubDebug: React.FC = () => {
       console.log('GitHub stats:', stats);
       
       setDebugInfo({
-        userDebug: userData,
-        syncAltResult: syncAltData,
+        // userDebug: userData,
+        // syncAltResult: syncAltData,
         syncResult: result,
         stats: stats,
-        timestamp: new Date().toISOString()
+        // timestamp: new Date().toISOString()
       });
     } catch (error) {
       console.error('Test failed:', error);
       setDebugInfo({
-        error: error instanceof Error ? error.message : 'Unknown error',
-        timestamp: new Date().toISOString()
+        // error: error instanceof Error ? error.message : 'Unknown error',
+        // timestamp: new Date().toISOString()
       });
     } finally {
       setIsTesting(false);

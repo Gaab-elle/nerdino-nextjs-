@@ -1,0 +1,34 @@
+src/app/api/notifications/stream/route.ts(16,33): error TS2304: Cannot find name 'ResponseController'.
+src/app/api/notifications/stream/route.ts(21,12): error TS2304: Cannot find name 'clients'.
+src/app/api/notifications/stream/route.ts(22,9): error TS2304: Cannot find name 'clients'.
+src/app/api/notifications/stream/route.ts(24,7): error TS2304: Cannot find name 'clients'.
+src/app/api/notifications/stream/route.ts(31,9): error TS2304: Cannot find name 'clients'.
+src/app/api/notifications/stream/route.ts(31,27): error TS2304: Cannot find name 'clients'.
+src/app/api/notifications/stream/route.ts(31,50): error TS7006: Parameter 'c' implicitly has an 'any' type.
+src/app/api/notifications/stream/route.ts(32,13): error TS2304: Cannot find name 'clients'.
+src/app/api/notifications/stream/route.ts(33,18): error TS2304: Cannot find name 'clients'.
+src/app/api/notifications/stream/route.ts(85,3): error TS2304: Cannot find name 'sendNotificationToUser'.
+src/app/api/tags/[id]/route.ts(22,13): error TS2561: Object literal may only specify known properties, but 'tags' does not exist in type 'PostTagInclude<DefaultArgs>'. Did you mean to write 'tag'?
+src/components/dashboard/QuickActions.tsx(121,25): error TS2352: Conversion of type 'string[]' to type 'Record<string, number>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Index signature for type 'string' is missing in type 'string[]'.
+src/components/dashboard/QuickActions.tsx(124,38): error TS2339: Property 'totalForks' does not exist on type 'GitHubStats'.
+src/components/dashboard/QuickActions.tsx(125,40): error TS2339: Property 'totalCommits' does not exist on type 'GitHubStats'.
+src/components/dashboard/QuickActions.tsx(127,24): error TS2339: Property 'repos' does not exist on type '{ user: GitHubUser; stats: GitHubStats; recentActivity: { type: string; repo: string; date: string; description: string; }[]; }'.
+src/contexts/NotificationContext.tsx(108,15): error TS2322: Type 'string' is not assignable to type '{ id: string; content: string; type: string; }'.
+src/contexts/NotificationContext.tsx(188,31): error TS2339: Property 'message' does not exist on type '{ id: string; type: string; title: string; content: string; timestamp: string; read: boolean; data?: Record<string, unknown> | undefined; }'.
+src/types/prisma.ts(10,117): error TS2344: Type '{ include: { githubAccount: true; projects: true; posts: true; comments: true; likes: true; followers: true; following: true; }; }' does not satisfy the constraint 'UserFindUniqueArgs<DefaultArgs>'.
+  Property 'where' is missing in type '{ include: { githubAccount: true; projects: true; posts: true; comments: true; likes: true; followers: true; following: true; }; }' but required in type 'UserFindUniqueArgs<DefaultArgs>'.
+src/types/prisma.ts(23,123): error TS2344: Type '{ include: { user: true; tags: { include: { tag: true; }; }; likes: true; comments: true; }; }' does not satisfy the constraint 'ProjectFindUniqueArgs<DefaultArgs>'.
+  Property 'where' is missing in type '{ include: { user: true; tags: { include: { tag: true; }; }; likes: true; comments: true; }; }' but required in type 'ProjectFindUniqueArgs<DefaultArgs>'.
+src/types/prisma.ts(37,117): error TS2344: Type '{ include: { user: true; tags: { include: { tag: true; }; }; likes: true; comments: { include: { user: true; replies: { include: { user: true; }; }; }; }; }; }' does not satisfy the constraint 'PostFindUniqueArgs<DefaultArgs>'.
+  Property 'where' is missing in type '{ include: { user: true; tags: { include: { tag: true; }; }; likes: true; comments: { include: { user: true; replies: { include: { user: true; }; }; }; }; }; }' but required in type 'PostFindUniqueArgs<DefaultArgs>'.
+src/types/prisma.ts(60,123): error TS2344: Type '{ include: { user: true; post: true; replies: { include: { user: true; }; }; likes: true; }; }' does not satisfy the constraint 'CommentFindUniqueArgs<DefaultArgs>'.
+  Property 'where' is missing in type '{ include: { user: true; post: true; replies: { include: { user: true; }; }; likes: true; }; }' but required in type 'CommentFindUniqueArgs<DefaultArgs>'.
+src/types/prisma.ts(74,137): error TS2344: Type '{ include: { technologies: { include: { technology: true; }; }; applications: true; favorites: true; }; }' does not satisfy the constraint 'JobOpportunityFindUniqueArgs<DefaultArgs>'.
+  Property 'where' is missing in type '{ include: { technologies: { include: { technology: true; }; }; applications: true; favorites: true; }; }' but required in type 'JobOpportunityFindUniqueArgs<DefaultArgs>'.
+src/types/prisma.ts(87,133): error TS2344: Type '{ include: { user: true; post: true; comment: true; }; }' does not satisfy the constraint 'NotificationFindUniqueArgs<DefaultArgs>'.
+  Property 'where' is missing in type '{ include: { user: true; post: true; comment: true; }; }' but required in type 'NotificationFindUniqueArgs<DefaultArgs>'.
+src/types/prisma.ts(96,133): error TS2344: Type '{ include: { participants: { include: { user: true; }; }; messages: { include: { sender: true; }; }; }; }' does not satisfy the constraint 'ConversationFindUniqueArgs<DefaultArgs>'.
+  Property 'where' is missing in type '{ include: { participants: { include: { user: true; }; }; messages: { include: { sender: true; }; }; }; }' but required in type 'ConversationFindUniqueArgs<DefaultArgs>'.
+src/types/prisma.ts(112,123): error TS2344: Type '{ include: { sender: true; conversation: { include: { participants: { include: { user: true; }; }; }; }; }; }' does not satisfy the constraint 'MessageFindUniqueArgs<DefaultArgs>'.
+  Property 'where' is missing in type '{ include: { sender: true; conversation: { include: { participants: { include: { user: true; }; }; }; }; }; }' but required in type 'MessageFindUniqueArgs<DefaultArgs>'.

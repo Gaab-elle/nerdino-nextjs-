@@ -113,3 +113,9 @@ export interface Activity {
   date: string;
   url?: string;
 }
+
+// Re-export job types
+export * from './jobs';
+
+// Re-export Next.js types
+export * from './nextjs';

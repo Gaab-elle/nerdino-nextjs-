@@ -7,14 +7,13 @@ import { Label } from '@/components/ui/label';
 import { Eye, EyeOff, Lock, Unlock } from 'lucide-react';
 
 interface PrivacySettingsProps {
-  onSettingsChange?: (settings: any) => void;
   onUnsavedChanges?: (hasChanges: boolean) => void;
 }
 
-export default function PrivacySettings({ onSettingsChange }: PrivacySettingsProps) {
+export default function PrivacySettings({ }: PrivacySettingsProps) {
   const [settings, setSettings] = useState({
     showStars: true,
-    showFollowers: true,
+    showFollowers: true,                                                                          
     showContact: true,
     showAchievements: true,
     showCertifications: true,

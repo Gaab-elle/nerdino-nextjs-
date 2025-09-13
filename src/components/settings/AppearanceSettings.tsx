@@ -42,7 +42,7 @@ export default function AppearanceSettings({ onSettingsChange }: AppearanceSetti
     }
   }, [globalSettings.appearanceLayout]);
 
-  const handleSettingChange = (key: keyof AppearanceSettings, value: any) => {
+  const handleSettingChange = (key: keyof AppearanceSettings, value: string | boolean | number) => {
     const newSettings = { ...settings, [key]: value };
     setSettings(newSettings);
     

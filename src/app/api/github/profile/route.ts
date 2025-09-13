@@ -1,11 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getGitHubAccessToken } from '@/lib/github';
+import { NextResponse } from 'next/server';
 import { GitHubService } from '@/lib/github';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { GitHubAdapter } from '@/adapters/githubAdapter';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // Get current user session
     const session = await getServerSession(authOptions);
@@ -19,7 +19,15 @@ export async function GET(request: NextRequest) {
     const userId = session.user.id;
 
     // Check if user has GitHub connected
-    const accessToken = await getGitHubAccessToken(userId);
+    const userWithGithub = await prisma.user.findUnique({
+      where: { id: userId },
+      include: { 
+        accounts: {
+          where: { provider: 'github' }
+        }
+      }
+    });
+    const accessToken = userWithGithub?.accounts?.[0]?.access_token;
     if (!accessToken) {
       return NextResponse.json(
         { error: 'GitHub not connected' },
@@ -30,22 +38,28 @@ export async function GET(request: NextRequest) {
     const githubService = new GitHubService(accessToken);
     
     // Get comprehensive GitHub data
-    const [githubUser, userStats, repos, recentActivity] = await Promise.all([
-      githubService.getUser(),
-      githubService.getUserStats(githubUser.login),
+    const githubUserRaw = await githubService.getUser();
+    const [userStatsRaw, reposRaw, recentActivityRaw] = await Promise.all([
+      githubService.getUserStats(githubUserRaw.login),
       githubService.getUserRepos(1, 20), // Top 20 repos
-      githubService.getRecentActivity(githubUser.login, 30) // Last 30 days
+      githubService.getRecentActivity(githubUserRaw.login, 30) // Last 30 days
     ]);
 
+    // Normalize data using adapter
+    const githubUser = GitHubAdapter.normalizeUser(githubUserRaw);
+    const repos = Array.isArray(reposRaw) ? GitHubAdapter.normalizeRepos(reposRaw) : [];
+    const activities = Array.isArray(recentActivityRaw) ? GitHubAdapter.normalizeActivities(recentActivityRaw) : [];
+    const normalizedStats = GitHubAdapter.calculateStats(githubUser, repos, activities);
+
     // Calculate additional stats
-    const totalCommits = recentActivity.length;
+    const totalCommits = activities.length;
     const experienceYears = Math.floor(
-      (new Date().getTime() - new Date(githubUser.created_at).getTime()) / 
+      (new Date().getTime() - new Date(githubUser.createdAt).getTime()) / 
       (1000 * 60 * 60 * 24 * 365)
     );
 
     // Get user's current data from database
-    const user = await prisma.user.findUnique({
+    const userData = await prisma.user.findUnique({
       where: { id: userId },
       include: {
         projects: {
@@ -61,64 +75,64 @@ export async function GET(request: NextRequest) {
       // Basic Info
       name: githubUser.name || githubUser.login,
       username: githubUser.login,
-      title: generateTitle(githubUser, userStats),
-      location: githubUser.location || 'Not specified',
-      joinDate: `Member since ${new Date(githubUser.created_at).getFullYear()}`,
-      avatar: githubUser.avatar_url,
-      bio: githubUser.bio || `Passionate developer with ${userStats.totalRepos} repositories and ${userStats.totalStars} stars.`,
+      title: GitHubAdapter.generateTitle(githubUser, normalizedStats),
+      location: githubUser.name || 'Not specified',
+      joinDate: `Member since ${new Date(githubUser.createdAt).getFullYear()}`,
+      avatar: githubUser.avatarUrl,
+      bio: githubUser.bio || `Passionate developer with ${normalizedStats.totalRepos} repositories and ${normalizedStats.totalStars} stars.`,
       
       // Stats
       stats: {
-        projects: userStats.totalRepos,
+        projects: normalizedStats.totalRepos,
         followers: githubUser.followers,
         experience: `${experienceYears}+ years`,
         commits: totalCommits,
-        stars: userStats.totalStars,
-        languages: userStats.languages.length
+        stars: normalizedStats.totalStars,
+        languages: Object.keys(normalizedStats.languages).length
       },
 
       // Social Links
       social: {
-        github: githubUser.html_url,
-        website: githubUser.blog,
-        email: githubUser.email || user?.email,
-        linkedin: user?.linkedin_url,
-        twitter: user?.twitter_url
+        github: githubUser.profileUrl,
+        website: githubUser.profileUrl,
+        email: githubUser.email || userData?.email,
+        linkedin: userData?.linkedin_url,
+        twitter: userData?.twitter_url
       },
 
       // Badges based on GitHub activity
-      badges: generateBadges(githubUser, userStats, repos),
+      badges: GitHubAdapter.generateBadges(githubUser, normalizedStats, repos),
 
       // Recent Activity
-      recentActivity: recentActivity.slice(0, 5).map(event => ({
+      recentActivity: activities.slice(0, 5).map(event => ({
         type: event.type,
-        repo: event.repo?.name,
-        created_at: event.created_at,
-        url: `https://github.com/${event.repo?.name}`
+        repo: event.repoName,
+        created_at: event.date,
+        url: event.repoUrl
       })),
 
       // Top Repositories
       topRepos: repos.slice(0, 6).map(repo => ({
         name: repo.name,
         description: repo.description,
-        stars: repo.stargazers_count,
-        forks: repo.forks_count,
+        stars: repo.stars,
+        forks: repo.forks,
         language: repo.language,
-        url: repo.html_url,
-        updated_at: repo.updated_at
+        url: repo.url,
+        updated_at: repo.updatedAt
       })),
 
       // Languages used
-      languages: userStats.languages.slice(0, 10),
+      languages: Object.keys(normalizedStats.languages).slice(0, 10),
 
       // GitHub specific data
       githubData: {
-        publicRepos: userStats.publicRepos,
-        privateRepos: userStats.privateRepos,
-        totalStars: userStats.totalStars,
-        totalForks: repos.reduce((sum, repo) => sum + repo.forks_count, 0),
+        publicRepos: normalizedStats.totalRepos,
+        privateRepos: 0,
+        totalStars: normalizedStats.totalStars,
+        totalForks: normalizedStats.totalForks,
         accountAge: experienceYears,
-        lastActive: githubUser.updated_at
+        lastActive: githubUser.updatedAt
       }
     };
 
@@ -131,59 +145,9 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('GitHub profile API error:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch GitHub profile data', details: error instanceof Error ? error.message : 'Unknown error' },
+        { error: 'Failed to fetch GitHub profile data', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
 }
 
-// Helper function to generate a professional title based on GitHub data
-function generateTitle(githubUser: any, userStats: any): string {
-  const repos = userStats.totalRepos;
-  const stars = userStats.totalStars;
-  const languages = userStats.languages.length;
-
-  if (stars > 1000) {
-    return 'Senior Developer & Open Source Contributor';
-  } else if (repos > 50) {
-    return 'Full Stack Developer & Tech Lead';
-  } else if (languages > 5) {
-    return 'Polyglot Developer';
-  } else if (repos > 20) {
-    return 'Software Developer';
-  } else {
-    return 'Developer';
-  }
-}
-
-// Helper function to generate badges based on GitHub activity
-function generateBadges(githubUser: any, userStats: any, repos: any[]): string[] {
-  const badges = [];
-
-  // Activity-based badges
-  if (userStats.totalStars > 100) {
-    badges.push('Star Collector');
-  }
-  if (userStats.totalRepos > 20) {
-    badges.push('Productive Developer');
-  }
-  if (userStats.languages.length > 5) {
-    badges.push('Polyglot');
-  }
-  if (repos.some(repo => repo.stargazers_count > 50)) {
-    badges.push('Popular Repos');
-  }
-  if (githubUser.followers > 100) {
-    badges.push('Community Leader');
-  }
-  if (userStats.totalRepos > 50) {
-    badges.push('Code Machine');
-  }
-
-  // Default badges if none match
-  if (badges.length === 0) {
-    badges.push('Developer', 'GitHub User');
-  }
-
-  return badges.slice(0, 4); // Max 4 badges
-}

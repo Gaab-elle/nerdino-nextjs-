@@ -8,7 +8,12 @@ import { useLanguage } from '@/contexts/LanguageContext';
 export const PopularTagsSidebar: React.FC = () => {
   const { t } = useLanguage();
 
-  const popularTags: any[] = []; // Dados reais serão implementados com sistema de tags
+  const popularTags: Array<{
+    id: string;
+    name: string;
+    count: number;
+    trending: boolean;
+  }> = []; // Dados reais serão implementados com sistema de tags
 
   const handleTagClick = (tagName: string) => {
     console.log('Clicked tag:', tagName);
@@ -44,7 +49,7 @@ export const PopularTagsSidebar: React.FC = () => {
                 </span>
                 <TrendingUp 
                   className={`h-3 w-3 ${
-                    tag.trend === 'up' 
+                    tag.trending 
                       ? 'text-green-500' 
                       : 'text-red-500 rotate-180'
                   }`} 

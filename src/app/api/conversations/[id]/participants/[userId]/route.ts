@@ -6,7 +6,7 @@ import { prisma } from '@/lib/prisma';
 // DELETE /api/conversations/[id]/participants/[userId] - Remover participante da conversa
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string; userId: string } }
+  context: { params: Promise<{ id: string; userId: string  }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -16,7 +16,7 @@ export async function DELETE(
 
     // Verificar se o usuário é participante da conversa
     const conversation = await prisma.conversation.findUnique({
-      where: { id: params.id },
+      where: { id: (await context.params).id },
       include: {
         participants: {
           where: { user_id: session.user.id },
@@ -36,8 +36,8 @@ export async function DELETE(
     const participantToRemove = await prisma.conversationParticipant.findUnique({
       where: {
         conversation_id_user_id: {
-          conversation_id: params.id,
-          user_id: params.userId,
+          conversation_id: (await context.params).id,
+          user_id: (await context.params).userId,
         },
       },
     });
@@ -50,7 +50,7 @@ export async function DELETE(
     const currentUserParticipant = await prisma.conversationParticipant.findUnique({
       where: {
         conversation_id_user_id: {
-          conversation_id: params.id,
+          conversation_id: (await context.params).id,
           user_id: session.user.id,
         },
       },
@@ -61,7 +61,7 @@ export async function DELETE(
     }
 
     const canRemove = 
-      params.userId === session.user.id || // Pode remover a si mesmo
+      (await context.params).userId === session.user.id || // Pode remover a si mesmo
       currentUserParticipant.role === 'admin' || // É admin
       conversation.creator_id === session.user.id; // É o criador
 
@@ -73,8 +73,8 @@ export async function DELETE(
     await prisma.conversationParticipant.delete({
       where: {
         conversation_id_user_id: {
-          conversation_id: params.id,
-          user_id: params.userId,
+          conversation_id: (await context.params).id,
+          user_id: (await context.params).userId,
         },
       },
     });
@@ -92,7 +92,7 @@ export async function DELETE(
 // PUT /api/conversations/[id]/participants/[userId] - Atualizar role do participante
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string; userId: string } }
+  context: { params: Promise<{ id: string; userId: string  }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -112,7 +112,7 @@ export async function PUT(
 
     // Verificar se o usuário é admin ou criador da conversa
     const conversation = await prisma.conversation.findUnique({
-      where: { id: params.id },
+      where: { id: (await context.params).id },
       select: { creator_id: true },
     });
 
@@ -123,7 +123,7 @@ export async function PUT(
     const currentUserParticipant = await prisma.conversationParticipant.findUnique({
       where: {
         conversation_id_user_id: {
-          conversation_id: params.id,
+          conversation_id: (await context.params).id,
           user_id: session.user.id,
         },
       },
@@ -145,8 +145,8 @@ export async function PUT(
     const participantToUpdate = await prisma.conversationParticipant.findUnique({
       where: {
         conversation_id_user_id: {
-          conversation_id: params.id,
-          user_id: params.userId,
+          conversation_id: (await context.params).id,
+          user_id: (await context.params).userId,
         },
       },
     });
@@ -159,8 +159,8 @@ export async function PUT(
     const updatedParticipant = await prisma.conversationParticipant.update({
       where: {
         conversation_id_user_id: {
-          conversation_id: params.id,
-          user_id: params.userId,
+          conversation_id: (await context.params).id,
+          user_id: (await context.params).userId,
         },
       },
       data: { role },

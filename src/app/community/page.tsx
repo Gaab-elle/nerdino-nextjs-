@@ -61,7 +61,20 @@ export default function CommunityPage() {
   const router = useRouter();
   const [posts, setPosts] = useState<Post[]>([]);
   const [filteredPosts, setFilteredPosts] = useState<Post[]>([]);
-  const [comments, setComments] = useState<any[]>([]);
+  const [comments, setComments] = useState<Array<{
+    id: number;
+    postId: number;
+    author: {
+      id: number;
+      name: string;
+      username: string;
+      avatar: string;
+    };
+    content: string;
+    timestamp: string;
+    likes: number;
+    userLiked: boolean;
+  }>>([]);
   const [filters, setFilters] = useState({
     type: 'all',
     sortBy: 'recent',
@@ -91,7 +104,20 @@ export default function CommunityPage() {
     if (savedComments) {
       const parsedComments = JSON.parse(savedComments);
       // Converter para array de comentários
-      const allComments: any[] = [];
+      const allComments: Array<{
+        id: number;
+        postId: number;
+        author: {
+          id: number;
+          name: string;
+          username: string;
+          avatar: string;
+        };
+        content: string;
+        timestamp: string;
+        likes: number;
+        userLiked: boolean;
+      }> = [];
       Object.values(parsedComments).forEach((postComments: any) => {
         allComments.push(...postComments);
       });
@@ -169,14 +195,59 @@ export default function CommunityPage() {
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             {/* Left Sidebar */}
             <div className="lg:col-span-1 space-y-6">
-              <ActivitySidebar posts={posts} comments={comments} />
+              <ActivitySidebar posts={posts.map(post => ({
+                id: post.id.toString(),
+                content: post.content,
+                type: post.type,
+                timestamp: post.timestamp,
+                author: {
+                  id: post.author.id.toString(),
+                  name: post.author.name,
+                  username: post.author.username,
+                  avatar: post.author.avatar
+                },
+                stats: post.stats
+              }))} comments={comments.map(comment => ({
+                id: comment.id.toString(),
+                content: comment.content,
+                timestamp: comment.timestamp,
+                postId: comment.postId.toString(),
+                authorId: comment.author.id.toString(),
+                author: {
+                  id: comment.author.id.toString(),
+                  name: comment.author.name,
+                  username: comment.author.username,
+                  avatar: comment.author.avatar
+                }
+              }))} />
               <TrendingSidebar />
             </div>
 
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-6">
               {/* Create Post */}
-              <CreatePost onPostCreated={handlePostCreated} />
+              <CreatePost onPostCreated={(post) => {
+                const newPost: Post = {
+                  id: posts.length + 1,
+                  content: post.content,
+                  type: post.type,
+                  timestamp: post.timestamp,
+                  author: {
+                    id: parseInt(post.author.id),
+                    name: post.author.name,
+                    username: post.author.username,
+                    avatar: post.author.avatar,
+                    title: "Desenvolvedor",
+                    verified: false
+                  },
+                  tags: [],
+                  stats: { likes: 0, comments: 0, shares: 0, saves: 0 },
+                  userLiked: false,
+                  userSaved: false,
+                  userFollowed: false
+                };
+                handlePostCreated(newPost);
+              }} />
               
               {/* Feed Filters */}
               <FeedFilters 

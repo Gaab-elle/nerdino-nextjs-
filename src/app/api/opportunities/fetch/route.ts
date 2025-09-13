@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { scrapeInfoJobs, getCachedInfoJobs, setCachedInfoJobs, InfoJobsJob } from '@/lib/scraping/infoJobsScraper';
+import { NextResponse } from 'next/server';
+import { scrapeInfoJobs, getCachedInfoJobs, setCachedInfoJobs } from '@/lib/scraping/infoJobsScraper';
+import { normalizeOpportunity } from '@/types/opportunities';
 
 // TheMuse API configuration
 const THEMUSE_API_BASE = 'https://www.themuse.com/api/public/jobs';
@@ -73,8 +74,8 @@ function determineExperienceLevel(description: string, title: string): string {
 }
 
 // Function to calculate match score based on user skills
-function calculateMatchScore(job: any, userSkills: string[]): number {
-  const jobTechs = extractTechnologies(job.contents || job.description || '');
+function calculateMatchScore(job: { technologies: string[]; requirements: string }, userSkills: string[]): number {
+  const jobTechs = extractTechnologies((job as any).contents || (job as any).description || '');
   const matchingSkills = jobTechs.filter(tech => 
     userSkills.some(skill => skill.toLowerCase().includes(tech.toLowerCase()) || 
                             tech.toLowerCase().includes(skill.toLowerCase()))
@@ -111,7 +112,16 @@ async function fetchFromTheMuse(page: number = 0, category: string = 'Software E
 
     const data = await response.json();
     
-    return data.results?.map((job: any) => {
+    return data.results?.map((job: {
+      id: string;
+      name: string;
+      contents: string;
+      company: { name: string };
+      locations: Array<{ name: string }>;
+      salary: string;
+      type: string;
+      posted_at: string;
+    }) => {
       const technologies = extractTechnologies(job.contents || '');
       const experience = determineExperienceLevel(job.contents || '', job.name || '');
       
@@ -119,19 +129,19 @@ async function fetchFromTheMuse(page: number = 0, category: string = 'Software E
         id: `themuse-${job.id}`,
         title: job.name || 'Desenvolvedor',
         company: job.company?.name || 'Empresa',
-        companyLogo: job.company?.logo_url,
+        companyLogo: (job.company as any)?.logo_url,
         location: job.locations?.[0]?.name || 'Remoto',
         remote: job.locations?.[0]?.name?.toLowerCase().includes('remote') || false,
         salary: job.salary ? {
-          min: job.salary.min || 0,
-          max: job.salary.max || 0
+          min: (job.salary as any).min || 0,
+          max: (job.salary as any).max || 0
         } : undefined,
         experience,
         contractType: 'CLT',
         technologies,
         description: job.contents?.substring(0, 200) + '...' || 'Descrição não disponível',
-        postedAt: job.publication_date ? new Date(job.publication_date).toLocaleDateString('pt-BR') : 'Data não disponível',
-        isNew: job.publication_date ? (Date.now() - new Date(job.publication_date).getTime()) < 7 * 24 * 60 * 60 * 1000 : false,
+        postedAt: (job as any).publication_date ? new Date((job as any).publication_date).toLocaleDateString('pt-BR') : 'Data não disponível',
+        isNew: (job as any).publication_date ? (Date.now() - new Date((job as any).publication_date).getTime()) < 7 * 24 * 60 * 60 * 1000 : false,
         isUrgent: false,
         matchScore: 75, // Will be calculated based on user skills
         matchBreakdown: {
@@ -141,7 +151,7 @@ async function fetchFromTheMuse(page: number = 0, category: string = 'Software E
         },
         userApplied: false,
         userFavorited: false,
-        url: job.refs?.landing_page || '#'
+        url: (job as any).refs?.landing_page || '#'
       };
     }) || [];
   } catch (error) {
@@ -175,7 +185,17 @@ async function fetchFromAdzuna(page: number = 1): Promise<JobData[]> {
 
     const data = await response.json();
     
-    return data.results?.map((job: any) => {
+    return data.results?.map((job: {
+      id: string;
+      title: string;
+      company: { display_name: string };
+      location: { display_name: string };
+      salary_min: number;
+      salary_max: number;
+      contract_type: string;
+      description: string;
+      created: string;
+    }) => {
       const technologies = extractTechnologies(job.description || '');
       const experience = determineExperienceLevel(job.description || '', job.title || '');
       
@@ -183,7 +203,7 @@ async function fetchFromAdzuna(page: number = 1): Promise<JobData[]> {
         id: `adzuna-${job.id}`,
         title: job.title || 'Desenvolvedor',
         company: job.company?.display_name || 'Empresa',
-        companyLogo: job.company?.logo_url,
+        companyLogo: (job.company as any)?.logo_url,
         location: job.location?.display_name || 'Remoto',
         remote: job.location?.display_name?.toLowerCase().includes('remote') || false,
         salary: job.salary_min && job.salary_max ? {
@@ -205,7 +225,7 @@ async function fetchFromAdzuna(page: number = 1): Promise<JobData[]> {
         },
         userApplied: false,
         userFavorited: false,
-        url: job.redirect_url || '#'
+        url: (job as any).redirect_url || '#'
       };
     }) || [];
   } catch (error) {
@@ -272,7 +292,7 @@ function getMockData(): JobData[] {
   ];
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '0');
@@ -352,9 +372,9 @@ export async function GET(request: NextRequest) {
     if (userSkills.length > 0) {
       jobs = jobs.map(job => ({
         ...job,
-        matchScore: calculateMatchScore(job, userSkills),
+        matchScore: calculateMatchScore(job as any, userSkills),
         matchBreakdown: {
-          skills: calculateMatchScore(job, userSkills),
+          skills: calculateMatchScore(job as any, userSkills),
           experience: job.matchBreakdown.experience,
           location: job.matchBreakdown.location
         }
@@ -394,7 +414,8 @@ export async function GET(request: NextRequest) {
     
     // Implementar paginação no fallback também
     const pageSize = 20;
-    const startIndex = page * pageSize;
+    const currentPage = 0; // Default page for fallback
+    const startIndex = currentPage * pageSize;
     const endIndex = startIndex + pageSize;
     const paginatedMockJobs = mockJobs.slice(startIndex, endIndex);
     const hasMore = endIndex < mockJobs.length;
@@ -403,7 +424,7 @@ export async function GET(request: NextRequest) {
       success: false,
       data: paginatedMockJobs,
       pagination: {
-        page,
+        page: currentPage,
         hasMore,
         total: mockJobs.length,
         pageSize,

@@ -18,7 +18,7 @@ export const DataSettings: React.FC<DataSettingsProps> = ({ onUnsavedChanges }) 
     exportFormat: 'json'
   });
 
-  const handleChange = (field: string, value: any) => {
+  const handleChange = (field: string, value: string | boolean | number) => {
     setData(prev => ({ ...prev, [field]: value }));
     onUnsavedChanges(true);
   };

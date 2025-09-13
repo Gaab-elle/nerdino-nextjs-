@@ -6,7 +6,7 @@ import { prisma } from '@/lib/prisma';
 // GET /api/conversations/[id]/messages - Listar mensagens da conversa
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string  }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -23,7 +23,7 @@ export async function GET(
 
     // Verificar se o usuário é participante da conversa
     const conversation = await prisma.conversation.findUnique({
-      where: { id: params.id },
+      where: { id: (await context.params).id },
       include: {
         participants: {
           where: { user_id: session.user.id },
@@ -40,8 +40,11 @@ export async function GET(
     }
 
     // Construir filtros para mensagens
-    const where: any = {
-      conversation_id: params.id,
+    const where: {
+      conversation_id: string;
+      created_at?: { lt: Date };
+    } = {
+      conversation_id: (await context.params).id,
     };
 
     if (before) {
@@ -66,13 +69,13 @@ export async function GET(
           },
         },
       }),
-      prisma.message.count({ where: { conversation_id: params.id } }),
+      prisma.message.count({ where: { conversation_id: (await context.params).id } }),
     ]);
 
     // Marcar mensagens como lidas
     await prisma.message.updateMany({
       where: {
-        conversation_id: params.id,
+        conversation_id: (await context.params).id,
         is_read: false,
         sender_id: { not: session.user.id },
       },
@@ -101,7 +104,7 @@ export async function GET(
 // POST /api/conversations/[id]/messages - Enviar nova mensagem
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string  }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -121,7 +124,7 @@ export async function POST(
 
     // Verificar se o usuário é participante da conversa
     const conversation = await prisma.conversation.findUnique({
-      where: { id: params.id },
+      where: { id: (await context.params).id },
       include: {
         participants: {
           where: { user_id: session.user.id },
@@ -145,7 +148,7 @@ export async function POST(
         file_url,
         file_name,
         file_size,
-        conversation_id: params.id,
+        conversation_id: (await context.params).id,
         sender_id: session.user.id,
       },
       include: {
@@ -163,7 +166,7 @@ export async function POST(
 
     // Atualizar timestamp da conversa
     await prisma.conversation.update({
-      where: { id: params.id },
+      where: { id: (await context.params).id },
       data: { updated_at: new Date() },
     });
 

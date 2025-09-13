@@ -24,7 +24,13 @@ export const SkillsSection: React.FC = () => {
     bgColor: string;
     skills: Array<{name: string, level: string, years: string}>;
   }>>([]);
-  const [savedSkills, setSavedSkills] = useState<any>(null);
+  const [savedSkills, setSavedSkills] = useState<Array<{
+    title: string;
+    icon: React.ReactNode;
+    color: string;
+    bgColor: string;
+    skills: Array<{name: string, level: string, years: string}>;
+  }> | null>(null);
   const [newSkill, setNewSkill] = useState({ name: '', level: 'beginner', years: '1+ anos', category: 'frontend' });
 
   // Função para obter o tipo do ícone baseado no título da categoria
@@ -83,11 +89,24 @@ export const SkillsSection: React.FC = () => {
           setSavedSkills(null);
         } else {
           // Reconstruir ícones dos dados salvos
-          const reconstructedData = parsed.map((category: any) => ({
-            ...category,
-            icon: renderIcon(category.iconType || getIconType(category.title))
+          const reconstructedData = parsed.map((category: { name: string; skills: string[]; iconType?: string; color?: string; bgColor?: string }) => ({
+            title: category.name,
+            icon: renderIcon(category.iconType || getIconType(category.name)),
+            color: category.color || '#3B82F6',
+            bgColor: category.bgColor || '#EFF6FF',
+            skills: category.skills
           }));
-          setSavedSkills(reconstructedData);
+          setSavedSkills(reconstructedData.map(cat => ({
+            title: cat.title,
+            icon: cat.icon,
+            color: cat.color,
+            bgColor: cat.bgColor,
+            skills: cat.skills.map(skill => ({
+              name: skill,
+              level: 'Intermediário',
+              years: '2-3 anos'
+            }))
+          })));
         }
       } catch (error) {
         console.error('❌ Erro ao carregar dados de habilidades:', error);
@@ -130,7 +149,7 @@ export const SkillsSection: React.FC = () => {
 
     try {
       localStorage.setItem('skillsData', JSON.stringify(dataToSave));
-      setSavedSkills(dataToSave);
+      setSavedSkills(editedSkills);
       stopEditSection();
       console.log('✅ Dados de habilidades salvos com sucesso:', dataToSave);
     } catch (error) {

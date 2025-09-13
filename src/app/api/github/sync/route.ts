@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { syncUserFromGitHub, getGitHubAccessToken } from '@/lib/github';
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     console.log('GitHub sync API called');
     
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions);
     

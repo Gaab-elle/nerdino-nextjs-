@@ -373,7 +373,7 @@ export const ProfileProjectsManager: React.FC = () => {
                   Nenhum projeto visível
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400 mb-4">
-                  Clique em "Editar" para tornar alguns projetos visíveis no seu perfil.
+                  Clique em &quot;Editar&quot; para tornar alguns projetos visíveis no seu perfil.
                 </p>
                 <Button
                   variant="outline"

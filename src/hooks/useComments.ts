@@ -42,7 +42,7 @@ export function useComments(postId: string, query: CommentsQuery = {}) {
     if (postId) {
       fetchComments();
     }
-  }, [postId, query.page, query.limit, query.parentId]);
+  }, [postId, query.page, query.limit, query.parentId, fetchComments]);
 
   const createComment = async (commentData: CreateCommentRequest): Promise<Comment | null> => {
     try {

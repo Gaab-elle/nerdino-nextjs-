@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
 
     const skip = (page - 1) * limit;
 
-    let where: any = {
+    const where: any = {
       is_public: true,
     };
 
@@ -33,16 +33,16 @@ export async function GET(request: NextRequest) {
       const followingIds = following.map(f => f.following_id);
       
       if (followingIds.length > 0) {
-        where.user_id = { in: followingIds };
+        (where as any).author_id = { in: followingIds };
       } else {
         // Se não segue ninguém, retornar posts populares
-        where = {
+        (where as any) = {
           is_public: true,
         };
       }
     } else if (type === 'trending') {
       // Posts em alta (baseado em likes e views recentes)
-      where = {
+      (where as any) = {
         is_public: true,
         created_at: {
           gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // Últimos 7 dias
@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
       );
 
       if (userTags.length > 0) {
-        where.tags = {
+        (where as any).tags = {
           some: {
             tag: {
               name: { in: userTags },

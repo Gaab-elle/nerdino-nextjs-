@@ -110,7 +110,7 @@ const calculateSkillMatchRate = async (skills: string[]): Promise<number> => {
     const data = await response.json();
     
     if (data.success && data.data.trendingTechnologies) {
-      const trendingTechs = data.data.trendingTechnologies.map((tech: any) => 
+      const trendingTechs = data.data.trendingTechnologies.map((tech: { name: string; count: number }) => 
         tech.name.toLowerCase()
       );
       
@@ -140,7 +140,7 @@ const calculateMarketDemand = async (userProfile: UserProfile): Promise<number> 
     
     if (data.success && data.data) {
       const totalJobs = data.data.length;
-      const compatibleJobs = data.data.filter((job: any) => {
+      const compatibleJobs = data.data.filter((job: { technologies: string[]; requirements: string }) => {
         if (!userProfile.skills || userProfile.skills.length === 0) return false;
         
         const jobTechs = job.technologies || [];

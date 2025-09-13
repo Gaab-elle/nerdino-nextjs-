@@ -1,7 +1,5 @@
 import { NextRequest } from 'next/server';
-
-// Store para gerenciar conexões SSE
-const connections = new Map<string, ReadableStreamDefaultController>();
+import { addConnection, removeConnection } from '@/lib/sse-messages';
 
 export async function GET(req: NextRequest) {
   const userId = req.nextUrl.searchParams.get('userId');
@@ -13,7 +11,7 @@ export async function GET(req: NextRequest) {
   const stream = new ReadableStream({
     start(controller) {
       // Armazenar a conexão
-      connections.set(userId, controller);
+      addConnection(userId, controller);
       
       // Enviar mensagem de conexão
       controller.enqueue(`data: ${JSON.stringify({ type: 'connected', userId })}\n\n`);
@@ -22,7 +20,7 @@ export async function GET(req: NextRequest) {
     },
     cancel() {
       // Remover conexão quando cancelada
-      connections.delete(userId);
+      removeConnection(userId);
       console.log(`SSE connection closed for user: ${userId}`);
     }
   });
@@ -38,32 +36,3 @@ export async function GET(req: NextRequest) {
   });
 }
 
-// Função para enviar mensagem para um usuário específico
-export function sendMessageToUser(userId: string, message: any) {
-  const controller = connections.get(userId);
-  if (controller) {
-    try {
-      controller.enqueue(`data: ${JSON.stringify(message)}\n\n`);
-    } catch (error) {
-      console.error('Error sending SSE message:', error);
-      connections.delete(userId);
-    }
-  }
-}
-
-// Função para enviar mensagem para múltiplos usuários
-export function sendMessageToUsers(userIds: string[], message: any) {
-  userIds.forEach(userId => sendMessageToUser(userId, message));
-}
-
-// Função para broadcast para todos os usuários conectados
-export function broadcastMessage(message: any) {
-  connections.forEach((controller, userId) => {
-    try {
-      controller.enqueue(`data: ${JSON.stringify(message)}\n\n`);
-    } catch (error) {
-      console.error('Error broadcasting SSE message:', error);
-      connections.delete(userId);
-    }
-  });
-}

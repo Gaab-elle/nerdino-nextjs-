@@ -6,11 +6,12 @@ import { prisma } from '@/lib/prisma';
 // GET /api/comments/[id] - Buscar comentário específico
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await context.params;
     const comment = await prisma.comment.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         user: {
           select: {
@@ -108,7 +109,7 @@ export async function GET(
 // PUT /api/comments/[id] - Atualizar comentário
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -117,6 +118,7 @@ export async function PUT(
     }
 
     const body = await request.json();
+    const { id: commentId } = await context.params;
     const { content } = body;
 
     if (!content || content.trim().length === 0) {
@@ -128,7 +130,7 @@ export async function PUT(
 
     // Verificar se o comentário existe e pertence ao usuário
     const existingComment = await prisma.comment.findUnique({
-      where: { id: params.id },
+      where: { id: (await context.params).id },
       select: { user_id: true },
     });
 
@@ -142,7 +144,7 @@ export async function PUT(
 
     // Atualizar comentário
     const updatedComment = await prisma.comment.update({
-      where: { id: params.id },
+      where: { id: (await context.params).id },
       data: {
         content: content.trim(),
       },
@@ -184,7 +186,7 @@ export async function PUT(
 // DELETE /api/comments/[id] - Deletar comentário
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string  }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -194,7 +196,7 @@ export async function DELETE(
 
     // Verificar se o comentário existe e pertence ao usuário
     const existingComment = await prisma.comment.findUnique({
-      where: { id: params.id },
+      where: { id: (await context.params).id },
       select: { user_id: true },
     });
 
@@ -208,7 +210,7 @@ export async function DELETE(
 
     // Deletar comentário (cascade vai deletar likes e replies)
     await prisma.comment.delete({
-      where: { id: params.id },
+      where: { id: (await context.params).id },
     });
 
     return NextResponse.json({ message: 'Comment deleted successfully' });

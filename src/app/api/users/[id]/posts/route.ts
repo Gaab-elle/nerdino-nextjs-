@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { Params } from '@/types/nextjs';
 
 // GET /api/users/[id]/posts - Listar posts de um usuário específico
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: Params<{ id: string }>
 ) {
   try {
+    const { id } = await params;
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '10');
@@ -17,7 +19,7 @@ export async function GET(
 
     // Verificar se o usuário existe
     const user = await prisma.user.findUnique({
-      where: { id: params.id },
+      where: { id },
       select: { id: true, is_public: true },
     });
 
@@ -26,8 +28,12 @@ export async function GET(
     }
 
     // Construir filtros
-    const where: any = {
-      user_id: params.id,
+    const where: {
+      user_id: string;
+      is_public: boolean;
+      type?: string;
+    } = {
+      user_id: id,
       is_public: true,
     };
 
@@ -36,7 +42,7 @@ export async function GET(
     }
 
     // Construir ordenação
-    let orderBy: any = { created_at: 'desc' };
+    let orderBy: Record<string, unknown> | Record<string, unknown>[] = { created_at: 'desc' };
     if (sortBy === 'popular') {
       orderBy = { views: 'desc' };
     } else if (sortBy === 'trending') {

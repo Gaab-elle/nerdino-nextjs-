@@ -7,7 +7,7 @@ import { NotificationService } from '@/lib/notifications';
 // GET /api/posts/[id]/comments - Listar comentários do post
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string  }> }
 ) {
   try {
     const { searchParams } = new URL(request.url);
@@ -17,8 +17,12 @@ export async function GET(
 
     const skip = (page - 1) * limit;
 
-    const where: any = {
-      post_id: params.id,
+    const where: {
+      post_id: string;
+      is_public: boolean;
+      parent_id?: string | null;
+    } = {
+      post_id: (await context.params).id,
       is_public: true,
     };
 
@@ -108,7 +112,7 @@ export async function GET(
 // POST /api/posts/[id]/comments - Criar novo comentário
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string  }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -128,7 +132,7 @@ export async function POST(
 
     // Verificar se o post existe e buscar o dono
     const post = await prisma.post.findUnique({
-      where: { id: params.id },
+      where: { id: (await context.params).id },
       select: { id: true, user_id: true },
     });
 
@@ -143,7 +147,7 @@ export async function POST(
         select: { id: true, post_id: true },
       });
 
-      if (!parentComment || parentComment.post_id !== params.id) {
+      if (!parentComment || parentComment.post_id !== (await context.params).id) {
         return NextResponse.json(
           { error: 'Parent comment not found' },
           { status: 404 }
@@ -156,7 +160,7 @@ export async function POST(
       data: {
         content: content.trim(),
         user_id: session.user.id,
-        post_id: params.id,
+        post_id: (await context.params).id,
         parent_id: parent_id || null,
       },
       include: {
@@ -193,7 +197,7 @@ export async function POST(
 
       if (commenter) {
         await NotificationService.createPostCommentNotification(
-          params.id,
+          (await context.params).id,
           post.user_id,
           session.user.id,
           commenter.name || commenter.username || 'Usuário',

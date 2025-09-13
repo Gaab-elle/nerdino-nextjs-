@@ -13,7 +13,7 @@ export type NextApiResponseServerIO = NextApiResponse & {
   };
 };
 
-export const SocketHandler = (req: any, res: NextApiResponseServerIO) => {
+export const SocketHandler = (req: { method: string; body?: unknown }, res: NextApiResponseServerIO) => {
   if (res.socket.server.io) {
     console.log('Socket is already running');
   } else {

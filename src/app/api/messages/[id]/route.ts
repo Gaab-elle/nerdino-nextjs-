@@ -6,7 +6,7 @@ import { prisma } from '@/lib/prisma';
 // GET /api/messages/[id] - Buscar mensagem específica
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string  }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -15,7 +15,7 @@ export async function GET(
     }
 
     const message = await prisma.message.findUnique({
-      where: { id: params.id },
+      where: { id: (await context.params).id },
       include: {
         sender: {
           select: {
@@ -58,7 +58,7 @@ export async function GET(
 // PUT /api/messages/[id] - Atualizar mensagem
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string  }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -78,7 +78,7 @@ export async function PUT(
 
     // Verificar se a mensagem existe e pertence ao usuário
     const existingMessage = await prisma.message.findUnique({
-      where: { id: params.id },
+      where: { id: (await context.params).id },
       select: { sender_id: true },
     });
 
@@ -92,7 +92,7 @@ export async function PUT(
 
     // Atualizar mensagem
     const updatedMessage = await prisma.message.update({
-      where: { id: params.id },
+      where: { id: (await context.params).id },
       data: {
         content: content.trim(),
       },
@@ -122,7 +122,7 @@ export async function PUT(
 // DELETE /api/messages/[id] - Deletar mensagem
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string  }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -132,7 +132,7 @@ export async function DELETE(
 
     // Verificar se a mensagem existe e pertence ao usuário
     const existingMessage = await prisma.message.findUnique({
-      where: { id: params.id },
+      where: { id: (await context.params).id },
       select: { sender_id: true },
     });
 
@@ -146,7 +146,7 @@ export async function DELETE(
 
     // Deletar mensagem
     await prisma.message.delete({
-      where: { id: params.id },
+      where: { id: (await context.params).id },
     });
 
     return NextResponse.json({ message: 'Message deleted successfully' });

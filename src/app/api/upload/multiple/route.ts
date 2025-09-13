@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!type || !Object.keys(UploadService.UPLOAD_CONFIGS).includes(type)) {
+    if (!type || !Object.keys((UploadService as any).UPLOAD_CONFIGS || {}).includes(type)) {
       return NextResponse.json(
         { error: 'Invalid upload type' },
         { status: 400 }

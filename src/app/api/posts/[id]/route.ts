@@ -6,11 +6,11 @@ import { prisma } from '@/lib/prisma';
 // GET /api/posts/[id] - Buscar post específico
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string  }> }
 ) {
   try {
     const post = await prisma.post.findUnique({
-      where: { id: params.id },
+      where: { id: (await context.params).id },
       include: {
         user: {
           select: {
@@ -83,7 +83,7 @@ export async function GET(
 
     // Incrementar visualizações
     await prisma.post.update({
-      where: { id: params.id },
+      where: { id: (await context.params).id },
       data: { views: { increment: 1 } },
     });
 
@@ -100,7 +100,7 @@ export async function GET(
 // PUT /api/posts/[id] - Atualizar post
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string  }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -113,7 +113,7 @@ export async function PUT(
 
     // Verificar se o post existe e pertence ao usuário
     const existingPost = await prisma.post.findUnique({
-      where: { id: params.id },
+      where: { id: (await context.params).id },
       select: { user_id: true },
     });
 
@@ -134,7 +134,7 @@ export async function PUT(
 
     // Atualizar post
     const updatedPost = await prisma.post.update({
-      where: { id: params.id },
+      where: { id: (await context.params).id },
       data: {
         content: content.trim(),
         type: type || 'text',
@@ -150,7 +150,7 @@ export async function PUT(
     if (tags !== undefined) {
       // Remover tags existentes
       await prisma.postTag.deleteMany({
-        where: { post_id: params.id },
+        where: { post_id: (await context.params).id },
       });
 
       // Adicionar novas tags
@@ -167,7 +167,7 @@ export async function PUT(
 
           await prisma.postTag.create({
             data: {
-              post_id: params.id,
+              post_id: (await context.params).id,
               tag_id: tag.id,
             },
           });
@@ -177,7 +177,7 @@ export async function PUT(
 
     // Buscar post atualizado com relacionamentos
     const fullPost = await prisma.post.findUnique({
-      where: { id: params.id },
+      where: { id: (await context.params).id },
       include: {
         user: {
           select: {
@@ -226,7 +226,7 @@ export async function PUT(
 // DELETE /api/posts/[id] - Deletar post
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string  }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -236,7 +236,7 @@ export async function DELETE(
 
     // Verificar se o post existe e pertence ao usuário
     const existingPost = await prisma.post.findUnique({
-      where: { id: params.id },
+      where: { id: (await context.params).id },
       select: { user_id: true },
     });
 
@@ -250,7 +250,7 @@ export async function DELETE(
 
     // Deletar post (cascade vai deletar likes, comments, tags)
     await prisma.post.delete({
-      where: { id: params.id },
+      where: { id: (await context.params).id },
     });
 
     return NextResponse.json({ message: 'Post deleted successfully' });

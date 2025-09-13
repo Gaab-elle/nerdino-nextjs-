@@ -2,13 +2,19 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
 // GET /api/tags - Listar tags populares
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search');
     const limit = parseInt(searchParams.get('limit') || '20');
 
-    const where: any = {};
+    const where: {
+      name?: {
+        contains: string;
+        mode: 'insensitive';
+      };
+    } = {};
 
     if (search) {
       where.name = {

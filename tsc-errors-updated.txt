@@ -1,0 +1,361 @@
+.next/types/app/api/comments/[id]/like/route.ts(49,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/comments/[id]/like/route.ts(166,7): error TS2344: Type '{ __tag__: "POST"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/comments/[id]/route.ts(49,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/comments/[id]/route.ts(205,7): error TS2344: Type '{ __tag__: "PUT"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/comments/[id]/route.ts(244,7): error TS2344: Type '{ __tag__: "DELETE"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/conversations/[id]/messages/route.ts(49,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/conversations/[id]/messages/route.ts(166,7): error TS2344: Type '{ __tag__: "POST"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/conversations/[id]/participants/[userId]/route.ts(205,7): error TS2344: Type '{ __tag__: "PUT"; __param_position__: "second"; __param_type__: { params: { id: string; userId: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; userId: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/conversations/[id]/participants/[userId]/route.ts(244,7): error TS2344: Type '{ __tag__: "DELETE"; __param_position__: "second"; __param_type__: { params: { id: string; userId: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; userId: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/conversations/[id]/participants/route.ts(49,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/conversations/[id]/participants/route.ts(166,7): error TS2344: Type '{ __tag__: "POST"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/conversations/[id]/read/route.ts(166,7): error TS2344: Type '{ __tag__: "POST"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/conversations/[id]/route.ts(49,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/conversations/[id]/route.ts(205,7): error TS2344: Type '{ __tag__: "PUT"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/conversations/[id]/route.ts(244,7): error TS2344: Type '{ __tag__: "DELETE"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/messages/[id]/route.ts(49,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/messages/[id]/route.ts(205,7): error TS2344: Type '{ __tag__: "PUT"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/messages/[id]/route.ts(244,7): error TS2344: Type '{ __tag__: "DELETE"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/messages/stream/route.ts(12,13): error TS2344: Type 'OmitWithTag<typeof import("/home/gaabz/nerdino-nextjs/src/app/api/messages/stream/route"), "GET" | "DELETE" | "HEAD" | "OPTIONS" | "POST" | "PUT" | "PATCH" | "config" | "generateStaticParams" | ... 6 more ... | "maxDuration", "">' does not satisfy the constraint '{ [x: string]: never; }'.
+  Property 'sendMessageToUser' is incompatible with index signature.
+    Type '(userId: string, message: { [key: string]: unknown; type: string; data?: unknown; timestamp?: string | undefined; }) => void' is not assignable to type 'never'.
+.next/types/app/api/notifications/[id]/route.ts(49,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/notifications/[id]/route.ts(205,7): error TS2344: Type '{ __tag__: "PUT"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/notifications/[id]/route.ts(244,7): error TS2344: Type '{ __tag__: "DELETE"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/notifications/stream/route.ts(12,13): error TS2344: Type 'OmitWithTag<typeof import("/home/gaabz/nerdino-nextjs/src/app/api/notifications/stream/route"), "GET" | "DELETE" | "HEAD" | "OPTIONS" | "POST" | "PUT" | "PATCH" | "config" | "generateStaticParams" | ... 6 more ... | "maxDuration", "">' does not satisfy the constraint '{ [x: string]: never; }'.
+  Property 'sendNotificationToUser' is incompatible with index signature.
+    Type '(userId: string, notification: { id: string; type: string; title: string; message: string; data?: unknown; timestamp: string; }) => void' is not assignable to type 'never'.
+.next/types/app/api/opportunities/[id]/apply/route.ts(49,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/opportunities/[id]/apply/route.ts(166,7): error TS2344: Type '{ __tag__: "POST"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/opportunities/[id]/favorite/route.ts(49,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/opportunities/[id]/favorite/route.ts(166,7): error TS2344: Type '{ __tag__: "POST"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/opportunities/[id]/route.ts(49,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/opportunities/[id]/route.ts(205,7): error TS2344: Type '{ __tag__: "PUT"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/opportunities/[id]/route.ts(244,7): error TS2344: Type '{ __tag__: "DELETE"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/opportunities/fetch/route.ts(38,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "first"; __param_type__: { nextUrl: { searchParams: URLSearchParams; }; }; }' does not satisfy the constraint 'ParamCheck<Request | NextRequest>'.
+  Types of property '__param_type__' are incompatible.
+    Type '{ nextUrl: { searchParams: URLSearchParams; }; }' is not assignable to type 'Request | NextRequest'.
+      Type '{ nextUrl: { searchParams: URLSearchParams; }; }' is missing the following properties from type 'NextRequest': cookies, page, ua, url, and 21 more.
+.next/types/app/api/opportunities/recommendations/route.ts(38,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "first"; __param_type__: { nextUrl: { searchParams: URLSearchParams; }; }; }' does not satisfy the constraint 'ParamCheck<Request | NextRequest>'.
+  Types of property '__param_type__' are incompatible.
+    Type '{ nextUrl: { searchParams: URLSearchParams; }; }' is not assignable to type 'Request | NextRequest'.
+      Type '{ nextUrl: { searchParams: URLSearchParams; }; }' is missing the following properties from type 'NextRequest': cookies, page, ua, url, and 21 more.
+.next/types/app/api/opportunities/route.ts(38,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "first"; __param_type__: { nextUrl: { searchParams: URLSearchParams; }; }; }' does not satisfy the constraint 'ParamCheck<NextRequest | Request>'.
+  Types of property '__param_type__' are incompatible.
+    Type '{ nextUrl: { searchParams: URLSearchParams; }; }' is not assignable to type 'NextRequest | Request'.
+      Type '{ nextUrl: { searchParams: URLSearchParams; }; }' is missing the following properties from type 'NextRequest': cookies, page, ua, url, and 21 more.
+.next/types/app/api/opportunities/route.ts(155,7): error TS2344: Type '{ __tag__: "POST"; __param_position__: "first"; __param_type__: { json: () => Promise<unknown>; }; }' does not satisfy the constraint 'ParamCheck<NextRequest | Request>'.
+  Types of property '__param_type__' are incompatible.
+    Type '{ json: () => Promise<unknown>; }' is not assignable to type 'NextRequest | Request'.
+      Type '{ json: () => Promise<unknown>; }' is missing the following properties from type 'Request': cache, credentials, destination, headers, and 17 more.
+.next/types/app/api/posts/[id]/comments/route.ts(49,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/posts/[id]/comments/route.ts(166,7): error TS2344: Type '{ __tag__: "POST"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/posts/[id]/like/route.ts(49,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/posts/[id]/like/route.ts(166,7): error TS2344: Type '{ __tag__: "POST"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/posts/[id]/route.ts(49,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/posts/[id]/route.ts(205,7): error TS2344: Type '{ __tag__: "PUT"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/posts/[id]/route.ts(244,7): error TS2344: Type '{ __tag__: "DELETE"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/posts/[id]/save/route.ts(49,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/posts/[id]/save/route.ts(166,7): error TS2344: Type '{ __tag__: "POST"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/profile/projects/route.ts(194,7): error TS2344: Type '{ __tag__: "PUT"; __param_position__: "first"; __param_type__: { json: () => Promise<unknown>; }; }' does not satisfy the constraint 'ParamCheck<NextRequest | Request>'.
+  Types of property '__param_type__' are incompatible.
+    Type '{ json: () => Promise<unknown>; }' is not assignable to type 'NextRequest | Request'.
+      Type '{ json: () => Promise<unknown>; }' is missing the following properties from type 'Request': cache, credentials, destination, headers, and 17 more.
+.next/types/app/api/projects/[id]/analytics/route.ts(49,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/projects/[id]/archive/route.ts(283,7): error TS2344: Type '{ __tag__: "PATCH"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/projects/[id]/delete/route.ts(244,7): error TS2344: Type '{ __tag__: "DELETE"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/projects/[id]/route.ts(205,7): error TS2344: Type '{ __tag__: "PUT"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/projects/user/route.ts(38,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "first"; __param_type__: { nextUrl: { searchParams: URLSearchParams; }; }; }' does not satisfy the constraint 'ParamCheck<NextRequest | Request>'.
+  Types of property '__param_type__' are incompatible.
+    Type '{ nextUrl: { searchParams: URLSearchParams; }; }' is not assignable to type 'NextRequest | Request'.
+      Type '{ nextUrl: { searchParams: URLSearchParams; }; }' is missing the following properties from type 'NextRequest': cookies, page, ua, url, and 21 more.
+.next/types/app/api/tags/[id]/route.ts(49,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/tags/[id]/route.ts(205,7): error TS2344: Type '{ __tag__: "PUT"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/tags/[id]/route.ts(244,7): error TS2344: Type '{ __tag__: "DELETE"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/users/[id]/follow/route.ts(49,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/users/[id]/route.ts(205,7): error TS2344: Type '{ __tag__: "PUT"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/validator.ts(161,11): error TS1360: Type 'typeof import("/home/gaabz/nerdino-nextjs/src/app/api/comments/[id]/like/route")' does not satisfy the expected type 'RouteHandlerConfig<"/api/comments/[id]/like">'.
+  Types of property 'GET' are incompatible.
+    Type '(request: NextRequest, { params }: { params: { id: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ liked: boolean; likeId: string | null; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ id: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ id: string; }>; }' is not assignable to type '{ params: { id: string; }; }'.
+          Types of property 'params' are incompatible.
+            Property 'id' is missing in type 'Promise<{ id: string; }>' but required in type '{ id: string; }'.
+.next/types/validator.ts(167,11): error TS1360: Type 'typeof import("/home/gaabz/nerdino-nextjs/src/app/api/comments/[id]/route")' does not satisfy the expected type 'RouteHandlerConfig<"/api/comments/[id]">'.
+  Types of property 'GET' are incompatible.
+    Type '(request: NextRequest, { params }: { params: { id: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ user: { id: string; name: string | null; avatar_url: string | null; username: string | null; image: string | null; }; ... 4 more ...; replies: ({ ...; } & { ...; })[]; } & { ...; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ id: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ id: string; }>; }' is not assignable to type '{ params: { id: string; }; }'.
+          Types of property 'params' are incompatible.
+            Property 'id' is missing in type 'Promise<{ id: string; }>' but required in type '{ id: string; }'.
+.next/types/validator.ts(191,11): error TS1360: Type 'typeof import("/home/gaabz/nerdino-nextjs/src/app/api/conversations/[id]/messages/route")' does not satisfy the expected type 'RouteHandlerConfig<"/api/conversations/[id]/messages">'.
+  Types of property 'GET' are incompatible.
+    Type '(request: NextRequest, { params }: { params: { id: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ messages: ({ sender: { id: string; name: string | null; avatar_url: string | null; username: string | null; image: string | null; }; } & { ...; })[]; pagination: { ...; }; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ id: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ id: string; }>; }' is not assignable to type '{ params: { id: string; }; }'.
+          Types of property 'params' are incompatible.
+            Property 'id' is missing in type 'Promise<{ id: string; }>' but required in type '{ id: string; }'.
+.next/types/validator.ts(197,11): error TS1360: Type 'typeof import("/home/gaabz/nerdino-nextjs/src/app/api/conversations/[id]/participants/[userId]/route")' does not satisfy the expected type 'RouteHandlerConfig<"/api/conversations/[id]/participants/[userId]">'.
+  Types of property 'PUT' are incompatible.
+    Type '(request: NextRequest, { params }: { params: { id: string; userId: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ user: { id: string; name: string | null; ... 11 more ...; online_status: string; }; } & { ...; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ id: string; userId: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ id: string; userId: string; }>; }' is not assignable to type '{ params: { id: string; userId: string; }; }'.
+          Types of property 'params' are incompatible.
+            Type 'Promise<{ id: string; userId: string; }>' is missing the following properties from type '{ id: string; userId: string; }': id, userId
+.next/types/validator.ts(203,11): error TS1360: Type 'typeof import("/home/gaabz/nerdino-nextjs/src/app/api/conversations/[id]/participants/route")' does not satisfy the expected type 'RouteHandlerConfig<"/api/conversations/[id]/participants">'.
+  Types of property 'GET' are incompatible.
+    Type '(request: NextRequest, { params }: { params: { id: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<({ user: { id: string; name: string | null; avatar_url: string | null; ... 10 more ...; online_status: string; }; } & { ...; })[]>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ id: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ id: string; }>; }' is not assignable to type '{ params: { id: string; }; }'.
+          Types of property 'params' are incompatible.
+            Property 'id' is missing in type 'Promise<{ id: string; }>' but required in type '{ id: string; }'.
+.next/types/validator.ts(209,11): error TS1360: Type 'typeof import("/home/gaabz/nerdino-nextjs/src/app/api/conversations/[id]/read/route")' does not satisfy the expected type 'RouteHandlerConfig<"/api/conversations/[id]/read">'.
+  Types of property 'POST' are incompatible.
+    Type '(request: NextRequest, { params }: { params: { id: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ message: string; updatedCount: number; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ id: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ id: string; }>; }' is not assignable to type '{ params: { id: string; }; }'.
+          Types of property 'params' are incompatible.
+            Property 'id' is missing in type 'Promise<{ id: string; }>' but required in type '{ id: string; }'.
+.next/types/validator.ts(215,11): error TS1360: Type 'typeof import("/home/gaabz/nerdino-nextjs/src/app/api/conversations/[id]/route")' does not satisfy the expected type 'RouteHandlerConfig<"/api/conversations/[id]">'.
+  Types of property 'GET' are incompatible.
+    Type '(request: NextRequest, { params }: { params: { id: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ displayName: string | null; unreadCount: number; _count: { ...; }; ... 9 more ...; creator_id: string; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ id: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ id: string; }>; }' is not assignable to type '{ params: { id: string; }; }'.
+          Types of property 'params' are incompatible.
+            Property 'id' is missing in type 'Promise<{ id: string; }>' but required in type '{ id: string; }'.
+.next/types/validator.ts(275,11): error TS1360: Type 'typeof import("/home/gaabz/nerdino-nextjs/src/app/api/messages/[id]/route")' does not satisfy the expected type 'RouteHandlerConfig<"/api/messages/[id]">'.
+  Types of property 'GET' are incompatible.
+    Type '(request: NextRequest, { params }: { params: { id: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ sender: { id: string; name: string | null; avatar_url: string | null; username: string | null; image: string | null; }; conversation: { ...; } & { ...; }; } & { ...; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ id: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ id: string; }>; }' is not assignable to type '{ params: { id: string; }; }'.
+          Types of property 'params' are incompatible.
+            Property 'id' is missing in type 'Promise<{ id: string; }>' but required in type '{ id: string; }'.
+.next/types/validator.ts(287,11): error TS1360: Type 'typeof import("/home/gaabz/nerdino-nextjs/src/app/api/notifications/[id]/route")' does not satisfy the expected type 'RouteHandlerConfig<"/api/notifications/[id]">'.
+  Types of property 'GET' are incompatible.
+    Type '(request: NextRequest, { params }: { params: { id: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ [x: string]: never; [x: number]: never; [x: symbol]: never; } & { ...; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ id: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ id: string; }>; }' is not assignable to type '{ params: { id: string; }; }'.
+          Types of property 'params' are incompatible.
+            Property 'id' is missing in type 'Promise<{ id: string; }>' but required in type '{ id: string; }'.
+.next/types/validator.ts(305,11): error TS1360: Type 'typeof import("/home/gaabz/nerdino-nextjs/src/app/api/opportunities/[id]/apply/route")' does not satisfy the expected type 'RouteHandlerConfig<"/api/opportunities/[id]/apply">'.
+  Types of property 'GET' are incompatible.
+    Type '(request: NextRequest, { params }: { params: { id: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ hasApplied: boolean; application: ({ job: { id: string; company: string; title: string; }; } & { ...; }) | null; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ id: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ id: string; }>; }' is not assignable to type '{ params: { id: string; }; }'.
+          Types of property 'params' are incompatible.
+            Property 'id' is missing in type 'Promise<{ id: string; }>' but required in type '{ id: string; }'.
+.next/types/validator.ts(311,11): error TS1360: Type 'typeof import("/home/gaabz/nerdino-nextjs/src/app/api/opportunities/[id]/favorite/route")' does not satisfy the expected type 'RouteHandlerConfig<"/api/opportunities/[id]/favorite">'.
+  Types of property 'GET' are incompatible.
+    Type '(request: NextRequest, { params }: { params: { id: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ favorited: boolean; favoriteId: string | null; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ id: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ id: string; }>; }' is not assignable to type '{ params: { id: string; }; }'.
+          Types of property 'params' are incompatible.
+            Property 'id' is missing in type 'Promise<{ id: string; }>' but required in type '{ id: string; }'.
+.next/types/validator.ts(317,11): error TS1360: Type 'typeof import("/home/gaabz/nerdino-nextjs/src/app/api/opportunities/[id]/route")' does not satisfy the expected type 'RouteHandlerConfig<"/api/opportunities/[id]">'.
+  Types of property 'GET' are incompatible.
+    Type '(request: NextRequest, { params }: { params: { id: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ isFavorited: boolean; hasApplied: boolean; userApplication: { ...; } | null; ... 22 more ...; currency: string; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ id: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ id: string; }>; }' is not assignable to type '{ params: { id: string; }; }'.
+          Types of property 'params' are incompatible.
+            Property 'id' is missing in type 'Promise<{ id: string; }>' but required in type '{ id: string; }'.
+.next/types/validator.ts(347,11): error TS1360: Type 'typeof import("/home/gaabz/nerdino-nextjs/src/app/api/posts/[id]/comments/route")' does not satisfy the expected type 'RouteHandlerConfig<"/api/posts/[id]/comments">'.
+  Types of property 'GET' are incompatible.
+    Type '(request: NextRequest, { params }: { params: { id: string; }; }) => Promise<NextResponse<{ comments: ({ user: { id: string; name: string | null; avatar_url: string | null; username: string | null; image: string | null; }; likes: { ...; }[]; _count: { ...; }; replies: ({ ...; } & { ...; })[]; } & { ...; })[]; paginat...' is not assignable to type '(request: NextRequest, context: { params: Promise<{ id: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ id: string; }>; }' is not assignable to type '{ params: { id: string; }; }'.
+          Types of property 'params' are incompatible.
+            Property 'id' is missing in type 'Promise<{ id: string; }>' but required in type '{ id: string; }'.
+.next/types/validator.ts(353,11): error TS1360: Type 'typeof import("/home/gaabz/nerdino-nextjs/src/app/api/posts/[id]/like/route")' does not satisfy the expected type 'RouteHandlerConfig<"/api/posts/[id]/like">'.
+  Types of property 'GET' are incompatible.
+    Type '(request: NextRequest, { params }: { params: { id: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ liked: boolean; likeId: string | null; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ id: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ id: string; }>; }' is not assignable to type '{ params: { id: string; }; }'.
+          Types of property 'params' are incompatible.
+            Property 'id' is missing in type 'Promise<{ id: string; }>' but required in type '{ id: string; }'.
+.next/types/validator.ts(359,11): error TS1360: Type 'typeof import("/home/gaabz/nerdino-nextjs/src/app/api/posts/[id]/route")' does not satisfy the expected type 'RouteHandlerConfig<"/api/posts/[id]">'.
+  Types of property 'GET' are incompatible.
+    Type '(request: NextRequest, { params }: { params: { id: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ user: { id: string; name: string | null; avatar_url: string | null; bio: string | null; username: string | null; image: string | null; }; tags: ({ ...; } & { ...; })[]; likes: { ...; }[]; com...' is not assignable to type '(request: NextRequest, context: { params: Promise<{ id: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ id: string; }>; }' is not assignable to type '{ params: { id: string; }; }'.
+          Types of property 'params' are incompatible.
+            Property 'id' is missing in type 'Promise<{ id: string; }>' but required in type '{ id: string; }'.
+.next/types/validator.ts(365,11): error TS1360: Type 'typeof import("/home/gaabz/nerdino-nextjs/src/app/api/posts/[id]/save/route")' does not satisfy the expected type 'RouteHandlerConfig<"/api/posts/[id]/save">'.
+  Types of property 'GET' are incompatible.
+    Type '(request: NextRequest, { params }: { params: { id: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ saved: boolean; savedPostId: null; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ id: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ id: string; }>; }' is not assignable to type '{ params: { id: string; }; }'.
+          Types of property 'params' are incompatible.
+            Property 'id' is missing in type 'Promise<{ id: string; }>' but required in type '{ id: string; }'.
+.next/types/validator.ts(383,11): error TS1360: Type 'typeof import("/home/gaabz/nerdino-nextjs/src/app/api/projects/[id]/analytics/route")' does not satisfy the expected type 'RouteHandlerConfig<"/api/projects/[id]/analytics">'.
+  Types of property 'GET' are incompatible.
+    Type '(request: NextRequest, { params }: { params: { id: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ success: boolean; data: { project: { id: string; title: string; status: string; }; metrics: { ...; }; timeline: { ...; }; performance: { ...; }; }; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ id: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ id: string; }>; }' is not assignable to type '{ params: { id: string; }; }'.
+          Types of property 'params' are incompatible.
+            Property 'id' is missing in type 'Promise<{ id: string; }>' but required in type '{ id: string; }'.
+.next/types/validator.ts(389,11): error TS1360: Type 'typeof import("/home/gaabz/nerdino-nextjs/src/app/api/projects/[id]/archive/route")' does not satisfy the expected type 'RouteHandlerConfig<"/api/projects/[id]/archive">'.
+  Types of property 'PATCH' are incompatible.
+    Type '(request: NextRequest, { params }: { params: { id: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ success: boolean; message: string; data: { id: string; status: string; }; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ id: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ id: string; }>; }' is not assignable to type '{ params: { id: string; }; }'.
+          Types of property 'params' are incompatible.
+            Property 'id' is missing in type 'Promise<{ id: string; }>' but required in type '{ id: string; }'.
+.next/types/validator.ts(395,11): error TS1360: Type 'typeof import("/home/gaabz/nerdino-nextjs/src/app/api/projects/[id]/delete/route")' does not satisfy the expected type 'RouteHandlerConfig<"/api/projects/[id]/delete">'.
+  Types of property 'DELETE' are incompatible.
+    Type '(request: NextRequest, { params }: { params: { id: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ success: boolean; message: string; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ id: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ id: string; }>; }' is not assignable to type '{ params: { id: string; }; }'.
+          Types of property 'params' are incompatible.
+            Property 'id' is missing in type 'Promise<{ id: string; }>' but required in type '{ id: string; }'.
+.next/types/validator.ts(401,11): error TS1360: Type 'typeof import("/home/gaabz/nerdino-nextjs/src/app/api/projects/[id]/route")' does not satisfy the expected type 'RouteHandlerConfig<"/api/projects/[id]">'.
+  Types of property 'PUT' are incompatible.
+    Type '(request: NextRequest, { params }: { params: { id: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ success: boolean; message: string; data: { id: number; name: string; ... 10 more ...; image: string; }; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ id: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ id: string; }>; }' is not assignable to type '{ params: { id: string; }; }'.
+          Types of property 'params' are incompatible.
+            Property 'id' is missing in type 'Promise<{ id: string; }>' but required in type '{ id: string; }'.
+.next/types/validator.ts(431,11): error TS1360: Type 'typeof import("/home/gaabz/nerdino-nextjs/src/app/api/tags/[id]/route")' does not satisfy the expected type 'RouteHandlerConfig<"/api/tags/[id]">'.
+  Types of property 'GET' are incompatible.
+    Type '(request: NextRequest, { params }: { params: { id: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ id: string; name: string; created_at: Date; description: string | null; color: string | null; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ id: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ id: string; }>; }' is not assignable to type '{ params: { id: string; }; }'.
+          Types of property 'params' are incompatible.
+            Property 'id' is missing in type 'Promise<{ id: string; }>' but required in type '{ id: string; }'.
+.next/types/validator.ts(473,11): error TS1360: Type 'typeof import("/home/gaabz/nerdino-nextjs/src/app/api/users/[id]/follow/route")' does not satisfy the expected type 'RouteHandlerConfig<"/api/users/[id]/follow">'.
+  Types of property 'GET' are incompatible.
+    Type '(request: NextRequest, { params }: { params: { id: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ following: boolean; followId: string | null; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ id: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ id: string; }>; }' is not assignable to type '{ params: { id: string; }; }'.
+          Types of property 'params' are incompatible.
+            Property 'id' is missing in type 'Promise<{ id: string; }>' but required in type '{ id: string; }'.
+.next/types/validator.ts(497,11): error TS1360: Type 'typeof import("/home/gaabz/nerdino-nextjs/src/app/api/users/[id]/route")' does not satisfy the expected type 'RouteHandlerConfig<"/api/users/[id]">'.
+  Types of property 'PUT' are incompatible.
+    Type '(request: NextRequest, { params }: { params: { id: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ user: { id: string; name: string | null; avatar_url: string | null; ... 17 more ...; company_size: string | null; }; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ id: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ id: string; }>; }' is not assignable to type '{ params: { id: string; }; }'.
+          Types of property 'params' are incompatible.
+            Property 'id' is missing in type 'Promise<{ id: string; }>' but required in type '{ id: string; }'.
+src/adapters/projectAdapter.ts(47,9): error TS2322: Type 'Record<number, unknown>' is not assignable to type 'Record<string, number>'.
+  'number' and 'string' index signatures are incompatible.
+    Type 'unknown' is not assignable to type 'number'.
+src/adapters/projectAdapter.ts(53,7): error TS2322: Type '{ name: string; description?: string | undefined; language?: string | undefined; stargazers_count?: number | undefined; forks_count?: number | undefined; html_url?: string | undefined; updated_at?: string | undefined; }[]' is not assignable to type '{ name: string; description: string; language: string; stargazers_count: number; forks_count: number; html_url: string; updated_at: string; }[]'.
+  Type '{ name: string; description?: string | undefined; language?: string | undefined; stargazers_count?: number | undefined; forks_count?: number | undefined; html_url?: string | undefined; updated_at?: string | undefined; }' is not assignable to type '{ name: string; description: string; language: string; stargazers_count: number; forks_count: number; html_url: string; updated_at: string; }'.
+    Types of property 'description' are incompatible.
+      Type 'string | undefined' is not assignable to type 'string'.
+        Type 'undefined' is not assignable to type 'string'.
+src/app/api/github/profile/route.ts(24,18): error TS2353: Object literal may only specify known properties, and 'githubAccount' does not exist in type 'UserInclude<DefaultArgs>'.
+src/app/api/github/profile/route.ts(26,41): error TS2339: Property 'githubAccount' does not exist on type '{ id: string; name: string | null; email: string; avatar_url: string | null; created_at: Date; updated_at: Date; bio: string | null; location: string | null; username: string | null; ... 21 more ...; company_size: string | null; }'.
+src/app/api/tags/[id]/route.ts(22,13): error TS2561: Object literal may only specify known properties, but 'tags' does not exist in type 'PostTagInclude<DefaultArgs>'. Did you mean to write 'tag'?
+src/components/dashboard/QuickActions.tsx(120,11): error TS2353: Object literal may only specify known properties, and 'totalRepos' does not exist in type 'GitHubStats | ((prevState: GitHubStats | null) => GitHubStats | null)'.
+src/components/dashboard/QuickActions.tsx(523,52): error TS2339: Property 'status' does not exist on type '{ id: string; name: string; description: string; language: string; stars: number; forks: number; url: string; updatedAt: string; }'.
+src/components/dashboard/QuickActions.tsx(524,53): error TS2339: Property 'progress' does not exist on type '{ id: string; name: string; description: string; language: string; stars: number; forks: number; url: string; updatedAt: string; }'.
+src/components/dashboard/QuickActions.tsx(527,65): error TS2339: Property 'technologies' does not exist on type '{ id: string; name: string; description: string; language: string; stars: number; forks: number; url: string; updatedAt: string; }'.
+src/components/dashboard/QuickActions.tsx(528,56): error TS2339: Property 'technologies' does not exist on type '{ id: string; name: string; description: string; language: string; stars: number; forks: number; url: string; updatedAt: string; }'.
+src/components/dashboard/QuickActions.tsx(548,33): error TS2339: Property 'status' does not exist on type '{ id: string; name: string; description: string; language: string; stars: number; forks: number; url: string; updatedAt: string; }'.
+src/components/dashboard/QuickActions.tsx(549,35): error TS2339: Property 'progress' does not exist on type '{ id: string; name: string; description: string; language: string; stars: number; forks: number; url: string; updatedAt: string; }'.
+src/components/dashboard/QuickActions.tsx(550,39): error TS2339: Property 'technologies' does not exist on type '{ id: string; name: string; description: string; language: string; stars: number; forks: number; url: string; updatedAt: string; }'.
+src/components/dashboard/QuickActions.tsx(551,36): error TS2339: Property 'githubUrl' does not exist on type '{ id: string; name: string; description: string; language: string; stars: number; forks: number; url: string; updatedAt: string; }'.
+src/components/dashboard/QuickActions.tsx(552,34): error TS2339: Property 'liveUrl' does not exist on type '{ id: string; name: string; description: string; language: string; stars: number; forks: number; url: string; updatedAt: string; }'.
+src/components/dashboard/QuickActions.tsx(553,39): error TS2339: Property 'lastActivity' does not exist on type '{ id: string; name: string; description: string; language: string; stars: number; forks: number; url: string; updatedAt: string; }'.
+src/components/dashboard/QuickActions.tsx(1268,51): error TS2339: Property 'status' does not exist on type '{ id: string; name: string; description: string; language: string; stars: number; forks: number; url: string; updatedAt: string; }'.
+src/components/dashboard/QuickActions.tsx(1268,80): error TS2339: Property 'progress' does not exist on type '{ id: string; name: string; description: string; language: string; stars: number; forks: number; url: string; updatedAt: string; }'.
+src/components/dashboard/QuickActions.tsx(1331,72): error TS2339: Property 'status' does not exist on type '{ id: string; name: string; description: string; language: string; stars: number; forks: number; url: string; updatedAt: string; }'.
+src/components/dashboard/QuickActions.tsx(1332,73): error TS2339: Property 'progress' does not exist on type '{ id: string; name: string; description: string; language: string; stars: number; forks: number; url: string; updatedAt: string; }'.
+src/components/dashboard/QuickActions.tsx(1335,85): error TS2339: Property 'technologies' does not exist on type '{ id: string; name: string; description: string; language: string; stars: number; forks: number; url: string; updatedAt: string; }'.
+src/components/dashboard/QuickActions.tsx(1336,76): error TS2339: Property 'technologies' does not exist on type '{ id: string; name: string; description: string; language: string; stars: number; forks: number; url: string; updatedAt: string; }'.
+src/contexts/NotificationContext.tsx(106,15): error TS2322: Type 'string' is not assignable to type '{ id: string; content: string; type: string; }'.
+src/contexts/NotificationContext.tsx(186,31): error TS2339: Property 'message' does not exist on type '{ id: string; type: string; title: string; content: string; timestamp: string; read: boolean; data?: Record<string, unknown> | undefined; }'.
+src/schemas/github.ts(62,16): error TS2554: Expected 2-3 arguments, but got 1.
+src/schemas/projects.ts(25,18): error TS2554: Expected 2-3 arguments, but got 1.

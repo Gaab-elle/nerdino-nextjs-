@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
 // GET - Buscar projetos do perfil com visibilidade
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions);
     console.log('🔐 Session check:', { 
@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
       id: project.id,
       name: project.title,
       description: project.description,
-      technologies: project.technologies.map((t: any) => t.technology.name),
+      technologies: project.technologies.map((t: { technology: { name: string } }) => t.technology.name),
       status: project.status,
       stars: project.stars || 0,
       forks: project.forks || 0,
@@ -78,7 +78,7 @@ export async function GET(request: NextRequest) {
 }
 
 // PUT - Atualizar visibilidade dos projetos
-export async function PUT(request: NextRequest) {
+export async function PUT(request: Request) {
   try {
     const session = await getServerSession(authOptions);
     
@@ -95,7 +95,7 @@ export async function PUT(request: NextRequest) {
       }
     }
 
-    const body = await request.json();
+    const body = await request.json() as any;
     const { projectId, isVisible, featured } = body;
 
     if (!projectId) {

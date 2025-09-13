@@ -43,7 +43,16 @@ export const ProfileHeader: React.FC = () => {
   });
   const [editedBadges, setEditedBadges] = useState<string[]>([]);
   const [newBadge, setNewBadge] = useState('');
-  const [savedData, setSavedData] = useState<any>(null);
+  const [savedData, setSavedData] = useState<{
+    name: string;
+    title: string;
+    location: string;
+    bio: string;
+    specialization: string;
+    currentFocus: string;
+    interest: string;
+    badges: string[];
+  } | null>(null);
 
   // Carregar dados salvos do localStorage
   React.useEffect(() => {
@@ -128,7 +137,16 @@ export const ProfileHeader: React.FC = () => {
 
     try {
       localStorage.setItem('profileHeaderData', JSON.stringify(dataToSave));
-      setSavedData(dataToSave);
+      setSavedData({
+        name: dataToSave.name,
+        title: dataToSave.title,
+        location: dataToSave.location,
+        bio: dataToSave.bio,
+        specialization: '',
+        currentFocus: '',
+        interest: '',
+        badges: dataToSave.badges
+      });
       console.log('Dados salvos com sucesso:', dataToSave);
     } catch (error) {
       console.error('Erro ao salvar dados:', error);

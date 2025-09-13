@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 
 interface SettingsData {
-  [key: string]: any;
+  [key: string]: string | number | boolean | string[] | unknown;
 }
 
 export function useSettings() {
@@ -139,7 +139,7 @@ export function useSettings() {
   };
 
   // Atualizar uma configuração específica
-  const updateSetting = (key: string, value: any) => {
+  const updateSetting = (key: string, value: string | number | boolean | string[] | unknown) => {
     const newSettings = { ...settings, [key]: value };
     setSettings(newSettings);
     setHasUnsavedChanges(true);

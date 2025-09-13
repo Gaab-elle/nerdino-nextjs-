@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!type || !Object.keys(UploadService.UPLOAD_CONFIGS).includes(type)) {
+    if (!type || !Object.keys((UploadService as any).UPLOAD_CONFIGS || {}).includes(type)) {
       return NextResponse.json(
         { error: 'Invalid upload type' },
         { status: 400 }
@@ -67,14 +67,14 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const type = searchParams.get('type') as UploadType;
 
-    if (!type || !Object.keys(UploadService.UPLOAD_CONFIGS).includes(type)) {
+    if (!type || !Object.keys((UploadService as any).UPLOAD_CONFIGS || {}).includes(type)) {
       return NextResponse.json(
         { error: 'Invalid upload type' },
         { status: 400 }
       );
     }
 
-    const config = UploadService.UPLOAD_CONFIGS[type];
+    const config = (UploadService as any).UPLOAD_CONFIGS?.[type];
 
     return NextResponse.json({
       success: true,

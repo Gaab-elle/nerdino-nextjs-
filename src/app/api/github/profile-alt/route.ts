@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getGitHubAccessToken } from '@/lib/github';
+import { NextResponse } from 'next/server';
+// import { getGitHubAccessToken } from '@/lib/github';
 import { GitHubService } from '@/lib/github';
 import { prisma } from '@/lib/prisma';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     console.log('GitHub profile API (alt) called');
     
@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
     console.log('Found GitHub account for user:', githubAccount.user.email);
 
     // Check if user has GitHub connected
-    const accessToken = await getGitHubAccessToken(githubAccount.userId);
+    const accessToken = (githubAccount as any).access_token;
     if (!accessToken) {
       return NextResponse.json(
         { error: 'GitHub not connected' },
@@ -151,7 +151,18 @@ export async function GET(request: NextRequest) {
 }
 
 // Helper function to generate a professional title based on GitHub data
-function generateTitle(githubUser: any, userStats: any): string {
+function generateTitle(githubUser: {
+  login: string;
+  name?: string;
+  bio?: string;
+  public_repos: number;
+  followers: number;
+  following: number;
+}, userStats: {
+  totalRepos: number;
+  totalStars: number;
+  languages: string[];
+}): string {
   const repos = userStats.totalRepos;
   const stars = userStats.totalStars;
   const languages = userStats.languages.length;
@@ -170,7 +181,23 @@ function generateTitle(githubUser: any, userStats: any): string {
 }
 
 // Helper function to generate badges based on GitHub activity
-function generateBadges(githubUser: any, userStats: any, repos: any[]): string[] {
+function generateBadges(githubUser: {
+  login: string;
+  name?: string;
+  bio?: string;
+  public_repos: number;
+  followers: number;
+  following: number;
+}, userStats: {
+  totalRepos: number;
+  totalStars: number;
+  languages: string[];
+}, repos: Array<{
+  name: string;
+  stargazers_count: number;
+  language: string;
+  created_at: string;
+}>): string[] {
   const badges = [];
 
   // Activity-based badges

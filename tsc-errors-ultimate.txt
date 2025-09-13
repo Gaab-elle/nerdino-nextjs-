@@ -1,0 +1,2 @@
+src/app/api/tags/[id]/route.ts(22,13): error TS2561: Object literal may only specify known properties, but 'tags' does not exist in type 'PostTagInclude<DefaultArgs>'. Did you mean to write 'tag'?
+src/contexts/NotificationContext.tsx(107,15): error TS2353: Object literal may only specify known properties, and 'id' does not exist in type 'NotificationData'.

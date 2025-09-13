@@ -1,10 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { OpportunityAdapter } from '@/adapters/opportunityAdapter';
 
 // GET /api/opportunities - Listar oportunidades com filtros avançados
-export async function GET(request: NextRequest) {
+export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1');
@@ -25,7 +26,7 @@ export async function GET(request: NextRequest) {
     const skip = (page - 1) * limit;
 
     // Construir filtros
-    const where: any = {
+    const where: Record<string, unknown> = {
       is_active: true,
     };
 
@@ -95,7 +96,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Construir ordenação
-    let orderBy: any = { created_at: 'desc' };
+    let orderBy: Record<string, unknown> | Record<string, unknown>[] = { created_at: 'desc' };
     if (sortBy === 'salary') {
       orderBy = { salary_max: 'desc' };
     } else if (sortBy === 'views') {
@@ -205,14 +206,30 @@ export async function GET(request: NextRequest) {
 }
 
 // POST /api/opportunities - Criar nova oportunidade (admin/recruiter)
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json();
+    const body = await request.json() as {
+      title: string;
+      company: string;
+      description: string;
+      requirements: string;
+      benefits?: string;
+      location: string;
+      is_remote?: boolean;
+      salary_min?: string | number;
+      salary_max?: string | number;
+      currency?: string;
+      contract_type?: string;
+      experience_level?: string;
+      company_size?: string;
+      is_featured?: boolean;
+      technologies?: string[];
+    };
     const {
       title,
       company,
@@ -249,8 +266,8 @@ export async function POST(request: NextRequest) {
         benefits: benefits?.trim(),
         location: location.trim(),
         is_remote: is_remote || false,
-        salary_min: salary_min ? parseInt(salary_min) : null,
-        salary_max: salary_max ? parseInt(salary_max) : null,
+        salary_min: salary_min ? parseInt(String(salary_min)) : null,
+        salary_max: salary_max ? parseInt(String(salary_max)) : null,
         currency: currency || 'BRL',
         contract_type: contract_type || 'CLT',
         experience_level: experience_level || 'mid',
