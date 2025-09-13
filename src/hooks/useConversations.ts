@@ -7,7 +7,7 @@ import {
   UpdateConversationRequest,
   ConversationsQuery 
 } from '@/types/messages';
-import { useSSE } from './useSSE';
+import { useSSE } from '@/hooks/useSSE';
 
 // Hook para gerenciar conversas
 export function useConversations(query: ConversationsQuery = {}) {

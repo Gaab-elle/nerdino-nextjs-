@@ -4,12 +4,12 @@ import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useSession } from 'next-auth/react';
-import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
-import { FeaturedProjects } from '@/components/dashboard/FeaturedProjects';
-import { ActivityFeed } from '@/components/dashboard/ActivityFeed';
-import { ProgressSection } from '@/components/dashboard/ProgressSection';
-import { OpportunitiesSection } from '@/components/dashboard/OpportunitiesSection';
-import { QuickActions } from '@/components/dashboard/QuickActions';
+import { DashboardHeader } from '@/features/dashboard/DashboardHeader';
+import { FeaturedProjects } from '@/features/dashboard/FeaturedProjects';
+import { ActivityFeed } from '@/features/dashboard/ActivityFeed';
+import { ProgressSection } from '@/features/dashboard/ProgressSection';
+import { OpportunitiesSection } from '@/features/dashboard/OpportunitiesSection';
+import { QuickActions } from '@/features/dashboard/QuickActions';
 
 export default function DashboardPage() {
   // const { t } = useLanguage(); // Temporariamente comentado até ser usado

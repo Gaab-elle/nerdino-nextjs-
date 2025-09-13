@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useSettings } from './useSettings';
+import { useSettings } from '@/features/settings/useSettings';
 
 interface PrivacySettings {
   showStars: boolean;

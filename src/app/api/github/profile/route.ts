@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { GitHubService } from '@/lib/github';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { authOptions } from '@/config/auth';
 import { GitHubAdapter } from '@/adapters/githubAdapter';
 
 export async function GET() {

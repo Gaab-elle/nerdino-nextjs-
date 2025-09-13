@@ -136,7 +136,7 @@ eb init nerdino-app --platform node.js --region us-east-1
 ### Criar Environment:
 
 ```bash
-eb create nerdino-prod --instance_type t2.micro
+eb create nerdino-prod --instance_type t2.micro                                                                                                                                                                                                                                                                                                                                                                                         
 ```
 
 ### Configurar Variáveis de Ambiente:

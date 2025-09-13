@@ -73,13 +73,13 @@ export const Navbar: React.FC = () => {
             </Link>
             {isClient && user && (
               <>
-                <Link href="/community" className="text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400">
+                <Link href="/dashboard/community" className="text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400">
                   {t('navbar.community')}
                 </Link>
-                <Link href="/messages" className="text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400">
+                <Link href="/dashboard/messages" className="text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400">
                   {t('navbar.messages')}
                 </Link>
-                <Link href="/opportunities" className="text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400">
+                <Link href="/dashboard/opportunities" className="text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400">
                   {t('navbar.opportunities')}
                 </Link>
               </>
@@ -169,7 +169,7 @@ export const Navbar: React.FC = () => {
                   <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
                     <div className="py-1">
                       <Link 
-                        href="/profile"
+                        href="/dashboard/profile"
                         className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                         onClick={() => setShowProfileMenu(false)}
                       >
@@ -185,7 +185,7 @@ export const Navbar: React.FC = () => {
                         Dashboard
                       </Link>
                       <Link 
-                        href="/projects"
+                        href="/dashboard/projects"
                         className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                         onClick={() => setShowProfileMenu(false)}
                       >
@@ -193,7 +193,7 @@ export const Navbar: React.FC = () => {
                         {t('navbar.projects')}
                       </Link>
                       <Link
-                        href="/settings"
+                        href="/dashboard/settings"
                         className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                         onClick={() => setShowProfileMenu(false)}
                       >
@@ -220,7 +220,7 @@ export const Navbar: React.FC = () => {
             ) : !isLoading ? (
               /* User is not logged in - show login/register buttons */
               <>
-                <Link href="/login">
+                <Link href="/auth/login">
                   <Button 
                     variant="outline" 
                     size="sm"
@@ -228,7 +228,7 @@ export const Navbar: React.FC = () => {
                     {t('navbar.login')}
                   </Button>
                 </Link>
-                <Link href="/register">
+                <Link href="/auth/register">
                   <Button size="sm">
                     {t('hero.getStarted')}
                   </Button>

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { authOptions } from '@/config/auth';
 import { GitHubService, getGitHubAccessToken } from '@/lib/github';
 
 export async function GET() {

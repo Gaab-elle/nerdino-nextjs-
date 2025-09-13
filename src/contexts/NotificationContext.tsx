@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useSSE } from '@/hooks/useSSE';
-import { MessageNotification, useMessageNotifications } from '@/components/messages/MessageNotification';
+import { MessageNotification, useMessageNotifications } from '@/features/messages/MessageNotification';
 import { NotificationAdapter } from '@/adapters/notificationAdapter';
 import { SSEMessage, MessageNotification as SSEMessageNotification, GeneralNotification } from '@/schemas/notifications';
 

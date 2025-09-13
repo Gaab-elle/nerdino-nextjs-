@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { authOptions } from '@/config/auth';
 import { prisma } from '@/lib/prisma';
-import { NotificationAdapter } from '@/services/notificationAdapter';
+import { NotificationAdapter } from '@/adapters/notificationAdapter';
 
 // GET /api/notifications - Listar todas as notificações do usuário
 export async function GET(request: NextRequest) {
@@ -88,7 +88,7 @@ export async function GET(request: NextRequest) {
     ]);
 
     // Normalize notifications using adapter
-    const notifications = NotificationAdapter.normalizeNotificationList(notificationsRaw);
+    const notifications = NotificationAdapter.normalizeNotifications(notificationsRaw);
 
     // Contar notificações não lidas por categoria
     const unreadCounts = await Promise.all([
@@ -208,10 +208,7 @@ export async function POST(request: NextRequest) {
         content: content.trim(),
         type,
         data: data || null,
-        from_user_id: from_user_id || null,
-        post_id: post_id || null,
-        comment_id: comment_id || null,
-      } as any,
+      },
     });
 
     return NextResponse.json(notification, { status: 201 });
